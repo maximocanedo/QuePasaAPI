@@ -1,68 +1,73 @@
 package frgp.utn.edu.ar.quepasa.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "_user")
 public class User implements UserDetails {
-
-    private Long id;
-    private String username;
-    private String name;
-    private String password;
-    private boolean enabled;
-    private Set<Role> roles;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() { return this.id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    @Column(unique = true, nullable = false)
-    public String getUsername() { return this.username; }
-
-    public void setUsername(String username) { this.username = username; }
-
-    @Column(nullable = false)
-    public String getName() { return this.name; }
-
-    public void setName(String name) { this.name = name; }
-
-    @JsonIgnore
-    @Column(nullable = false)
-    public String getPassword() { return this.password; }
-
-    public void setPassword(String password) { this.password = password; }
-
-    @Column(nullable = false)
-    public boolean isEnabled() { return this.enabled; }
-
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    public Set<Role> getRoles() { return roles; }
-
-    public void setRoles(Set<Role> roles) { this.roles = roles; }
-
+    private Integer id;
+    private String firstName;
+    private String lastName;
+    @Column(unique = true)
+    private String email;
+    private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @Override
-    @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    public User() {}
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPassword(String password) { this.password = password; }
+
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setRole(Role role) { this.role = role; }
+
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
