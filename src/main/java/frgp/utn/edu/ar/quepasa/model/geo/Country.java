@@ -1,6 +1,7 @@
-package frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model.geo;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
@@ -9,10 +10,12 @@ import jakarta.persistence.Id;
  * Datos obtenidos de <a href="https://public.opendatasoft.com/explore/dataset/countries-codes/table/">OpenDataSoft</a>.
  * </p>
  */
+@Entity
 public class Country {
 
     private String iso3;
     private String label;
+    private boolean active = true;
 
     public Country() {}
 
@@ -34,4 +37,6 @@ public class Country {
     public void setIso3(String iso3) { this.iso3 = iso3; }
     public void setLabel(String label) { this.label = label; }
 
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
