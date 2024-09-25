@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.model;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -19,7 +20,7 @@ public class Post {
     private PostSubtype subtype;
     private String description;
     private Neighbourhood neighbourhood;
-    private Date date;
+    private Timestamp timestamp;
     private String tags;
     private boolean active = true;
 
@@ -82,8 +83,8 @@ public class Post {
      * Devuelve la fecha de la publicación.
      */
     @Column(nullable = false)
-    public Date getDate() { return date; }
-    public void setDate(Date date) { this.date = date; }
+    public Timestamp getTimestamp() { return timestamp; }
+    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
 
     /**
      * Devuelve las etiquetas de la publicación.
