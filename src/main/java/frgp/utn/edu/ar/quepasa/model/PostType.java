@@ -6,7 +6,7 @@ import jakarta.persistence.*;
  * Entidad que representa el tipo de una publicación.
  */
 @Entity
-@Table(name = "posts")
+@Table(name = "postTypes")
 public class PostType {
     private Integer id;
     private String description;
