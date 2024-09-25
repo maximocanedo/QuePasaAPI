@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.model.request;
 
-import frgp.utn.edu.ar.quepasa.model.Role;
+import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
 import jakarta.persistence.*;

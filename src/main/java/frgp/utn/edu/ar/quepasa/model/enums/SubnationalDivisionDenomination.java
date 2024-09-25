@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.model.geo;
+package frgp.utn.edu.ar.quepasa.model.enums;
 
 /**
  * Denominación de divisiones administrativas.

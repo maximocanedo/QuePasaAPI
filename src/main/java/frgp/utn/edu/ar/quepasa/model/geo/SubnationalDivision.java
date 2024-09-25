@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model.geo;
 
+import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import jakarta.persistence.*;
 
 /**

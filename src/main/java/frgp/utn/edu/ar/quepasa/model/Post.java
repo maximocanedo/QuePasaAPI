@@ -1,10 +1,10 @@
 package frgp.utn.edu.ar.quepasa.model;
 
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * Entidad que representa una publicación.

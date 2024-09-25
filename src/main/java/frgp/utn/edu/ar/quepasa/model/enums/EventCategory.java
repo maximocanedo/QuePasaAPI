@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model.enums;
 
 /**
  * Enumeración de categorías de un evento.

@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model.enums;
 
 /**
  * Audiencia o alcance de recursos.
