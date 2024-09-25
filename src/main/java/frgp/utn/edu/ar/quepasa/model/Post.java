@@ -1,7 +1,6 @@
 package main.java.frgp.utn.edu.ar.quepasa.model;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 
 /**
@@ -13,10 +12,10 @@ public class Post {
     
     private Integer id;
     private User user;
+    // private Audience audience; // TODO: Implementar una vez hecha la entidad Audience.
     private String title;
-    // private PostType type; // TODO: Implementar una vez hecha la entidad PostType.
-    // private PostSubtype subtype; // TODO: Implementar una vez hecha la entidad PostSubtype.
-    private String synthesis;
+    private PostType type;
+    private PostSubtype subtype;
     private String description;
     private Neighbourhood neighbourhood;
     private Date date;
@@ -49,11 +48,20 @@ public class Post {
     public void setTitle(String title) { this.title = title; }
 
     /**
-     * Devuelve la síntesis de la publicación.
+     * Devuelve el tipo asociado a la publicación.
      */
-    @Column(nullable = false)
-    public String getSynthesis() { return synthesis; }
-    public void setSynthesis(String synthesis) { this.synthesis = synthesis; }
+    @ManyToOne
+    @JoinColumn(name = "type_id", nullable = false)
+    public User getType() { return type; }  
+    public void setType(PostType type) { this.type = type; }
+
+    /**
+     * Devuelve el subtipo asociado a la publicación.
+     */
+    @ManyToOne
+    @JoinColumn(name = "subtype_id", nullable = false)
+    public User geSubtype() { return subtype; }  
+    public void setSubtype(PostSubtype subtype) { this.subtype = subtype; }
 
     /**
      * Devuelve la descripción de la publicación.
@@ -66,7 +74,7 @@ public class Post {
      * Devuelve el barrio asociado a la publicación.
      */
     @ManyToOne
-    @JoinColumn(name="neighbourhood", nullable = false)
+    @JoinColumn(name = "neighbourhood", nullable = false)
     public Neighbourhood getNeighbourhood() { return neighbourhood; }
     public void setNeighbourhood(Neighbourhood neighbourhood) { this.neighbourhood = neighbourhood; }
 
