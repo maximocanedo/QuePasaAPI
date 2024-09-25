@@ -1,4 +1,4 @@
-package main.java.frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model;
 
 import jakarta.persistence.*;
 

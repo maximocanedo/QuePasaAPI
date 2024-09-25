@@ -1,6 +1,5 @@
-package main.java.frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model;
 
-import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 
 /**
@@ -27,8 +26,8 @@ public class PostSubtype {
      * Devuelve el tipo de publicación asociado al subtipo de publicación.
      */
     @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false)
-    public User getType() { return type; }  
+    @JoinColumn(name = "type", nullable = false)
+    public PostType getType() { return type; }
     public void setType(PostType type) { this.type = type; }
 
     /**

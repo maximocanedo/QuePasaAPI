@@ -1,7 +1,9 @@
-package main.java.frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import jakarta.persistence.*;
+
+import java.util.Date;
 
 /**
  * Entidad que representa una publicación.
@@ -11,10 +13,9 @@ import jakarta.persistence.*;
 public class Post {
     
     private Integer id;
-    private User user;
-    // private Audience audience; // TODO: Implementar una vez hecha la entidad Audience.
+    private User originalPoster;
+    private Audience audience = Audience.NEIGHBORHOOD;
     private String title;
-    private PostType type;
     private PostSubtype subtype;
     private String description;
     private Neighbourhood neighbourhood;
@@ -36,9 +37,16 @@ public class Post {
      * Devuelve el usuario asociado a la publicación.
      */
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    public User getUser() { return user; }  
-    public void setUser(User user) { this.user = user; }
+    @JoinColumn(name = "op", nullable = false)
+    public User getOriginalPoster() { return originalPoster; }
+    public void setOriginalPoster(User user) { this.originalPoster = user; }
+
+    /**
+     * Devuelve la audiencia de la publicación.
+     */
+    @Enumerated(EnumType.STRING)
+    public Audience getAudience() { return audience; }
+    public void setAudience(Audience audience) { this.audience = audience; }
 
     /**
      * Devuelve el título de la publicación.
@@ -48,19 +56,11 @@ public class Post {
     public void setTitle(String title) { this.title = title; }
 
     /**
-     * Devuelve el tipo asociado a la publicación.
-     */
-    @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false)
-    public User getType() { return type; }  
-    public void setType(PostType type) { this.type = type; }
-
-    /**
      * Devuelve el subtipo asociado a la publicación.
      */
     @ManyToOne
-    @JoinColumn(name = "subtype_id", nullable = false)
-    public User geSubtype() { return subtype; }  
+    @JoinColumn(name = "subtype", nullable = false)
+    public PostSubtype getSubtype() { return subtype; }
     public void setSubtype(PostSubtype subtype) { this.subtype = subtype; }
 
     /**
