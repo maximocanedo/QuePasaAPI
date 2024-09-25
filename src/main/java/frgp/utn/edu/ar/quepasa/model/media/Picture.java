@@ -1,5 +1,6 @@
-package frgp.utn.edu.ar.quepasa.model;
+package frgp.utn.edu.ar.quepasa.model.media;
 
+import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -8,6 +9,8 @@ import java.util.UUID;
  * Entidad que representa una imagen subida por el usuario.
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "pictures")
 public class Picture {
     private UUID id;
     private String description;

@@ -2,6 +2,7 @@ package frgp.utn.edu.ar.quepasa.model.request;
 
 import frgp.utn.edu.ar.quepasa.model.Role;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.media.Document;
 import jakarta.persistence.*;
 
 import java.util.HashSet;

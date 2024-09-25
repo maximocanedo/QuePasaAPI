@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model.voting;
 
-import frgp.utn.edu.ar.quepasa.model.Picture;
+import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

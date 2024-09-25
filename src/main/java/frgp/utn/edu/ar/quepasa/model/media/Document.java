@@ -1,7 +1,8 @@
-package frgp.utn.edu.ar.quepasa.model.request;
+package frgp.utn.edu.ar.quepasa.model.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
