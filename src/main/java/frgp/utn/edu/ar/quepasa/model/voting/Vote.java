@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) // Define la estrategia de herencia
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "votes")
 public class Vote {
 
