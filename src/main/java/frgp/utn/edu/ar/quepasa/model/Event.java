@@ -55,7 +55,7 @@ public class Event {
     public void setStart(LocalDateTime start) { this.start = start; }
     public void setEnd(LocalDateTime end) { this.end = end; }
     public void setCategory(EventCategory category) { this.category = category; }
-    public void setCreated(Timestamp createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public void setAudience(Audience audience) { this.audience = audience; }
     public void setActive(boolean active) { this.active = active; }
 

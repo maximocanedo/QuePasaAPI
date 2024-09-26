@@ -1,11 +1,16 @@
 package frgp.utn.edu.ar.quepasa.model;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import frgp.utn.edu.ar.quepasa.model.auth.Mail;
+import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +25,13 @@ import jakarta.persistence.*;
 public class User implements UserDetails {
 
     private Integer id;
+    private String username;
     private String name;
-    private String phone;
+    private Set<Phone> phone = Collections.emptySet();
     private String address;
     private Neighbourhood neighbourhood;
-    // private Picture profilePicture; // TODO: Implementar una vez hecha la entidad Picture.
-    private String email;
+    private Picture profilePicture;
+    private Set<Mail> email = Collections.emptySet();
     private String password;
     private Role role;
     private boolean active = true;
@@ -51,8 +57,9 @@ public class User implements UserDetails {
      * Devuelve el número de teléfono del usuario.
      */
     @Column(nullable = false)
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<Phone> getPhone() { return phone; }
+    public void setPhone(Set<Phone> phone) { this.phone = phone; }
 
     /**
      * Devuelve la dirección del usuario.
@@ -70,21 +77,31 @@ public class User implements UserDetails {
     public void setNeighbourhood(Neighbourhood neighbourhood) { this.neighbourhood = neighbourhood; }
 
     /**
+     * Devuelve la foto de perfil, la cual es opcional.
+     */
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "profile_picture", referencedColumnName = "id")
+    public Picture getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(Picture picture) { this.profilePicture = picture; }
+
+    /**
      * Devuelve la dirección de correo electrónico asociada al usuario.
      * <p>
      *     Dado que se usa este campo como clave primaria, un usuario no puede tener más de una dirección de correo electrónico asociada.
      * </p>
      */
     @Column(nullable = false, unique = true)
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<Mail> getEmail() { return email; }
+    public void setEmail(Set<Mail> email) { this.email = email; }
 
     /**
      * Devuelve la contraseña del usuario, ya encriptada.
      */
-    @Column(nullable = false)
-    @JsonIgnore
+
     @Override
+    @JsonIgnore
+    @Column(nullable = false)
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
@@ -107,18 +124,21 @@ public class User implements UserDetails {
      * Se utiliza la dirección de correo electrónico como "username".
      */
     @Override
-    public String getUsername() { return email; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
     /**
      * Método requerido por Spring Security, sin utilidad real.
      */
     @Override
+    @Transient
     public boolean isCredentialsNonExpired() { return isActive(); }
 
     /**
      * Método requerido por Spring Security, sin utilidad real.
      */
     @Override
+    @Transient
     public boolean isEnabled() { return isActive(); }
 
     /**
@@ -129,6 +149,18 @@ public class User implements UserDetails {
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    @Transient
+    public boolean isAccountNonExpired() {
+        return active;
+    }
+
+    @Override
+    @Transient
+    public boolean isAccountNonLocked() {
+        return active;
     }
 
 }

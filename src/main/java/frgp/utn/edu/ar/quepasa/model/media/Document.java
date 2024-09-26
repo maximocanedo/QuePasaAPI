@@ -55,7 +55,7 @@ public class Document {
     /**
      * Devuelve un set de {@link RoleUpdateRequest Solicitudes de Actualización de Rol} en los que se presentó este documento.
      */
-    @ManyToMany(mappedBy = "roleUpdateRequests")
+    @ManyToMany(mappedBy = "documents")
     public Set<RoleUpdateRequest> getRoleUpdateRequestsLinked() { return roleUpdateRequestsLinked; }
     public void setRoleUpdateRequestsLinked(Set<RoleUpdateRequest> roleUpdateRequestsLinked) { this.roleUpdateRequestsLinked = roleUpdateRequestsLinked; }
 
