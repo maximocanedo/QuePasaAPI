@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.model.geo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Entidad que representa un país.
@@ -11,6 +12,7 @@ import jakarta.persistence.Id;
  * </p>
  */
 @Entity
+@Table(name = "countries")
 public class Country {
 
     private String iso3;

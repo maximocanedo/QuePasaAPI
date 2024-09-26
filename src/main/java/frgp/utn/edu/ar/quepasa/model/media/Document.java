@@ -13,6 +13,7 @@ import java.util.UUID;
  * Entidad que representa un documento almacenado en el servidor por el usuario para adjuntar a solicitudes.
  */
 @Entity
+@Table(name="documents")
 public class Document {
     private UUID id;
     private User owner;

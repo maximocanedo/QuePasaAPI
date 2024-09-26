@@ -8,6 +8,7 @@ import jakarta.persistence.*;
  * Se usa el código ISO3 como clave primaria.
  */
 @Entity
+@Table(name="states")
 public class SubnationalDivision {
     private String iso3;
     private String label;
