@@ -6,6 +6,7 @@ import jakarta.persistence.*;
  * Entidad que representa un barrio.
  */
 @Entity
+@Table(name = "neighbourhoods")
 public class Neighbourhood {
     private long id;
     private String name;

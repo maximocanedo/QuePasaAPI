@@ -6,6 +6,7 @@ import jakarta.persistence.*;
  * Entidad que representa una ciudad.
  */
 @Entity
+@Table(name="cities")
 public class City {
     private long id;
     private String name;
