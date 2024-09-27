@@ -1,7 +1,11 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
+import frgp.utn.edu.ar.quepasa.model.auth.Mail;
+import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
@@ -40,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public JwtAuthenticationResponse signin(SigninRequest request) {
+    public JwtAuthenticationResponse login(SigninRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername())
@@ -50,4 +54,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         e.setToken(jwt);
         return e;
     }
+
+    @Override
+    public Mail requestMailVerificationCode(VerificationRequest request) {
+        return null;
+    }
+
+    @Override
+    public Mail verifyMail(CodeVerificationRequest request) {
+        return null;
+    }
+
+    @Override
+    public Phone requestSMSVerificationCode(VerificationRequest request) {
+        return null;
+    }
+
+    @Override
+    public Phone verifyPhone(CodeVerificationRequest request) {
+        return null;
+    }
+
 }
