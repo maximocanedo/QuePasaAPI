@@ -44,6 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired private MailRepository mailRepository;
     @Autowired private PhoneRepository phoneRepository;
 
+    /**
+     * <b>Devuelve el usuario autenticado</b>
+     */
+    @Override
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null || !authentication.isAuthenticated()) { return Optional.empty(); }
@@ -53,6 +57,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return Optional.empty();
     }
+
+    /**
+     * <b>Devuelve el usuario autenticado, o lanza una excepción. </b>
+     */
+    @Override
+    public User getCurrentUserOrDie() throws AuthenticationFailedException {
+        return getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+    }
+
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         var user = new User();
@@ -80,17 +93,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return e;
     }
 
+    /**
+     * <p>Genera un código OTP de seis dígitos. </p>
+     */
     @Override
     public int generateOTP() {
         SecureRandom random = new SecureRandom();
         return 100000 + random.nextInt(900000);
     }
 
+    /**
+     * <p>Genera un hash a partir del código dado. </p>
+     */
     @Override
     public String generateVerificationCodeHash(int code) {
         return passwordEncoder.encode(String.valueOf(code));
     }
 
+
+    /**
+     * <b>Registra un correo electrónico</b>
+     * <p>Y envía un correo electrónico con un código OTP de seis dígitos para su posterior verificación. </p>
+     */
     @Override
     public Mail requestMailVerificationCode(@NotNull VerificationRequest request) throws MessagingException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
@@ -112,6 +136,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return mail;
     }
 
+    /**
+     * <b>Verifica un correo electrónico</b>
+     * <p>Intenta verificar que el código OTP recibido coincida con el almacenado para marcar como verificada la dirección de correo. </p>
+     */
     @Override
     public Mail verifyMail(CodeVerificationRequest request) throws AuthenticationFailedException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
@@ -128,6 +156,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         throw new AuthenticationFailedException("Code not valid. ");
     }
 
+    /**
+     * <b>Registra un número de teléfono</b>
+     * <p>Debería enviar un SMS con un código OTP de seis dígitos para su posterior verificación. </p>
+     * <p><b>Aviso importante: </b>Dada la falta de presupuesto para contratar una API de envío de SMS, no se implementará esta funcionalidad, y se podrá verificar cualquier registro con el código `111 - 111`.</p>
+     */
     @Override
     public Phone requestSMSVerificationCode(@NotNull VerificationRequest request) throws AuthenticationFailedException {
        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
@@ -143,6 +176,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        return phone;
     }
 
+    /**
+     * <b>Verifica un número de teléfono</b>
+     * <p>Debería intentar verificar que el código OTP recibido coincida con el almacenado para marcar como verificado el número de teléfono. </p>
+     * <p><b>Aviso importante: </b>Dada la falta de presupuesto para contratar una API de envío de SMS, no se implementará esta funcionalidad, y se podrá verificar cualquier registro con el código `111 - 111`.</p>
+     */
     @Override
     public Phone verifyPhone(CodeVerificationRequest request) throws AuthenticationFailedException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);

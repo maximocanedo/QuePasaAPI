@@ -1,7 +1,13 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.auth.Mail;
+import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,10 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    UserService userService;
 
-    UserController(UserService userService) {
+    private final UserService userService;
+    private final AuthenticationService authenticationService;
+
+    UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
     }
 
     @GetMapping("/{username}")
@@ -34,18 +43,22 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-    // Actual User Methods
+    @PostMapping("/me/mail")
+    public ResponseEntity<Mail> saveMail(@RequestBody VerificationRequest req) throws MessagingException {
+        Mail mail = authenticationService.requestMailVerificationCode(req);
+        return new ResponseEntity<>(mail, HttpStatus.OK);
+    }
+
+    @PostMapping("/me/mail/verify")
+    public ResponseEntity<Mail> verifyMail(@RequestBody CodeVerificationRequest req) throws AuthenticationFailedException {
+        Mail mail = authenticationService.verifyMail(req);
+        return new ResponseEntity<>(mail, HttpStatus.OK);
+    }
+
     @GetMapping("/me")
-    public ResponseEntity<?> getMe() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                User currentUser = userService.findByUsername(((UserDetails) principal).getUsername());
-                return ResponseEntity.ok(currentUser);
-            }
-        }
-        return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> getMe() throws AuthenticationFailedException {
+        User me = authenticationService.getCurrentUserOrDie();
+        return new ResponseEntity<>(me, HttpStatus.OK);
     }
 
     @PatchMapping("/me")
