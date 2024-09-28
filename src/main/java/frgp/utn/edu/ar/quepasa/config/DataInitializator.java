@@ -66,8 +66,8 @@ public class DataInitializator implements CommandLineRunner {
             userRepository.saveAndFlush(rootUser);
             System.out.println("Usuario 'root' creado.");
         } else {
-            userRepository.delete(rootUser);
-            userRepository.save(rootUser);
+            //userRepository.delete(rootUser);
+            //userRepository.save(rootUser);
         }
     }
 

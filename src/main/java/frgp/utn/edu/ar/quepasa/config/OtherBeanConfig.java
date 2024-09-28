@@ -14,7 +14,7 @@ public class OtherBeanConfig {
     @Value("${mail.username}")
     private String username;
 
-    @Value("${mail.password")
+    @Value("${mail.password}")
     private String password;
 
     @Bean

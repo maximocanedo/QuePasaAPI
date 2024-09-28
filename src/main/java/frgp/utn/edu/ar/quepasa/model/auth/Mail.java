@@ -24,8 +24,9 @@ public class Mail {
     public void setMail(String email) { this.mail = email; }
 
     @Id
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 

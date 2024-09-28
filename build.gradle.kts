@@ -33,7 +33,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
     // https://mvnrepository.com/artifact/jakarta.mail/jakarta.mail-api
     implementation("jakarta.mail:jakarta.mail-api:2.1.3")
-
+    implementation("org.eclipse.angus:jakarta.mail:1.0.0")
+    implementation("org.jetbrains:annotations:16.0.2")
 }
 
 tasks.withType<Test> {

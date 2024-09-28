@@ -26,6 +26,7 @@ public class Phone {
     public void setPhone(String phone) { this.phone = phone; }
 
     @Id
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User getUser() { return user; }

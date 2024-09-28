@@ -8,9 +8,11 @@ import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.PhoneRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
+import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
@@ -43,6 +45,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired private MailSenderService mailSenderServiceImpl;
     @Autowired private MailRepository mailRepository;
     @Autowired private PhoneRepository phoneRepository;
+    @Autowired
+    private NeighbourhoodRepository neighbourhoodRepository;
 
     /**
      * <b>Devuelve el usuario autenticado</b>
@@ -68,9 +72,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
+        Neighbourhood n = neighbourhoodRepository
+                .findById(request.getNeighbourhoodId())
+                .orElseThrow(NoSuchElementException::new);
         var user = new User();
         user.setName(request.getName());
         user.setUsername(request.getUsername());
+        user.setAddress("");
+        user.setNeighbourhood(n);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
         userRepository.save(user);

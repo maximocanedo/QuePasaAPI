@@ -123,8 +123,8 @@ public class User implements UserDetails {
      * Este método es necesario para la autenticación mediante Spring Security.
      * Se utiliza la dirección de correo electrónico como "username".
      */
-    @Id
     @Override
+    @Column(unique = true, nullable = false)
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 

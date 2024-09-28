@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
+import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import jakarta.mail.AuthenticationFailedException;
@@ -54,6 +55,18 @@ public class UserController {
     public ResponseEntity<Mail> verifyMail(@RequestBody CodeVerificationRequest req) throws AuthenticationFailedException {
         Mail mail = authenticationService.verifyMail(req);
         return new ResponseEntity<>(mail, HttpStatus.OK);
+    }
+
+    @PostMapping("/me/phone")
+    public ResponseEntity<Phone> savePhone(@RequestBody VerificationRequest req) throws AuthenticationFailedException {
+        Phone phone = authenticationService.requestSMSVerificationCode(req);
+        return new ResponseEntity<>(phone, HttpStatus.OK);
+    }
+
+    @PostMapping("/me/phone/verify")
+    public ResponseEntity<Phone> verifyPhone(@RequestBody CodeVerificationRequest req) throws AuthenticationFailedException {
+        Phone phone = authenticationService.verifyPhone(req);
+        return new ResponseEntity<>(phone, HttpStatus.OK);
     }
 
     @GetMapping("/me")
