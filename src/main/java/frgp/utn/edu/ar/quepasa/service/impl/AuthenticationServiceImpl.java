@@ -14,9 +14,13 @@ import frgp.utn.edu.ar.quepasa.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
+
+import java.security.SecureRandom;
 
 
 @Service
@@ -49,6 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
+        System.out.println(user);
         var jwt = jwtService.generateToken(user);
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();
         e.setToken(jwt);
@@ -56,7 +61,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    public String generateVerificationCodeHash() {
+        SecureRandom random = new SecureRandom();
+        int code = 100000 + random.nextInt(900000);
+        return passwordEncoder.encode(String.valueOf(code));
+    }
+
+    @Override
+    public boolean compareCode(String verificationCodeHash, String code) {
+        return false;
+    }
+
+    @Override
     public Mail requestMailVerificationCode(VerificationRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !authentication.isAuthenticated()) return null;
+
+        Mail mail = new Mail();
+        mail.setMail(request.getSubject());
         return null;
     }
 
