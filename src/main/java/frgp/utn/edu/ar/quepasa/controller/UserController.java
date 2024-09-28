@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -87,4 +88,17 @@ public class UserController {
         }
         return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
     }
+
+    /// EXCEPCIONES
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<ResponseError> handleAuthError(AuthenticationFailedException e) {
+        return new ResponseEntity<>(new ResponseError(e), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ResponseError> handleMessagingError(MessagingException e) {
+        return new ResponseEntity<>(new ResponseError("Hubo un error al intentar enviar un correo electrónico. "), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
