@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,33 +31,29 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+
     @Override
-    public User findById(Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public User update(String username, User newUser) {
+        User user = findByUsername(username);
+        user.setName(newUser.getName());
+        /** @see AuthenticationServiceImpl **/
+        // user.setEmail(newUser.getEmail());
+        user.setAddress(newUser.getAddress());
+        /** @see AuthenticationServiceImpl **/
+        // user.setPhone(newUser.getPhone());
+        // user.setPassword(newUser.getPassword());
+        user.setRole(newUser.getRole());
+        if(newUser.getNeighbourhood() != null)
+            user.setNeighbourhood(newUser.getNeighbourhood());
+        if(newUser.getProfilePicture() != null)
+            user.setProfilePicture(newUser.getProfilePicture());
+        return userRepository.save(user);
     }
 
     @Override
-    public User updateUser(Integer id, User newUser) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setName(newUser.getName());
-                    user.setEmail(newUser.getEmail());
-                    user.setAddress(newUser.getAddress());
-                    user.setPhone(newUser.getPhone());
-                    user.setPassword(newUser.getPassword());
-                    user.setRole(newUser.getRole());
-                    return userRepository.save(user);
-                })
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
-    @Override
-    public void deleteUser(Integer id) {
-        if (userRepository.findById(id).isPresent()) {
-            userRepository.deleteById(id);
-        } else {
-            throw new UsernameNotFoundException("User not found");
-        }
+    public void delete(String username) {
+        User user = findByUsername(username);
+        user.setActive(false);
+        userRepository.save(user);
     }
 }

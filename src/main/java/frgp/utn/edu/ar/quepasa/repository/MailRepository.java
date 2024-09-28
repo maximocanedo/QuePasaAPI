@@ -6,9 +6,11 @@ import frgp.utn.edu.ar.quepasa.model.auth.MailSerializable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface MailRepository extends JpaRepository<Mail, MailSerializable> {
 
-    public Mail findByMailAndUser(String mail, User user);
+    public Optional<Mail> findByMailAndUser(String mail, User user);
 
 }

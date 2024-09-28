@@ -18,19 +18,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Integer id) {
-        return ResponseEntity.ok(userService.findById(id));
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getUserById(@PathVariable String username) {
+        return ResponseEntity.ok(userService.findByUsername(username));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(id, user));
+    @PatchMapping("/{username}")
+    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User user) {
+        return ResponseEntity.ok(userService.update(username, user));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+        userService.delete(username);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
@@ -55,7 +55,7 @@ public class UserController {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetails) {
                 User currentUser = userService.findByUsername(((UserDetails) principal).getUsername());
-                return ResponseEntity.ok(userService.updateUser(currentUser.getId(), user));
+                return ResponseEntity.ok(userService.update(currentUser.getUsername(), user));
             }
         }
         return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
@@ -68,7 +68,7 @@ public class UserController {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetails) {
                 User currentUser = userService.findByUsername(((UserDetails) principal).getUsername());
-                userService.deleteUser(currentUser.getId());
+                userService.delete(currentUser.getUsername());
                 return ResponseEntity.ok(HttpStatus.NO_CONTENT);
             }
         }

@@ -7,23 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Component
+@Service
 public class Auth {
 
-    @Autowired
-    private UserRepository userRepository;
 
-    public Optional<User> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !authentication.isAuthenticated()) { return Optional.empty(); }
-        if(authentication.getPrincipal() instanceof UserDetails) {
-            String username = ((UserDetails)authentication.getPrincipal()).getUsername();
-            return userRepository.findByUsername(username);
-        }
-        return Optional.empty();
-    }
 
 }

@@ -8,18 +8,22 @@ import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.MessagingException;
 
 public interface AuthenticationService {
     JwtAuthenticationResponse signup(SignUpRequest request);
     JwtAuthenticationResponse login(SigninRequest request);
 
-    String generateVerificationCodeHash();
-    boolean compareCode(String verificationCodeHash, String code);
 
-    Mail requestMailVerificationCode(VerificationRequest request);
-    Mail verifyMail(CodeVerificationRequest request);
+    int generateOTP();
 
-    Phone requestSMSVerificationCode(VerificationRequest request);
-    Phone verifyPhone(CodeVerificationRequest request);
+    String generateVerificationCodeHash(int code);
+
+    Mail requestMailVerificationCode(VerificationRequest request) throws MessagingException;
+    Mail verifyMail(CodeVerificationRequest request) throws AuthenticationFailedException;
+
+    Phone requestSMSVerificationCode(VerificationRequest request) throws AuthenticationFailedException;
+    Phone verifyPhone(CodeVerificationRequest request) throws AuthenticationFailedException;
 
 }

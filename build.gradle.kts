@@ -31,6 +31,9 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // https://mvnrepository.com/artifact/jakarta.mail/jakarta.mail-api
+    implementation("jakarta.mail:jakarta.mail-api:2.1.3")
+
 }
 
 tasks.withType<Test> {
