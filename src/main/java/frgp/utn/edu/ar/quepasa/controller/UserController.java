@@ -95,8 +95,8 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<User>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(userService.listUser(pageable));
+    public ResponseEntity<Page<User>> getAll(String q, Pageable pageable) {
+        return ResponseEntity.ok(userService.listUser(q, pageable));
     }
 
     @DeleteMapping("/me")

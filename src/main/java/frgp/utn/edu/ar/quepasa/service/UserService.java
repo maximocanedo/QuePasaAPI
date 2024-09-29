@@ -7,7 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
-    Page<User> listUser(Pageable pageable);
+
+    Page<User> listUser(String query, Pageable pageable);
 
     User findByUsername(String username);
     User update(UserPatchEditRequest user);

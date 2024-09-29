@@ -60,6 +60,11 @@ GET {{base}}/api/users/me
 Authorization: Bearer {{token}}
 
 
+### Consultar por otro usuario (*)
+GET {{base}}/api/users/root
+Authorization: Bearer {{token}}
+
+
 ### Editar datos básicos del usuario
 PATCH {{base}}/api/users/me
 Content-Type: application/json
@@ -71,6 +76,11 @@ Authorization: Bearer {{token}}
 }
 
 
+### Editar datos básicos (*)
+PATCH {{base}}/api/users/root
+Authorization: Bearer {{token}}
+
+
 ### Actualizar contraseña
 POST {{base}}/api/users/me/password
 Authorization: Bearer {{token}}
@@ -78,6 +88,16 @@ Authorization: Bearer {{token}}
 Abc.1234$6789
 
 
-### Listar usuarios
-GET {{base}}/api/users?page=0&size=10&sort=name,asc
+### Deshabilitar el usuario autenticado (*)
+DELETE {{base}}/api/users/me
+Authorization: Bearer {{token}}
+
+
+### Deshabilitar usuario (*)
+DELETE {{base}}/api/users/bocelli.andrea
+Authorization: Bearer {{token}}
+
+
+### Búsqueda de usuarios
+GET {{base}}/api/users?q=&page=0&size=10&sort=name,asc
 Authorization: Bearer {{token}}
