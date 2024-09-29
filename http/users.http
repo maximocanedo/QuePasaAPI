@@ -53,3 +53,19 @@ Content-Type: application/json
   "subject": "+541130388784",
   "code": "111111"
 }
+
+
+### Consultar usuario autenticado
+GET {{base}}/api/users/me
+Authorization: Bearer {{token}}
+
+
+### Editar datos básicos del usuario
+PATCH http://localhost:8080/api/users/me
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Máximo Bocelli",
+  "address": "Av. Siempreviva 723"
+}

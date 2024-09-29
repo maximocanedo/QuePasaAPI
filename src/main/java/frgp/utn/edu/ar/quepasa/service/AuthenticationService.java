@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface AuthenticationService {
     Optional<User> getCurrentUser();
 
-    User getCurrentUserOrDie() throws AuthenticationFailedException;
+    User getCurrentUserOrDie();
 
     JwtAuthenticationResponse signup(SignUpRequest request);
     JwtAuthenticationResponse login(SigninRequest request);

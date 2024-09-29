@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -40,18 +41,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        username = jwtService.extractUserName(jwt);
-        if (StringUtils.isNotEmpty(username)
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails ud = userService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(jwt, ud)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        ud, null, ud.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                context.setAuthentication(authToken);
-                SecurityContextHolder.setContext(context);
+        try {
+            username = jwtService.extractUserName(jwt);
+            if (StringUtils.isNotEmpty(username)
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails ud = userService.loadUserByUsername(username);
+                if (jwtService.isTokenValid(jwt, ud)) {
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            ud, null, ud.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    context.setAuthentication(authToken);
+                    SecurityContextHolder.setContext(context);
+                }
             }
+        }
+        catch(ExpiredJwtException e) {
+            response.setStatus(400);
         }
         filterChain.doFilter(request, response);
     }

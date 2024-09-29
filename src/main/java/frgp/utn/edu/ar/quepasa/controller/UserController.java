@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
+import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -12,6 +13,7 @@ import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +37,7 @@ public class UserController {
     }
 
     @PatchMapping("/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserPatchEditRequest user) {
         return ResponseEntity.ok(userService.update(username, user));
     }
 
@@ -46,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/me/mail")
-    public ResponseEntity<Mail> saveMail(@RequestBody String sub) throws MessagingException {
+    public ResponseEntity<Mail> saveMail(@RequestBody String sub) throws AuthenticationCredentialsNotFoundException, MessagingException {
         VerificationRequest verificationRequest = new VerificationRequest();
         verificationRequest.setSubject(sub);
         Mail mail = authenticationService.requestMailVerificationCode(verificationRequest);
@@ -54,13 +56,13 @@ public class UserController {
     }
 
     @PostMapping("/me/mail/verify")
-    public ResponseEntity<Mail> verifyMail(@RequestBody CodeVerificationRequest req) throws AuthenticationFailedException {
+    public ResponseEntity<Mail> verifyMail(@RequestBody CodeVerificationRequest req) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
         Mail mail = authenticationService.verifyMail(req);
         return new ResponseEntity<>(mail, HttpStatus.OK);
     }
 
     @PostMapping("/me/phone")
-    public ResponseEntity<Phone> savePhone(@RequestBody String content) throws AuthenticationFailedException {
+    public ResponseEntity<Phone> savePhone(@RequestBody String content) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
         VerificationRequest req = new VerificationRequest();
         req.setSubject(content);
         Phone phone = authenticationService.requestSMSVerificationCode(req);
@@ -68,28 +70,20 @@ public class UserController {
     }
 
     @PostMapping("/me/phone/verify")
-    public ResponseEntity<Phone> verifyPhone(@RequestBody CodeVerificationRequest req) throws AuthenticationFailedException {
+    public ResponseEntity<Phone> verifyPhone(@RequestBody CodeVerificationRequest req) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
         Phone phone = authenticationService.verifyPhone(req);
         return new ResponseEntity<>(phone, HttpStatus.OK);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMe() throws AuthenticationFailedException {
+    public ResponseEntity<?> getMe() {
         User me = authenticationService.getCurrentUserOrDie();
         return new ResponseEntity<>(me, HttpStatus.OK);
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<?> updateMe(@RequestBody User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                User currentUser = userService.findByUsername(((UserDetails) principal).getUsername());
-                return ResponseEntity.ok(userService.update(currentUser.getUsername(), user));
-            }
-        }
-        return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> updateMe(@RequestBody UserPatchEditRequest user) {
+        return ResponseEntity.ok(userService.update(user));
     }
 
     @DeleteMapping("/me")
@@ -108,8 +102,8 @@ public class UserController {
 
     /// EXCEPCIONES
 
-    @ExceptionHandler(AuthenticationFailedException.class)
-    public ResponseEntity<ResponseError> handleAuthError(AuthenticationFailedException e) {
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ResponseError> handleAuthError(AuthenticationCredentialsNotFoundException e) {
         return new ResponseEntity<>(new ResponseError(e), HttpStatus.UNAUTHORIZED);
     }
 

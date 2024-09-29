@@ -20,9 +20,11 @@ import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,8 +68,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * <b>Devuelve el usuario autenticado, o lanza una excepción. </b>
      */
     @Override
-    public User getCurrentUserOrDie() throws AuthenticationFailedException {
-        return getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+    public User getCurrentUserOrDie() throws AuthenticationCredentialsNotFoundException {
+        return getCurrentUser()
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("No user authenticated. "));
     }
 
     @Override
