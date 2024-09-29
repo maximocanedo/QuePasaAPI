@@ -1,0 +1,19 @@
+package frgp.utn.edu.ar.quepasa.service.geo;
+
+import frgp.utn.edu.ar.quepasa.model.geo.Country;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public interface CountryService {
+
+    Country save(Country country);
+    List<Country> saveAll(List<Country> countries);
+    List<Country> getAllCountries();
+    Optional<Country> getCountry(String iso3);
+    void delete(Country country);
+    Optional<Country> update(Country country);
+
+}
