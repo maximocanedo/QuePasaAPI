@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -46,8 +46,10 @@ public class UserController {
     }
 
     @PostMapping("/me/mail")
-    public ResponseEntity<Mail> saveMail(@RequestBody VerificationRequest req) throws MessagingException {
-        Mail mail = authenticationService.requestMailVerificationCode(req);
+    public ResponseEntity<Mail> saveMail(@RequestBody String sub) throws MessagingException {
+        VerificationRequest verificationRequest = new VerificationRequest();
+        verificationRequest.setSubject(sub);
+        Mail mail = authenticationService.requestMailVerificationCode(verificationRequest);
         return new ResponseEntity<>(mail, HttpStatus.OK);
     }
 
@@ -58,7 +60,9 @@ public class UserController {
     }
 
     @PostMapping("/me/phone")
-    public ResponseEntity<Phone> savePhone(@RequestBody VerificationRequest req) throws AuthenticationFailedException {
+    public ResponseEntity<Phone> savePhone(@RequestBody String content) throws AuthenticationFailedException {
+        VerificationRequest req = new VerificationRequest();
+        req.setSubject(content);
         Phone phone = authenticationService.requestSMSVerificationCode(req);
         return new ResponseEntity<>(phone, HttpStatus.OK);
     }

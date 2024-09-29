@@ -1,0 +1,55 @@
+### Crear una cuenta de usuario
+POST {{base}}/api/signup
+Content-Type: application/json
+
+{
+  "name": "Andrea Bocelli",
+  "username": "bocelli.andrea",
+  "password": "123456789"
+}
+
+
+### Iniciar sesión
+POST {{base}}/api/login
+Content-Type: application/json
+
+{
+  "username": "bocelli.andrea",
+  "password": "123456789"
+}
+
+
+### Solicitar código de verificación de correo electrónico
+POST {{base}}/api/users/me/mail
+Authorization: Bearer {{token}}
+
+maximo.tomas.can.edo@gmail.com
+
+
+### Verificar correo electrónico con código OTP recibido
+POST {{base}}/api/users/me/mail/verify
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "maximo.tomas.can.edo@gmail.com",
+  "code": "906553"
+}
+
+
+### Solicitar código de verificación de número de teléfono
+POST {{base}}/api/users/me/phone
+Authorization: Bearer {{token}}
+
++541130388784
+
+
+### Verificar número de teléfono con código OTP recibido
+POST {{base}}/api/users/me/phone/verify
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "+541130388784",
+  "code": "111111"
+}
