@@ -1,6 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.geo;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

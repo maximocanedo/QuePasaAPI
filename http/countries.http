@@ -1,0 +1,7 @@
+
+### Obtener información de un país
+GET {{base}}/api/countries/ARG
+
+
+### Listar países
+GET {{base}}/api/countries?q=
