@@ -11,6 +11,8 @@ import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -76,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMe() {
+    public ResponseEntity<User> getMe() {
         User me = authenticationService.getCurrentUserOrDie();
         return new ResponseEntity<>(me, HttpStatus.OK);
     }
@@ -84,6 +86,17 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<?> updateMe(@RequestBody UserPatchEditRequest user) {
         return ResponseEntity.ok(userService.update(user));
+    }
+
+    @PostMapping("/me/password")
+    public ResponseEntity<?> updatePassword(@RequestBody String newPassword) {
+        userService.updatePassword(newPassword);
+        return ResponseEntity.ok("Password reset. ");
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<User>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(userService.listUser(pageable));
     }
 
     @DeleteMapping("/me")

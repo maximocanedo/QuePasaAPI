@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "username": "bocelli.andrea",
-  "password": "123456789"
+  "password": "Abc.1234$6789"
 }
 
 
@@ -61,7 +61,7 @@ Authorization: Bearer {{token}}
 
 
 ### Editar datos básicos del usuario
-PATCH http://localhost:8080/api/users/me
+PATCH {{base}}/api/users/me
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -69,3 +69,15 @@ Authorization: Bearer {{token}}
   "name": "Máximo Bocelli",
   "address": "Av. Siempreviva 723"
 }
+
+
+### Actualizar contraseña
+POST {{base}}/api/users/me/password
+Authorization: Bearer {{token}}
+
+Abc.1234$6789
+
+
+### Listar usuarios
+GET {{base}}/api/users?page=0&size=10&sort=name,asc
+Authorization: Bearer {{token}}

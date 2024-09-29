@@ -9,13 +9,12 @@ import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 
 @Service("userService")
@@ -28,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private AuthenticationService authenticationService;
     @Autowired
     private Auth auth;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,6 +39,11 @@ public class UserServiceImpl implements UserService {
                 user.getPassword(),
                 user.getAuthorities()
         );
+    }
+
+    @Override
+    public Page<User> listUser(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
 
@@ -68,6 +74,14 @@ public class UserServiceImpl implements UserService {
         if(newUser.getPicture() != null) user.setProfilePicture(newUser.getPicture());
         userRepository.save(user);
         return user;
+    }
+
+    @Override
+    public void updatePassword(String newPassword) {
+        User user = authenticationService.getCurrentUserOrDie();
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
     }
 
     @Override
