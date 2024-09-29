@@ -1,0 +1,5 @@
+### Consultar publicación
+GET {{base}}/api/posts/1
+
+### Dar de baja publicación
+DELETE {{base}}/api/posts/1
