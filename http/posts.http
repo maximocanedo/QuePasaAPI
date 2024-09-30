@@ -1,5 +1,17 @@
 ### Consultar publicación
 GET {{base}}/api/posts/1
 
-### Dar de baja publicación
+### Editar datos básicos de la publicación
+PATCH {{base}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "Post 1 (RequestBody)",
+  "subtype": 1,
+  "description": "Descripcion Ejemplo (RequestBody)",
+  "neighbourhood": 1,
+  "tags": "ejemplo,requestbody"
+}
+
+### Deshabilitar publicación
 DELETE {{base}}/api/posts/1
