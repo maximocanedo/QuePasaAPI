@@ -31,6 +31,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
+    implementation("org.thymeleaf:thymeleaf:3.1.2.RELEASE")
     // https://mvnrepository.com/artifact/jakarta.mail/jakarta.mail-api
     implementation("jakarta.mail:jakarta.mail-api:2.1.3")
     implementation("org.eclipse.angus:jakarta.mail:1.0.0")

@@ -1,8 +1,11 @@
 package frgp.utn.edu.ar.quepasa.model.media;
 
+import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
+import org.springframework.http.MediaType;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 /**
@@ -15,6 +18,8 @@ public class Picture {
     private UUID id;
     private String description;
     private boolean active = true;
+    private MediaType mediaType = MediaType.TEXT_PLAIN;
+    private Timestamp uploadedAt = null;
     private User owner;
 
     /**
@@ -46,4 +51,14 @@ public class Picture {
     @JoinColumn(nullable = false, name = "owner")
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
+
+    @Convert(converter = MediaTypeConverter.class)
+    @Column(nullable = false)
+    public MediaType getMediaType() { return mediaType; }
+    public void setMediaType(MediaType mediaType) { this.mediaType = mediaType; }
+
+    @Column
+    public Timestamp getUploadedAt() { return uploadedAt; }
+    public void setUploadedAt(Timestamp uploadedAt) { this.uploadedAt = uploadedAt; }
+
 }
