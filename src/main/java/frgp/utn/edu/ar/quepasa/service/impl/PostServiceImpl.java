@@ -1,12 +1,15 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 
+import frgp.utn.edu.ar.quepasa.data.request.post.PostCreateRequest;
 import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
+import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,9 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private PostSubtypeRepository postSubtypeRepository;
 
     @Autowired
@@ -35,6 +41,27 @@ public class PostServiceImpl implements PostService {
     public Post findById(Integer id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+    @Override
+    public Post create(PostCreateRequest newPost) {
+        Post post = new Post();
+        User user = userRepository.findByUsername(newPost.getOriginalPoster())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        post.setOriginalPoster(user);
+        post.setAudience((newPost.getAudience()));
+        post.setTitle(newPost.getTitle());
+        PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
+                .orElseThrow(() -> new ResourceNotFoundException("Subtype not found"));
+        post.setSubtype(subtype);
+        post.setDescription(newPost.getDescription());
+        Neighbourhood neighbourhood = neighbourhoodRepository.findById(newPost.getNeighbourhood())
+                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found"));
+        post.setNeighbourhood(neighbourhood);
+        post.setTimestamp(newPost.getTimestamp());
+        post.setTags(newPost.getTags());
+        postRepository.save(post);
+        return post;
     }
 
     @Override

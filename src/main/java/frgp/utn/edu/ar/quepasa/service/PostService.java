@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service;
 
+import frgp.utn.edu.ar.quepasa.data.request.post.PostCreateRequest;
 import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ public interface PostService {
     Page<Post> listPost(Pageable pageable);
 
     Post findById(Integer id);
+
+    Post create(PostCreateRequest newPost);
 
     Post update(Integer id, PostPatchEditRequest newPost);
 
