@@ -1,3 +1,23 @@
+### Creación publicación
+POST {{base}}/api/posts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "originalPoster": "bocelli.andrea",
+  "audience": "CITY",
+  "title": "Post 1 (RequestBody)",
+  "subtype": 1,
+  "description": "Descripcion 1 Ejemplo (RequestBody)",
+  "neighbourhood": 1,
+  "timestamp": "2024-10-01T12:30:00Z",
+  "tags": "ejemplo,requestbody,requestbody2"
+}
+
+### Consultar publicaciones
+GET {{base}}/api/posts/all?page=0&size=10
+Authorization: Bearer {{token}}
+
 ### Consultar publicación
 GET {{base}}/api/posts/1
 Authorization: Bearer {{token}}
@@ -8,11 +28,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Post 1 (RequestBody)",
+  "title": "Post 2 (RequestBody)",
   "subtype": 1,
-  "description": "Descripcion Ejemplo (RequestBody)",
+  "description": "Descripcion 2 Ejemplo (RequestBody)",
   "neighbourhood": 1,
-  "tags": "ejemplo,requestbody"
+  "tags": "ejemplo,requestbody,requestbody2,requestbody3"
 }
 
 ### Deshabilitar publicación
