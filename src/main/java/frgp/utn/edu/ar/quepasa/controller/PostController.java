@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class PostController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable Integer id) {
-        return null;
+    public ResponseEntity<?> updatePost(@PathVariable Integer id, @RequestBody PostPatchEditRequest post) {
+        return ResponseEntity.ok(postService.update(id, post));
     }
 
     @DeleteMapping("/{id}")
