@@ -16,6 +16,17 @@ public class PostController {
         this.postService = postService;
     }
 
+    @PostMapping
+    public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {
+        return ResponseEntity.ok(postService.create(post));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.listPost(pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getPostById(@PathVariable Integer id) {
         return ResponseEntity.ok(postService.findById(id));
