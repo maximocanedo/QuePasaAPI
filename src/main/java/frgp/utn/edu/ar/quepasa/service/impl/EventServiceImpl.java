@@ -45,7 +45,8 @@ public class EventServiceImpl implements EventService {
         newEvent.setActive(true);
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
-        return eventRepository.save(newEvent);
+        eventRepository.save(newEvent);
+        return newEvent;
     }
 
     @Override
