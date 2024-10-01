@@ -31,13 +31,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event create(Event event, User owner) {
+    public Event create(EventPatchEditRequest event, User owner) {
         /*TODO
         *  -Validacion info*/
-        event.setActive(true);
-        event.setCreatedAt(Timestamp.from(Instant.now()));
-        event.setOwner(owner);
-        return eventRepository.save(event);
+        Event newEvent = new Event();
+        newEvent.setTitle(event.getTitle());
+        newEvent.setDescription(event.getDescription());
+        newEvent.setStart(event.getStartDate());
+        newEvent.setEnd(event.getEndDate());
+        newEvent.setCategory(event.getCategory());
+        newEvent.setAudience(event.getAudience());
+        newEvent.setAddress(event.getAddress());
+        newEvent.setActive(true);
+        newEvent.setCreatedAt(Timestamp.from(Instant.now()));
+        newEvent.setOwner(owner);
+        return eventRepository.save(newEvent);
     }
 
     @Override

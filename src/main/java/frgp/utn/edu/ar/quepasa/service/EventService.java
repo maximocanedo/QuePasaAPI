@@ -13,7 +13,7 @@ public interface EventService {
 
     Event findById(UUID id);
 
-    Event create(Event event, User owner);
+    Event create(EventPatchEditRequest event, User owner);
 
     Event update(UUID id, EventPatchEditRequest newEvent);
 

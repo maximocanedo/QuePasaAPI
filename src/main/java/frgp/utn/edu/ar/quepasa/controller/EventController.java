@@ -23,8 +23,8 @@ public class EventController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+    @PostMapping
+    public ResponseEntity<?> createEvent(@RequestBody EventPatchEditRequest event) {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.create(event, me));
     }
