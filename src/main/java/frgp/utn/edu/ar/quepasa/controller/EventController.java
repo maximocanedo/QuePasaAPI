@@ -5,9 +5,10 @@ import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,6 +22,11 @@ public class EventController {
     EventController(EventService eventService, AuthenticationService authenticationService) {
         this.eventService = eventService;
         this.authenticationService = authenticationService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Event>> listEvents(String q, Pageable pageable) {
+        return ResponseEntity.ok(eventService.listEvent(pageable));
     }
 
     @PostMapping

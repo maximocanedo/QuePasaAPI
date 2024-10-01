@@ -13,8 +13,12 @@ Content-Type: application/json
   "audience": "PUBLIC"
 }
 
+### Consultar eventos
+GET {{base}}/api/events?q=&page=0&size=10&sort=name,asc
+Authorization: Bearer {{token}}
+
 ### Consultar evento
-GET {{base}}/api/events/a238257b-5acd-4901-a61d-d554a3b835e3
+GET {{base}}/api/events/f5a6c3b9-5db3-4e03-b442-ebf133357763
 Authorization: Bearer {{token}}
 
 ### Modificar evento
@@ -35,3 +39,4 @@ Content-Type: application/json
 ### Eliminar evento
 DELETE {{base}}/api/events/1
 Authorization: Bearer {{token}}
+
