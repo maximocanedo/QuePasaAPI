@@ -7,8 +7,8 @@ Content-Type: application/json
   "title": "Taller de Ceramica",
   "description": "Se realizará un taller de cerámica en la Plaza San Martín",
   "address": "Av Daniel M. Cazon 1220, Tigre, Provincia de Buenos Aires",
-  "start": "02/12/24",
-  "end": "09/12/24",
+  "startDate": "2024-12-02 11:45",
+  "endDate": "2024-12-12 11:45",
   "category": "EDUCATIVE",
   "audience": "PUBLIC"
 }
