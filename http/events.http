@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ### Consultar evento
-GET {{base}}/api/events/1
+GET {{base}}/api/events/a238257b-5acd-4901-a61d-d554a3b835e3
 Authorization: Bearer {{token}}
 
 ### Modificar evento
