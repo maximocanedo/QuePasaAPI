@@ -1,8 +1,10 @@
 ### Consultar publicación
 GET {{base}}/api/posts/1
+Authorization: Bearer {{token}}
 
 ### Editar datos básicos de la publicación
 PATCH {{base}}/api/posts/1
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -15,3 +17,4 @@ Content-Type: application/json
 
 ### Deshabilitar publicación
 DELETE {{base}}/api/posts/1
+Authorization: Bearer {{token}}
