@@ -1,5 +1,5 @@
 ### Creacion evento
-POST {{base}}/api/events/
+POST {{base}}/api/events
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
