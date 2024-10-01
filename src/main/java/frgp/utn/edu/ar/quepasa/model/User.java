@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
@@ -64,6 +65,7 @@ public class User implements UserDetails {
     /**
      * Devuelve la dirección del usuario.
      */
+    @Sensitive
     @Column(nullable = false)
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
@@ -100,6 +102,7 @@ public class User implements UserDetails {
      */
 
     @Override
+    @Sensitive
     @JsonIgnore
     @Column(nullable = false)
     public String getPassword() { return password; }

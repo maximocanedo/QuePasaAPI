@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model.media;
 
+import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
@@ -33,6 +34,7 @@ public class Picture {
     /**
      * Devuelve la descripción brindada por el usuario.
      */
+    @Sensitive
     @Column(nullable = false)
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
