@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
@@ -16,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.AccessDeniedException;
+import java.util.Objects;
 
 
 @Service("postService")
@@ -24,9 +29,6 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRepository postRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private PostSubtypeRepository postSubtypeRepository;
@@ -44,11 +46,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post create(PostCreateRequest newPost) {
+    public Post create(PostCreateRequest newPost, User originalPoster) {
         Post post = new Post();
-        User user = userRepository.findByUsername(newPost.getOriginalPoster())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        post.setOriginalPoster(user);
+        post.setOriginalPoster(originalPoster);
         post.setAudience((newPost.getAudience()));
         post.setTitle(newPost.getTitle());
         PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
@@ -65,8 +65,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post update(Integer id, PostPatchEditRequest newPost) {
+    public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
+        if(!post.getOriginalPoster().getUsername().equals(originalPoster.getUsername())
+                && !originalPoster.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Insufficient permissions");
+        }
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
             PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
@@ -85,8 +89,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
+        if(!post.getOriginalPoster().getUsername().equals(originalPoster.getUsername())
+                && !originalPoster.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Insufficient permissions");
+        }
         post.setActive(false);
         postRepository.save(post);
     }
