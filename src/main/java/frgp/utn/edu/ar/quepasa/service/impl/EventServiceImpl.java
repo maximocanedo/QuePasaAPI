@@ -51,15 +51,18 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event update(UUID id, EventPatchEditRequest newEvent) {
-        Event event = findById(id);
-        if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
-        if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
-        if (newEvent.getStartDate() != null) event.setStart(newEvent.getStartDate());
-        if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
-        if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
-        if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
-        eventRepository.save(event);
-        return event;
+        return eventRepository.findById(id).map(
+                event -> {
+                    if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
+                    if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
+                    if (newEvent.getStartDate() != null) event.setStart(newEvent.getStartDate());
+                    if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
+                    if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
+                    if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
+                    return eventRepository.save(event);
+                }
+                )
+                .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 
     @Override
