@@ -59,6 +59,7 @@ public class EventServiceImpl implements EventService {
                     if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
                     if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
                     if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
+                    if (newEvent.getAddress() != null) event.setAddress(newEvent.getAddress());
                     return eventRepository.save(event);
                 }
                 )
