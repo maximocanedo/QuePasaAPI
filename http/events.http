@@ -18,18 +18,18 @@ GET {{base}}/api/events?q=&page=0&size=10&sort=name,asc
 Authorization: Bearer {{token}}
 
 ### Consultar evento
-GET {{base}}/api/events/f5a6c3b9-5db3-4e03-b442-ebf133357763
+GET {{base}}/api/events/3dbc881f-6802-454f-aea0-a1a423c54a8b
 Authorization: Bearer {{token}}
 
 ### Modificar evento
-PATCH {{base}}/api/events/1
+PATCH {{base}}/api/events/3dbc881f-6802-454f-aea0-a1a423c54a8b
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "title": "Taller de Ceramica",
   "description": "Se realizará un taller de cerámica en la Plaza San Martín",
-  "address": "Av Daniel M. Cazon 1220, Tigre, Provincia de Buenos Aires",
+  "address": "Av Daniel M. Cazon 1220, Tigre, Provincia de B",
   "start": "02/12/24",
   "end": "09/12/24",
   "category": "EDUCATIVE",
