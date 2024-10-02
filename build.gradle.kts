@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
     // https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
     implementation("org.thymeleaf:thymeleaf:3.1.2.RELEASE")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     // https://mvnrepository.com/artifact/jakarta.mail/jakarta.mail-api
     implementation("jakarta.mail:jakarta.mail-api:2.1.3")
     implementation("org.eclipse.angus:jakarta.mail:1.0.0")

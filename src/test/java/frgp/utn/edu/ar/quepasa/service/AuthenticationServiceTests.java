@@ -4,43 +4,71 @@ import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.records.UserRecords;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
+import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.utils.JwtTestUtils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static frgp.utn.edu.ar.quepasa.records.UserRecords.ANTONIO_GONZALEZ;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticationServiceTests {
 
-    @Autowired
-    private AuthenticationService authenticationService;
-
+    @Autowired private AuthenticationServiceImpl authenticationService;
+    @Autowired private UserRepository userRepository;
     @Autowired UserService userService;
+    private final String testUsername = "test5";
 
-    private final String testUsername = "test2";
-    private final String testPassword = "Abc.1234";
+    public User ANTONIO_GONZALEZ;
+
+    @BeforeAll
+    public void setup() {
+        User e = new User();
+        try {
+            e = userService.findByUsername("antonio.gonzalez.ok");
+        } catch(UsernameNotFoundException ex) {
+            SignUpRequest req = new SignUpRequest();
+            req.setUsername("antonio.gonzalez.ok");
+            req.setPassword("antonio.gonzalez.ok");
+            req.setName("Antonio González");
+            req.setNeighbourhoodId(1);
+            authenticationService.signup(req);
+            e = userService.findByUsername("antonio.gonzalez.ok");
+        } finally {
+            ANTONIO_GONZALEZ = e;
+        }
+    }
+
+
+    @AfterAll
+    public void destroy() {
+        try {
+            userRepository.deleteByUsername(ANTONIO_GONZALEZ.getUsername());
+            userRepository.deleteByUsername(testUsername);
+        } catch(Exception expected) {}
+    }
 
     @Test
     @DisplayName("Registrar un usuario")
     public void testSignup() {
-        try {
-            userService.delete(testUsername);
-        } catch(Exception expected) {} finally {
-            SignUpRequest req = new SignUpRequest();
-            req.setUsername(testUsername);
-            req.setPassword(testPassword);
-            req.setNeighbourhoodId(1);
-            req.setName("Usuario de prueba 1");
-            JwtAuthenticationResponse res = authenticationService.signup(req);
-            assertNotNull(res, "Respuesta de registro es nula. ");
-            assertTrue(JwtTestUtils.isJwt(res.getToken()), "No genera un token JWT válido. ");
-        }
+        SignUpRequest req = new SignUpRequest();
+        req.setUsername(testUsername);
+        String testPassword = "Abc.1234";
+        req.setPassword(testPassword);
+        req.setNeighbourhoodId(1);
+        req.setName("Usuario de prueba 1");
+        JwtAuthenticationResponse res = authenticationService.signup(req);
+        assertNotNull(res, "Respuesta de registro es nula. ");
+        assertTrue(JwtTestUtils.isJwt(res.getToken()), "No genera un token JWT válido. ");
+
     }
 
     @Test
