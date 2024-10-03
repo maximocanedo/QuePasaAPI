@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 public class PostType {
     private Integer id;
     private String description;
+    private boolean active = true;
 
     public PostType() {}
 
@@ -28,4 +29,11 @@ public class PostType {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
+    /**
+     * Devuelve el estado lógico del tipo de publicación.
+     */
+    @Column(nullable = false)
+    public boolean isActive() { return active; }
+
+    public void setActive(boolean active) { this.active = active; }
 }
