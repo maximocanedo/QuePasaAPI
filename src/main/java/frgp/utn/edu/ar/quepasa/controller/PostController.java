@@ -42,6 +42,12 @@ public class PostController {
         return ResponseEntity.ok(postService.findById(id));
     }
 
+    @GetMapping("/op/{op}")
+    public ResponseEntity<?> getPostByOp(@PathVariable Integer op, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByOp(op, pageable));
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<?> updatePost(@PathVariable Integer id, @RequestBody PostPatchEditRequest post) throws AccessDeniedException {
         User me = authenticationService.getCurrentUserOrDie();
