@@ -11,6 +11,7 @@ public class PostSubtype {
     private Integer id;
     private PostType type;
     private String description;
+    private boolean active = true;
 
     public PostSubtype() {}
 
@@ -36,4 +37,11 @@ public class PostSubtype {
     @Column(nullable = false)
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    /**
+     * Devuelve el estado lógico del subtipo de publicación.
+     */
+    @Column(nullable = false)
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
