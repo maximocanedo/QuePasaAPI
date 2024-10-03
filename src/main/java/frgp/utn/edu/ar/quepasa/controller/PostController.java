@@ -42,10 +42,17 @@ public class PostController {
         return ResponseEntity.ok(postService.findById(id));
     }
 
-    @GetMapping("/op/{op}")
-    public ResponseEntity<?> getPostByOp(@PathVariable Integer op, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    @GetMapping("/op/{id}")
+    public ResponseEntity<?> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(postService.findByOp(op, pageable));
+        return ResponseEntity.ok(postService.findByOp(id, pageable));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getPostsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        User me = authenticationService.getCurrentUserOrDie();
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByOp(me.getId(), pageable));
     }
 
     @PatchMapping("/{id}")
