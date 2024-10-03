@@ -14,6 +14,8 @@ public interface PostService {
 
     Post findById(Integer id);
 
+    Page<Post> findByOp(Integer originalPoster, Pageable pageable);
+
     Post create(PostCreateRequest newPost, User originalPoster);
 
     Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException;

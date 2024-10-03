@@ -17,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Objects;
 
 
 @Service("postService")
@@ -34,6 +32,9 @@ public class PostServiceImpl implements PostService {
     private PostSubtypeRepository postSubtypeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NeighbourhoodRepository neighbourhoodRepository;
 
     @Override
@@ -43,6 +44,13 @@ public class PostServiceImpl implements PostService {
     public Post findById(Integer id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+    @Override
+    public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
+        User user = userRepository.findById(originalPoster)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return postRepository.findByOriginalPoster(user, pageable);
     }
 
     @Override
