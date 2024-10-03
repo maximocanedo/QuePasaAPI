@@ -1,8 +1,10 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SigninRequest request) {
         return ResponseEntity.ok(authenticationService.login(request));
+    }
+
+    @ExceptionHandler(Fail.class)
+    public ResponseEntity<ResponseError> handleFail(Fail e) {
+        return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
     }
 }
 

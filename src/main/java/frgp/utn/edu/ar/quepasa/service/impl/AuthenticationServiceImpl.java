@@ -4,6 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
@@ -18,8 +19,10 @@ import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.UnavailableException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,11 +76,49 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("No user authenticated. "));
     }
 
+    public void validatePassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new Fail("Password is empty. ", HttpStatus.BAD_REQUEST);
+        }
+        if (password.length() < 8) {
+            throw new Fail("Password length is less than 8. ", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean hasUpperCase = false;
+        boolean hasLowerCase = false;
+        boolean hasDigit = false;
+        boolean hasSpecialChar = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) hasUpperCase = true;
+            else if (Character.isLowerCase(c)) hasLowerCase = true;
+            else if (Character.isDigit(c)) hasDigit = true;
+            else if (!Character.isLetterOrDigit(c)) hasSpecialChar = true;
+        }
+
+        if (!hasUpperCase)
+            throw new Fail("Password lacks one upper case letter. ", HttpStatus.BAD_REQUEST);
+
+        if (!hasLowerCase)
+            throw new Fail("Password lacks one lower case letter. ", HttpStatus.BAD_REQUEST);
+
+        if (!hasDigit)
+            throw new Fail("Password lacks one number. ", HttpStatus.BAD_REQUEST);
+
+        if (!hasSpecialChar)
+            throw new Fail("Password lacks one special symbol. ", HttpStatus.BAD_REQUEST);
+    }
+
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         Neighbourhood n = neighbourhoodRepository
-                .findById(request.getNeighbourhoodId())
-                .orElseThrow(NoSuchElementException::new);
+                .findActiveNeighbourhoodById(request.getNeighbourhoodId())
+                .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
+
+        Optional<User> check = userRepository
+                .findByUsername(request.getUsername());
+        if(check.isPresent()) throw new Fail("Username not available. ", HttpStatus.CONFLICT);
+        validatePassword(request.getPassword());
         var user = new User();
         user.setName(request.getName());
         user.setUsername(request.getUsername());
