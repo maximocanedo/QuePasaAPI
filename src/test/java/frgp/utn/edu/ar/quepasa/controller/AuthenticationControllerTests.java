@@ -1,14 +1,10 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.UserService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuthentcationControllerTests {
+public class AuthenticationControllerTests {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
@@ -39,6 +39,11 @@ public class AuthentcationControllerTests {
             req.setName("Usuario de prueba para inicio de sesión. ");
             req.setNeighbourhoodId(1);
             this.token = authenticationService.signup(req).getToken();
+        } else {
+            var req = new SigninRequest();
+            req.setUsername("mockUser0001");
+            req.setPassword("P455w0&d+");
+            this.token = authenticationService.login(req).getToken();
         }
         if(userRepository.findByUsername("mockUser0123").isPresent()) {
             userRepository.delete(userRepository.findByUsername("mockUser0123").get());
@@ -181,6 +186,63 @@ public class AuthentcationControllerTests {
                 .andExpect(jsonPath("$.token").doesNotExist());
     }
 
+    @Test
+    @DisplayName("Solicitar código de verificación por correo: Datos válidos")
+    public void testMV__ok() throws Exception {
+        String body = "maximo.tomas.canedo@gmail.com";
+        mockMvc.perform(
+                post("/api/users/me/mail")
+                        .contentType("text/plain")
+                        .content(body)
+                        .header("Authorization", "Bearer " + token)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mail").exists())
+                .andExpect(jsonPath("$.mail").value(body))
+                .andExpect(jsonPath("$.verified").exists())
+                .andExpect(jsonPath("$.requestedAt").exists())
+                .andExpect(jsonPath("$.requestedAt").isNotEmpty());
 
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por correo: Repetir correo")
+    public void testMV__repeatMail() throws Exception {
+        String body = "maximo.tomas.canedo@gmail.com";
+        mockMvc.perform(
+                        post("/api/users/me/mail")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por correo: Sin correo")
+    public void testMV__noMail() throws Exception {
+        String body = "m";
+        mockMvc.perform(
+                        post("/api/users/me/mail")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por correo: Sin autenticar")
+    public void testMV__unauthenticated() throws Exception {
+        String body = "maximo.tomas.canedo@gmail.com";
+        mockMvc.perform(
+                        post("/api/users/me/mail")
+                                .contentType("text/plain")
+                                .content(body)
+                )
+                .andExpect(status().is4xxClientError());
+    }
 
 }

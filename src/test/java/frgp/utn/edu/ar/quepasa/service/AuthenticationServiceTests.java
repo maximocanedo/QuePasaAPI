@@ -2,13 +2,16 @@ package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.utils.JwtTestUtils;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticationServiceTests {
 
+    @Mock private MailSenderService mailSenderService;
     @Autowired private AuthenticationServiceImpl authenticationService;
     @Autowired private UserRepository userRepository;
     @Autowired UserService userService;
@@ -114,6 +118,12 @@ public class AuthenticationServiceTests {
         assertTrue(ok, "Permite iniciar sesión con el nombre de usuario de una cuenta inexistente. ");
     }
 
-
+    @Test
+    @DisplayName("Solicitar código de verificación por mail: Datos válidos")
+    public void requestVerificationCodeViaMail__validCase() throws MessagingException {
+        var vr = new VerificationRequest();
+        vr.setSubject("fake.mail@fake.fake");
+        authenticationService.requestMailVerificationCode(vr);
+    }
 
 }
