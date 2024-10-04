@@ -91,6 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("No user authenticated. "));
     }
 
+    @Override
     public void validatePassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new Fail("Password is empty. ", HttpStatus.BAD_REQUEST);
