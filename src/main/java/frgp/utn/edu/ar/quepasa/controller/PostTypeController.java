@@ -16,14 +16,10 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/api/post-types")
 public class PostTypeController {
 
-    @Autowired private PostTypeService postTypeService;
+    @Autowired
+    private PostTypeService postTypeService;
     @Autowired
     private AuthenticationService authenticationService;
-
-    PostTypeController(PostTypeService postTypeService, AuthenticationService authenticationService) {
-        this.postTypeService = postTypeService;
-        this.authenticationService = authenticationService;
-    }
 
     @PostMapping
     public ResponseEntity<?> createPostType(@RequestBody String description) throws AccessDeniedException {
