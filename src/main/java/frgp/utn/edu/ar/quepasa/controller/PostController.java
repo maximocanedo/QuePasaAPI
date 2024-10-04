@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,10 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/api/posts")
 public class PostController {
 
-    private final PostService postService;
-    private final AuthenticationService authenticationService;
+    @Autowired
+    private PostService postService;
+    @Autowired private AuthenticationService authenticationService;
 
-    PostController(PostService postService, AuthenticationService authenticationService) {
-        this.postService = postService;
-        this.authenticationService = authenticationService;
-    }
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {

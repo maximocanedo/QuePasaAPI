@@ -33,6 +33,6 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     public Page<PostSubtype> findByPostType(Integer type, Pageable pageable) {
         PostType postType = postTypeRepository.findById(type)
                 .orElseThrow(() -> new ResourceNotFoundException("PostType not found"));
-        return postSubtypeRepository.findByPostType(postType, pageable);
+        return postSubtypeRepository.findByType(postType, pageable);
     }
 }
