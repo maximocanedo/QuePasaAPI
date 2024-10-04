@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,13 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.findById(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        User me = authenticationService.getCurrentUserOrDie();
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(eventService.findByOp(me, pageable));
     }
 
     @PatchMapping("/{id}")

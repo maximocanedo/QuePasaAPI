@@ -31,6 +31,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Page<Event> findByOp(User owner, Pageable pageable) {
+        return eventRepository.findByOwner(owner, pageable)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+    }
+
+    @Override
     public Event create(EventPatchEditRequest event, User owner) {
         /*TODO
         *  -Validacion info*/

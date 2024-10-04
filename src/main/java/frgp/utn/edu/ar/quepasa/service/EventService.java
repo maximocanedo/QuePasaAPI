@@ -13,6 +13,8 @@ public interface EventService {
 
     Event findById(UUID id);
 
+    Page<Event> findByOp(User owner, Pageable pageable);
+
     Event create(EventPatchEditRequest event, User owner);
 
     Event update(UUID id, EventPatchEditRequest newEvent);
