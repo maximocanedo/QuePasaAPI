@@ -20,8 +20,8 @@ public class PostController {
 
     @Autowired
     private PostService postService;
-    @Autowired private AuthenticationService authenticationService;
-
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {
