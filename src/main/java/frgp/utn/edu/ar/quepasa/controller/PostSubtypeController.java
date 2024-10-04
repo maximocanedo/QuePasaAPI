@@ -5,11 +5,10 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 
@@ -25,5 +24,11 @@ public class PostSubtypeController {
     public ResponseEntity<?> createPostSubtype(@RequestBody PostSubtypeRequest subtype) throws AccessDeniedException {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(postSubtypeService.create(subtype, me));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getPostSubtypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postSubtypeService.listPostSubtypes(pageable));
     }
 }
