@@ -20,8 +20,9 @@ public class EventServiceImpl implements EventService {
     private EventRepository eventRepository;
 
     @Override
-    public Page<Event> listEvent(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+    public Page<Event> getEvents(String query, Pageable pageable) {
+        return eventRepository.search(query, pageable, true)
+                .orElseThrow(() -> new RuntimeException("No events found"));
     }
 
     @Override

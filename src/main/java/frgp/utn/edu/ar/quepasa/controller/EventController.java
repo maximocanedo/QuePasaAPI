@@ -26,8 +26,9 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Event>> listEvents(String q, Pageable pageable) {
-        return ResponseEntity.ok(eventService.listEvent(pageable));
+    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(eventService.getEvents(q, pageable));
     }
 
     @PostMapping

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface EventService {
-    Page<Event> listEvent(Pageable pageable);
+    Page<Event> getEvents(String query, Pageable pageable);
 
     Event findById(UUID id);
 
