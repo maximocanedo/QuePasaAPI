@@ -1,5 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
@@ -229,7 +232,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        int code = 111111;
        String hash = generateVerificationCodeHash(code);
        Phone phone = new Phone();
-       phone.setPhone(request.getSubject());
+       PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+       Phonenumber.PhoneNumber parsedPhoneNumber;
+       try {
+           parsedPhoneNumber = phoneUtil.parse(request.getSubject(), "AR");
+           if (!phoneUtil.isValidNumber(parsedPhoneNumber)) {
+               throw new Fail("Invalid phone number. ", HttpStatus.BAD_REQUEST);
+           }
+       } catch (NumberParseException e) {
+           throw new Fail("Error parsing phone number. ", HttpStatus.BAD_REQUEST);
+       }
+       String formattedPhoneNumber = phoneUtil.format(parsedPhoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+       phone.setPhone(formattedPhoneNumber);
        phone.setUser(me);
        phone.setHash(hash);
        phone.setRequestedAt(new Timestamp(System.currentTimeMillis()));
@@ -248,7 +262,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
         Phone phone = phoneRepository
                 .findByPhoneAndUser(request.getSubject(), me)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new Fail("Phone not found. ", HttpStatus.BAD_REQUEST));
         if(phone.isVerified()) return phone;
         if(passwordEncoder.matches(request.getCode(), phone.getHash())) {
             phone.setVerified(true);
@@ -256,7 +270,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             phoneRepository.save(phone);
             return phone;
         }
-        throw new AuthenticationFailedException("Code not valid. ");
+        throw new Fail("Code not valid. ", HttpStatus.BAD_REQUEST);
     }
 
 }

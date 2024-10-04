@@ -3,6 +3,8 @@ package frgp.utn.edu.ar.quepasa.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import org.junit.jupiter.api.*;
@@ -241,6 +243,132 @@ public class AuthenticationControllerTests {
         String body = "maximo.tomas.canedo@gmail.com";
         mockMvc.perform(
                         post("/api/users/me/mail")
+                                .contentType("text/plain")
+                                .content(body)
+                )
+                .andExpect(status().is4xxClientError());
+    }
+
+
+
+
+    @Test
+    @DisplayName("Solicitar código de verificación por número de teléfono: Datos válidos")
+    public void testPV__ok() throws Exception {
+        String body = "+541130388784";
+        mockMvc.perform(
+                        post("/api/users/me/phone")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phone").exists())
+                .andExpect(jsonPath("$.phone").value(body))
+                .andExpect(jsonPath("$.verified").exists())
+                .andExpect(jsonPath("$.requestedAt").exists())
+                .andExpect(jsonPath("$.requestedAt").isNotEmpty());
+
+    }
+
+
+    @Test
+    @DisplayName("Verificar número de teléfono: Datos inválidos")
+    public void testPC__wrongCode() throws Exception {
+        var ver = new CodeVerificationRequest();
+        ver.setSubject("+541130388784");
+        ver.setCode("998997");
+        String body = objectMapper.writeValueAsString(ver);
+        mockMvc.perform(
+                        post("/api/users/me/phone/verify")
+                                .contentType("application/json")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.phone").doesNotExist())
+                .andExpect(jsonPath("$.verified").doesNotExist())
+                .andExpect(jsonPath("$.requestedAt").doesNotExist())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+    }
+
+    @Test
+    @DisplayName("Verificar número de teléfono: Datos válidos")
+    public void testPC__ok() throws Exception {
+        var ver = new CodeVerificationRequest();
+        ver.setSubject("+541130388784");
+        ver.setCode("111111");
+        String body = objectMapper.writeValueAsString(ver);
+        mockMvc.perform(
+                        post("/api/users/me/phone/verify")
+                                .contentType("application/json")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phone").exists())
+                .andExpect(jsonPath("$.phone").value(ver.getSubject()))
+                .andExpect(jsonPath("$.verified").exists())
+                .andExpect(jsonPath("$.requestedAt").exists())
+                .andExpect(jsonPath("$.requestedAt").isNotEmpty())
+                .andExpect(jsonPath("$.verifiedAt").exists())
+                .andExpect(jsonPath("$.verifiedAt").isNotEmpty());
+
+    }
+
+
+    @Test
+    @DisplayName("Solicitar código de verificación por número de teléfono: Repetir número")
+    public void testPV__repeatMail() throws Exception {
+        String body = "+541130388784";
+        mockMvc.perform(
+                        post("/api/users/me/phone")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por número de teléfono: Sin número")
+    public void testMV__noPhone() throws Exception {
+        String body = "";
+        mockMvc.perform(
+                        post("/api/users/me/phone")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por número de teléfono: Número inválido")
+    public void testPV__invalidPhone() throws Exception {
+        String body = "543";
+        mockMvc.perform(
+                        post("/api/users/me/phone")
+                                .contentType("text/plain")
+                                .content(body)
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+    }
+
+    @Test
+    @DisplayName("Solicitar código de verificación por número de teléfono: Sin autenticar")
+    public void testPV__unauthenticated() throws Exception {
+        String body = "+541130388784";
+        mockMvc.perform(
+                        post("/api/users/me/phone")
                                 .contentType("text/plain")
                                 .content(body)
                 )

@@ -38,6 +38,7 @@ dependencies {
     implementation("jakarta.mail:jakarta.mail-api:2.1.3")
     implementation("org.eclipse.angus:jakarta.mail:1.0.0")
     implementation("org.jetbrains:annotations:16.0.2")
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.17")
 }
 
 tasks.withType<Test> {
