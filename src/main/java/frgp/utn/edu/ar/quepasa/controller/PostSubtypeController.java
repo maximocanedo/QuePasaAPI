@@ -31,4 +31,15 @@ public class PostSubtypeController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postSubtypeService.listPostSubtypes(pageable));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPostSubtypeById(@PathVariable Integer id) {
+        return ResponseEntity.ok(postSubtypeService.findById(id));
+    }
+
+    @GetMapping("/type/{id}")
+    public ResponseEntity<?> getPostSubtypesByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postSubtypeService.findByType(id, pageable));
+    }
 }
