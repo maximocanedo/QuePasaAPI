@@ -23,6 +23,12 @@ public interface AuthenticationService {
     JwtAuthenticationResponse login(SigninRequest request);
 
 
+    byte[] createTotpSecret();
+
+    void disableTotp();
+
+    JwtAuthenticationResponse loginWithTotp(String code);
+
     int generateOTP();
 
     String generateVerificationCodeHash(int code);

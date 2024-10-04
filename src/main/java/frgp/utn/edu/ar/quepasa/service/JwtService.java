@@ -6,5 +6,9 @@ public interface JwtService {
 
     String generateToken(UserDetails userDetails);
 
+    String generateToken(UserDetails userDetails, boolean isPartial);
+
     boolean isTokenValid(String token, UserDetails userService);
+
+    boolean isTokenPartiallyValid(String token, UserDetails user);
 }

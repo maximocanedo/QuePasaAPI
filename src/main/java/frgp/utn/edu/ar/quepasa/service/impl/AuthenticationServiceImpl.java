@@ -3,6 +3,13 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import de.taimos.totp.TOTPData;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
@@ -22,7 +29,7 @@ import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.UnavailableException;
+import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,15 +37,19 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
+import de.taimos.totp.TOTP;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -135,6 +146,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var jwt = jwtService.generateToken(user);
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();
         e.setToken(jwt);
+        e.setTotpRequired(false);
         return e;
     }
 
@@ -144,10 +156,80 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
-        var jwt = jwtService.generateToken(user);
+        var jwt = jwtService.generateToken(user, user.hasTotpEnabled());
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();
         e.setToken(jwt);
+        e.setTotpRequired(user.hasTotpEnabled());
         return e;
+    }
+
+    public byte[] hexToBytes(String s) {
+        byte[] ans = new byte[s.length() / 2];
+        for (int i = 0; i < ans.length; i++) {
+            int index = i * 2;
+            int val = Integer.parseInt(s.substring(index, index + 2), 16);
+            ans[i] = (byte)val;
+        }
+        return ans;
+    }
+
+    public TOTPData generateSecret(String username) {
+        byte[] bytes = new byte[20];
+        new SecureRandom().nextBytes(bytes);
+        return new TOTPData("QuePasa", username, bytes);
+    }
+
+    @Override
+    public byte[] createTotpSecret() {
+        User user = getCurrentUserOrDie();
+        if(user.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
+        TOTPData data = generateSecret(user.getUsername());
+        try {
+            byte[] qr = generateQRCodeImage(data.getUrl(), 250, 250);
+            user.setTotp(data.getSecretAsHex());
+            userRepository.save(user);
+            return qr;
+        } catch(WriterException | IOException e) {
+            throw new Fail("Error trying to generate QR Code. Operation was aborted.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private byte[] generateQRCodeImage(String text, int width, int height) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        Map<EncodeHintType, Object> hintMap = new HashMap<>();
+        hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hintMap);
+
+        try (ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream()) {
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+            return pngOutputStream.toByteArray();
+        }
+    }
+
+    @Override
+    public void disableTotp() {
+        User user = getCurrentUserOrDie();
+        if(!user.hasTotpEnabled()) throw new Fail("Totp already disabled. ", HttpStatus.OK);
+        user.setTotp("no-totp");
+        userRepository.save(user);
+    }
+
+    public boolean validateTOTP(String secret, String code) {
+        return TOTP.validate(secret, code);
+    }
+
+    @Override
+    public JwtAuthenticationResponse loginWithTotp(String code) {
+        User user = getCurrentUserOrDie();
+        if(!user.hasTotpEnabled()) throw new Fail("Totp not enabled. ", HttpStatus.CONFLICT);
+        if(validateTOTP(user.getTotp(), code)) {
+            var jwt = jwtService.generateToken(user, user.hasTotpEnabled());
+            JwtAuthenticationResponse e = new JwtAuthenticationResponse();
+            e.setToken(jwt);
+            e.setTotpRequired(false);
+            return e;
+        }
+        throw new Fail("Invalid TOTP code. ", HttpStatus.UNAUTHORIZED);
     }
 
     /**

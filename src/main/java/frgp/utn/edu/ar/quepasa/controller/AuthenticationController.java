@@ -25,6 +25,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.login(request));
     }
 
+    @PostMapping("/login/totp")
+    public ResponseEntity<JwtAuthenticationResponse> loginWithTotp(@RequestBody String totp) {
+        System.out.println("TOTPCODE: '" + totp + "'.");
+        return ResponseEntity.ok(authenticationService.loginWithTotp(totp));
+    }
+
     @ExceptionHandler(Fail.class)
     public ResponseEntity<ResponseError> handleFail(Fail e) {
         return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));

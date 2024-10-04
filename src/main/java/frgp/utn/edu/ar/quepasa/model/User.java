@@ -35,6 +35,7 @@ public class User implements UserDetails {
     private Set<Mail> email = Collections.emptySet();
     private String password;
     private Role role;
+    private String totp = "no-totp";
     private boolean active = true;
 
     public User() {}
@@ -114,6 +115,20 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    /**
+     * Devuelve el token TOTP.
+     */
+    @JsonIgnore
+    public String getTotp() { return totp; }
+    public void setTotp(String totp) { this.totp = totp; }
+
+    /**
+     * Indica si el usuario tiene habilitado 2FA mediante TOTP.
+     */
+    @Transient
+    @JsonIgnore
+    public boolean hasTotpEnabled() { return totp != null && !totp.isEmpty() && !totp.equals("no-totp"); }
 
     /**
      * Devuelve el estado lógico del usuario.

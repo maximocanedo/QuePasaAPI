@@ -7,6 +7,7 @@ import frgp.utn.edu.ar.quepasa.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -46,6 +47,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.isNotEmpty(username)
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails ud = userService.loadUserByUsername(username);
+                if(jwtService.isTokenPartiallyValid(jwt, ud)) {
+                    if(!request.getRequestURI().endsWith("/login/totp")){
+
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                        return;
+                    }
+                }
                 if (jwtService.isTokenValid(jwt, ud)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
