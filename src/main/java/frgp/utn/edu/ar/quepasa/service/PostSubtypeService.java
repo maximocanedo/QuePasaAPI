@@ -16,4 +16,6 @@ public interface PostSubtypeService {
     Page<PostSubtype> findByPostType(Integer type, Pageable pageable);
 
     PostSubtype create(PostSubtypeRequest newSubtype, User author) throws AccessDeniedException;
+
+    PostSubtype update(Integer id, PostSubtypeRequest newSubtype, User author) throws AccessDeniedException;
 }
