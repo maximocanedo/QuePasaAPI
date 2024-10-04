@@ -33,6 +33,18 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public String generateToken(UserDetails userDetails, boolean isPartial) {
+        var map = new HashMap<String, Object>();
+        map.put("partial", isPartial);
+        return generateToken(map, userDetails);
+    }
+
+    @Override
+    public boolean isTokenPartiallyValid(String token, UserDetails userDetails) {
+        return (boolean) extractClaim(token, claim -> claim.get("partial"));
+    }
+
+    @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);

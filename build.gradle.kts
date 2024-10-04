@@ -39,6 +39,17 @@ dependencies {
     implementation("org.eclipse.angus:jakarta.mail:1.0.0")
     implementation("org.jetbrains:annotations:16.0.2")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.13.17")
+    // https://mvnrepository.com/artifact/de.taimos/totp
+    implementation("de.taimos:totp:1.0")
+    // https://mvnrepository.com/artifact/com.google.zxing/core
+    implementation("com.google.zxing:core:3.5.3")
+    // https://mvnrepository.com/artifact/com.google.zxing/javase
+    implementation("com.google.zxing:javase:3.5.3")
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation("org.apache.commons:commons-lang3:3.0")
+    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    implementation("commons-codec:commons-codec:1.17.1")
+
 }
 
 tasks.withType<Test> {

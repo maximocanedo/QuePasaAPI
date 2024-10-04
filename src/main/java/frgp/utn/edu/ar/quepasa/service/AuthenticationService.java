@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 
+import de.taimos.totp.TOTPData;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
@@ -22,6 +23,14 @@ public interface AuthenticationService {
     JwtAuthenticationResponse signup(SignUpRequest request);
     JwtAuthenticationResponse login(SigninRequest request);
 
+
+    TOTPData generateSecret(String username);
+
+    byte[] createTotpSecret();
+
+    void disableTotp();
+
+    JwtAuthenticationResponse loginWithTotp(String code);
 
     int generateOTP();
 

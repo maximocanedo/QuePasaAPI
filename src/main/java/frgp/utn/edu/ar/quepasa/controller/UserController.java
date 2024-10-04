@@ -1,5 +1,11 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
@@ -14,13 +20,20 @@ import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -82,6 +95,20 @@ public class UserController {
     public ResponseEntity<User> getMe() {
         User me = authenticationService.getCurrentUserOrDie();
         return new ResponseEntity<>(me, HttpStatus.OK);
+    }
+
+    @PostMapping("/me/totp")
+    public ResponseEntity<byte[]> enableTotpAuthentication() {
+        byte[] qr = authenticationService.createTotpSecret();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(qr, headers, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/me/totp")
+    public ResponseEntity<?> disableTotpAuthentication() {
+        authenticationService.disableTotp();
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/me")
