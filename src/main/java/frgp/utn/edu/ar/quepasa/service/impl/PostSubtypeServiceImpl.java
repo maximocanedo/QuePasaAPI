@@ -68,4 +68,14 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         postSubtypeRepository.save(subtype);
         return subtype;
     }
+
+    @Override
+    public void delete(Integer id, User author) throws AccessDeniedException {
+        PostSubtype subtype = findById(id);
+        if(!author.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Insufficient permissions");
+        }
+        subtype.setActive(false);
+        postSubtypeRepository.save(subtype);
+    }
 }
