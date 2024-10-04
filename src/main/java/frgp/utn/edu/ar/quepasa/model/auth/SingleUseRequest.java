@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -14,6 +15,7 @@ public class SingleUseRequest {
     private String hash;
     private SingleUseRequestAction action;
     private User user;
+    private Timestamp requested;
     private boolean active;
 
     @Id
@@ -36,6 +38,18 @@ public class SingleUseRequest {
     @JoinColumn(name = "user_id", nullable = false)
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    @Column(nullable = false)
+    public Timestamp getRequested() { return requested; }
+    public void setRequested(Timestamp requested) { this.requested = requested; }
+
+    @Transient
+    public boolean isExpired() {
+        long now = System.currentTimeMillis();
+        long then = getRequested().getTime();
+        long difference = now - then;
+        return difference > 1000 * 60 * 60 * 24;
+    }
 
     @Column(nullable = false)
     public boolean isActive() { return active; }

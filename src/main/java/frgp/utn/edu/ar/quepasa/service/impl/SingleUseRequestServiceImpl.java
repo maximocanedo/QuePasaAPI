@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @Service
@@ -71,6 +72,7 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         document.setAction(SingleUseRequestAction.RESET_PASSWORD);
         document.setActive(true);
         document.setHash(generateHexOTP());
+        document.setRequested(new Timestamp(System.currentTimeMillis()));
         document = singleUseRequestRepository.save(document);
         return document;
 
@@ -83,9 +85,10 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
     @Override
     public JwtAuthenticationResponse passwordResetAttempt(PasswordResetAttempt request) {
         Optional<SingleUseRequest> opt = singleUseRequestRepository.findById(request.getId());
-        // TODO Comprobar que no esté expirado.
         if(opt.isEmpty()) throw new Fail("Request with id " + request.getId() + " was not found. ", HttpStatus.NOT_FOUND);
         var document = opt.get();
+        if(document.isExpired())
+            throw new Fail("Request has expired. ", HttpStatus.UNAUTHORIZED);
         if(document.getAction() != SingleUseRequestAction.RESET_PASSWORD)
             throw new Fail("Cannot use " + document.getAction().name() + " request to recover a password. ", HttpStatus.BAD_REQUEST);
         if(!passwordEncoder.matches(request.getCode(), document.getHash()))

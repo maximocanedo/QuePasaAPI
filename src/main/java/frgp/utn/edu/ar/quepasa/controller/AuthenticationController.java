@@ -3,9 +3,13 @@ package frgp.utn.edu.ar.quepasa.controller;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
+import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    SingleUseRequestService singleUseRequestService;
     @PostMapping("/signup")
     public ResponseEntity<JwtAuthenticationResponse> signup(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signup(request));
@@ -27,8 +33,17 @@ public class AuthenticationController {
 
     @PostMapping("/login/totp")
     public ResponseEntity<JwtAuthenticationResponse> loginWithTotp(@RequestBody String totp) {
-        System.out.println("TOTPCODE: '" + totp + "'.");
         return ResponseEntity.ok(authenticationService.loginWithTotp(totp));
+    }
+
+    @PostMapping("/recover")
+    public ResponseEntity<SingleUseRequest> requestPasswordReset(@RequestBody PasswordResetRequest request) {
+        return ResponseEntity.ok(singleUseRequestService.passwordResetRequest(request));
+    }
+
+    @PostMapping("/recover/reset")
+    public ResponseEntity<JwtAuthenticationResponse> resetPassword(@RequestBody PasswordResetAttempt attempt) {
+        return ResponseEntity.ok(singleUseRequestService.passwordResetAttempt(attempt));
     }
 
     @ExceptionHandler(Fail.class)
