@@ -38,6 +38,8 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service
@@ -162,6 +164,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return passwordEncoder.encode(String.valueOf(code));
     }
 
+    public void validateMail(String mail) {
+        Pattern p = Pattern.compile(".+@.+\\..+");
+        Matcher m = p.matcher(mail);
+        if(!m.matches())
+            throw new Fail("Invalid email address. ", HttpStatus.BAD_REQUEST);
+    }
+
 
     /**
      * <b>Registra un correo electrónico</b>
@@ -170,6 +179,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Mail requestMailVerificationCode(@NotNull VerificationRequest request) throws MessagingException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+        validateMail(request.getSubject());
         int code = generateOTP();
         String hash = generateVerificationCodeHash(code);
         Mail mail = new Mail();

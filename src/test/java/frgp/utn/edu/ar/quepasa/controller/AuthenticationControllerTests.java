@@ -229,7 +229,9 @@ public class AuthenticationControllerTests {
                                 .content(body)
                                 .header("Authorization", "Bearer " + token)
                 )
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty());
 
     }
 

@@ -4,6 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -125,4 +126,8 @@ public class UserController {
         return new ResponseEntity<>(new ResponseError("Hubo un error al intentar enviar un correo electrónico. "), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(Fail.class)
+    public ResponseEntity<ResponseError> handleFail(Fail e) {
+        return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
+    }
 }
