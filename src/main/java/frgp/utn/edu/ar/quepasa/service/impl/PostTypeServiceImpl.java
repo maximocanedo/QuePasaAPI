@@ -24,7 +24,7 @@ public class PostTypeServiceImpl implements PostTypeService {
     @Override
     public PostType findById(Integer id) {
         return postTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PostType not found"));
+                .orElseThrow(() -> new RuntimeException("Type not found"));
     }
 
     @Override
