@@ -15,6 +15,8 @@ public interface EventService {
 
     Page<Event> findByOp(User owner, Pageable pageable);
 
+    Page<Event> findByUsername(String username, Pageable pageable);
+
     Event create(EventPatchEditRequest event, User owner);
 
     Event update(UUID id, EventPatchEditRequest newEvent);

@@ -22,7 +22,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> getEvents(String query, Pageable pageable) {
         return eventRepository.search(query, pageable, true)
-                .orElseThrow(() -> new RuntimeException("No events found"));
+                .orElseThrow(() -> new RuntimeException("No Events found"));
     }
 
     @Override
@@ -35,6 +35,12 @@ public class EventServiceImpl implements EventService {
     public Page<Event> findByOp(User owner, Pageable pageable) {
         return eventRepository.findByOwner(owner, pageable)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
+    }
+
+    @Override
+    public Page<Event> findByUsername(String username, Pageable pageable) {
+        return eventRepository.findByOwnerUsername(username, pageable)
+                .orElseThrow(() -> new RuntimeException("No Events found"));
     }
 
     @Override

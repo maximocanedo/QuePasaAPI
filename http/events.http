@@ -21,6 +21,10 @@ Authorization: Bearer {{token}}
 GET {{base}}/api/events/me?page=0&size=10
 Authorization: Bearer {{token}}
 
+### Consultar eventos de un usuario por nombre de usuario
+GET {{base}}/api/events/user/bocelli.andrea?page=0&size=10
+Authorization: Bearer {{token}}
+
 ### Consultar eventos
 GET {{base}}/api/events?q=&page=0&size=10&sort=name,asc
 Authorization: Bearer {{token}}

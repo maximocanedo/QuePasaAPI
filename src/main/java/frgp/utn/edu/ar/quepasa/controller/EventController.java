@@ -42,6 +42,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
+    @GetMapping("/user/{username}")
+    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(eventService.findByUsername(username, pageable));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         User me = authenticationService.getCurrentUserOrDie();
