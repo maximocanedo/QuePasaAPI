@@ -42,4 +42,10 @@ public class PostSubtypeController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postSubtypeService.findByType(id, pageable));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updatePostSubtype(@PathVariable Integer id, @RequestBody PostSubtypeRequest subtype) throws AccessDeniedException {
+        User me = authenticationService.getCurrentUserOrDie();
+        return ResponseEntity.ok(postSubtypeService.update(id, subtype, me));
+    }
 }
