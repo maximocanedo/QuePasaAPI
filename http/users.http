@@ -14,10 +14,21 @@ POST {{base}}/api/login
 Content-Type: application/json
 
 {
+  "username": "mockUser0001",
+  "password": "P455w0&d+"
+}
+
+
+
+
+
+### Iniciar sesión con TOTP
+POST {{base}}
+
+{
   "username": "bocelli.andrea",
   "password": "Abc.1234$6789"
 }
-
 
 ### Solicitar código de verificación de correo electrónico
 POST {{base}}/api/users/me/mail

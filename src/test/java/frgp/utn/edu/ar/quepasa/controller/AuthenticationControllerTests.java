@@ -1,10 +1,12 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import de.taimos.totp.TOTP;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
-import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
+import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import org.junit.jupiter.api.*;
@@ -14,15 +16,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthenticationControllerTests {
 
     @Autowired private MockMvc mockMvc;
@@ -34,7 +39,8 @@ public class AuthenticationControllerTests {
 
     @BeforeAll
     public void cleanPossibleMockUsers() {
-        if(userRepository.findByUsername("mockUser0001").isEmpty()) {
+        var i = userRepository.findByUsername("mockUser0001");
+        if(i.isEmpty()) {
             var req = new SignUpRequest();
             req.setUsername("mockUser0001");
             req.setPassword("P455w0&d+");
@@ -42,6 +48,9 @@ public class AuthenticationControllerTests {
             req.setNeighbourhoodId(1);
             this.token = authenticationService.signup(req).getToken();
         } else {
+            User e = i.get();
+            e.setTotp("no-totp");
+            userRepository.save(e);
             var req = new SigninRequest();
             req.setUsername("mockUser0001");
             req.setPassword("P455w0&d+");
@@ -66,6 +75,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Registro de usuario con valores válidos")
     public void testSignUp() throws Exception {
         SignUpRequest request = new SignUpRequest();
@@ -86,6 +96,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Registro de usuario con nombre de usuario no disponible")
     public void testSignUp__usernameNotAvailable() throws Exception {
         SignUpRequest request = new SignUpRequest();
@@ -105,6 +116,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Registro de usuario con contraseña inválida")
     public void testSignUp_badPassword() throws Exception {
         SignUpRequest request = new SignUpRequest();
@@ -124,6 +136,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(4)
     @DisplayName("Inicio de sesión con valores válidos")
     public void testLogin() throws Exception {
         var credentials = new SigninRequest();
@@ -141,6 +154,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(5)
     @DisplayName("Inicio de sesión con nombre de usuario no existente")
     public void testLogin__badUsername() throws Exception {
         var credentials = new SigninRequest();
@@ -157,6 +171,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(6)
     @DisplayName("Inicio de sesión con contraseña inválida")
     public void testLogin__badPassword() throws Exception {
         var credentials = new SigninRequest();
@@ -173,6 +188,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(7)
     @DisplayName("Inicio de sesión con credenciales vacías")
     public void testLogin__emptyCredentials() throws Exception {
         var credentials = new SigninRequest();
@@ -189,6 +205,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(8)
     @DisplayName("Solicitar código de verificación por correo: Datos válidos")
     public void testMV__ok() throws Exception {
         String body = "maximo.tomas.canedo@gmail.com";
@@ -208,6 +225,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(9)
     @DisplayName("Solicitar código de verificación por correo: Repetir correo")
     public void testMV__repeatMail() throws Exception {
         String body = "maximo.tomas.canedo@gmail.com";
@@ -222,6 +240,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(10)
     @DisplayName("Solicitar código de verificación por correo: Sin correo")
     public void testMV__noMail() throws Exception {
         String body = "m";
@@ -238,6 +257,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(11)
     @DisplayName("Solicitar código de verificación por correo: Sin autenticar")
     public void testMV__unauthenticated() throws Exception {
         String body = "maximo.tomas.canedo@gmail.com";
@@ -253,6 +273,7 @@ public class AuthenticationControllerTests {
 
 
     @Test
+    @Order(12)
     @DisplayName("Solicitar código de verificación por número de teléfono: Datos válidos")
     public void testPV__ok() throws Exception {
         String body = "+541130388784";
@@ -273,6 +294,7 @@ public class AuthenticationControllerTests {
 
 
     @Test
+    @Order(13)
     @DisplayName("Verificar número de teléfono: Datos inválidos")
     public void testPC__wrongCode() throws Exception {
         var ver = new CodeVerificationRequest();
@@ -295,6 +317,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(14)
     @DisplayName("Verificar número de teléfono: Datos válidos")
     public void testPC__ok() throws Exception {
         var ver = new CodeVerificationRequest();
@@ -320,6 +343,7 @@ public class AuthenticationControllerTests {
 
 
     @Test
+    @Order(15)
     @DisplayName("Solicitar código de verificación por número de teléfono: Repetir número")
     public void testPV__repeatMail() throws Exception {
         String body = "+541130388784";
@@ -334,6 +358,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(16)
     @DisplayName("Solicitar código de verificación por número de teléfono: Sin número")
     public void testMV__noPhone() throws Exception {
         String body = "";
@@ -348,6 +373,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(17)
     @DisplayName("Solicitar código de verificación por número de teléfono: Número inválido")
     public void testPV__invalidPhone() throws Exception {
         String body = "543";
@@ -364,6 +390,7 @@ public class AuthenticationControllerTests {
     }
 
     @Test
+    @Order(18)
     @DisplayName("Solicitar código de verificación por número de teléfono: Sin autenticar")
     public void testPV__unauthenticated() throws Exception {
         String body = "+541130388784";
@@ -375,4 +402,65 @@ public class AuthenticationControllerTests {
                 .andExpect(status().is4xxClientError());
     }
 
+
+    @Test
+    @Order(19)
+    @DisplayName("Habilitar TOTP")
+    public void testEnableTOTP() throws Exception {
+        mockMvc.perform(
+                post("/api/users/me/totp")
+                        .header("Authorization", "Bearer " + token)
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("image/png"));
+    }
+
+    @Test
+    @Order(20)
+    @DisplayName("Iniciar sesión Post TOTP")
+    public void testLoginTOTP() throws Exception {
+        var opt = userRepository.findByUsername("mockUser0001");
+        assertTrue(opt.isPresent());
+        var user = opt.get();
+        var rq = new SigninRequest();
+        rq.setUsername("mockUser0001");
+        rq.setPassword("P455w0&d+");
+        MvcResult res = mockMvc.perform(
+                        post("/api/login")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(rq))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.totpRequired").exists())
+                .andExpect(jsonPath("$.totpRequired").value(true))
+                .andReturn();
+        String response = res.getResponse().getContentAsString();
+        String partialToken = JsonPath.parse(response).read("$.token");
+        var code = TOTP.getOTP(user.getTotp());
+        mockMvc.perform(
+                post("/api/login/totp")
+                        .header("Authorization", "Bearer " + partialToken)
+                        .contentType("text/plain")
+                        .content(code)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.totpRequired").exists())
+                .andExpect(jsonPath("$.totpRequired").value(false))
+                .andReturn();
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("Deshabilitar TOTP")
+    public void testDisableTOTP() throws Exception {
+        mockMvc.perform(
+                        delete("/api/users/me/totp")
+                                .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk());
+    }
 }
