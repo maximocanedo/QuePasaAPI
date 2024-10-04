@@ -7,6 +7,7 @@ import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,4 +49,12 @@ public class PostSubtypeController {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(postSubtypeService.update(id, subtype, me));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePostSubtype(@PathVariable Integer id) throws AccessDeniedException {
+        User me = authenticationService.getCurrentUserOrDie();
+        postSubtypeService.delete(id, me);
+        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+    }
+
 }
