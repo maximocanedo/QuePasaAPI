@@ -29,7 +29,6 @@ import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
-import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -163,16 +162,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return e;
     }
 
-    public byte[] hexToBytes(String s) {
-        byte[] ans = new byte[s.length() / 2];
-        for (int i = 0; i < ans.length; i++) {
-            int index = i * 2;
-            int val = Integer.parseInt(s.substring(index, index + 2), 16);
-            ans[i] = (byte)val;
-        }
-        return ans;
-    }
-
+    @Override
     public TOTPData generateSecret(String username) {
         byte[] bytes = new byte[20];
         new SecureRandom().nextBytes(bytes);
