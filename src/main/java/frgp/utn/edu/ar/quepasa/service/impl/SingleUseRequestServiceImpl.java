@@ -14,7 +14,9 @@ import frgp.utn.edu.ar.quepasa.repository.PhoneRepository;
 import frgp.utn.edu.ar.quepasa.repository.SingleUseRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
+import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +30,7 @@ import java.util.Optional;
 public class SingleUseRequestServiceImpl implements SingleUseRequestService {
 
     @Autowired private SingleUseRequestRepository singleUseRequestRepository;
+    @Autowired private MailSenderService mailSenderService;
     @Autowired private MailRepository mailRepository;
     @Autowired private PhoneRepository phoneRepository;
     @Autowired private PasswordEncoder passwordEncoder;
@@ -42,7 +45,7 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         for (byte b : bytes) {
             code.append(String.format("%02x", b));
         }
-        return passwordEncoder.encode(code.toString());
+        return (code.toString());
     }
 
     /**
@@ -52,26 +55,40 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
     @Override
     public SingleUseRequest passwordResetRequest(PasswordResetRequest request) {
         Optional<User> u;
+        String via = "";
         if(request.getEmail() != null && !request.getEmail().isBlank()) {
             Optional<Mail> m = mailRepository.findByMail(request.getEmail(), request.getUsername());
             if(m.isEmpty()) throw new Fail("Mail is not linked to any account. ", HttpStatus.BAD_REQUEST);
             Mail mail = m.get();
+            via = "mail";
             u = Optional.of(mail.getUser());
         } else if(request.getPhone() != null && !request.getPhone().isBlank()) {
             Optional<Phone> p = phoneRepository.findByPhone(request.getPhone(), request.getUsername());
             if(p.isEmpty()) throw new Fail("Phone is not linked to any account. ", HttpStatus.BAD_REQUEST);
             Phone phone = p.get();
+            via = "sms";
             u = Optional.of(phone.getUser());
         } else throw new Fail("Must provide an email or a phone number. ", HttpStatus.BAD_REQUEST);
         User user = u.get();
         if(!user.isAccountNonExpired() || !user.isAccountNonLocked() || !user.isCredentialsNonExpired() || !user.isEnabled() || !user.isActive()) {
             throw new Fail("The account you are trying to reset password is not active. ", HttpStatus.UNAUTHORIZED);
         }
+        String otp = generateHexOTP();
+        if(via.equals("mail")) {
+            try {
+                mailSenderService.send(request.getEmail(), "Recuperá tu cuenta", mailSenderService.recoverPasswordBody(otp));
+            } catch(MessagingException e) {
+                throw new Fail("Error while trying to send the code. Operation was aborted. ", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            otp = "111111"; // No hay plata para APIs de SMS o WhatsApp.
+        }
+
         var document = new SingleUseRequest();
         document.setUser(u.get());
         document.setAction(SingleUseRequestAction.RESET_PASSWORD);
         document.setActive(true);
-        document.setHash(generateHexOTP());
+        document.setHash(passwordEncoder.encode(otp));
         document.setRequested(new Timestamp(System.currentTimeMillis()));
         document = singleUseRequestRepository.save(document);
         return document;

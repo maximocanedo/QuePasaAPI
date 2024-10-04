@@ -7,4 +7,6 @@ public interface MailSenderService {
     void send(String to, String subject, String body) throws AddressException, MessagingException;
 
     String otp(int code);
+
+    String recoverPasswordBody(String code);
 }

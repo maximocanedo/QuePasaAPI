@@ -33,4 +33,14 @@ public class MailSenderServiceImpl implements frgp.utn.edu.ar.quepasa.service.Ma
         return sb.toString();
     }
 
+    @Override
+    public String recoverPasswordBody(String code) {
+        StringBuilder sb = new StringBuilder("Solicitaste la recuperación de tu cuenta de QuePasa. \n");
+        sb.append("Si fuiste vos, usá este código para autorizar el cambio de contraseña: ");
+        sb.append(code);
+        sb.append("\n\n");
+        sb.append("Si no solicitaste esto, ignorá este correo. \n\nSaludos.");
+        return sb.toString();
+    }
+
 }
