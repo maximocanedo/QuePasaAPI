@@ -33,8 +33,7 @@ public class SingleUseRequest {
     public SingleUseRequestAction getAction() { return action; }
     public void setAction(SingleUseRequestAction action) { this.action = action; }
 
-    @Column(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

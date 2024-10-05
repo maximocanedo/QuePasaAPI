@@ -17,6 +17,7 @@ import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
 import jakarta.mail.MessagingException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-@Service
+@Service("singleUseRequestService")
 public class SingleUseRequestServiceImpl implements SingleUseRequestService {
 
     @Autowired private SingleUseRequestRepository singleUseRequestRepository;
@@ -60,17 +61,19 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
             Optional<Mail> m = mailRepository.findByMail(request.getEmail(), request.getUsername());
             if(m.isEmpty()) throw new Fail("Mail is not linked to any account. ", HttpStatus.BAD_REQUEST);
             Mail mail = m.get();
+            Hibernate.initialize(mail.getUser());
             via = "mail";
             u = Optional.of(mail.getUser());
         } else if(request.getPhone() != null && !request.getPhone().isBlank()) {
             Optional<Phone> p = phoneRepository.findByPhone(request.getPhone(), request.getUsername());
             if(p.isEmpty()) throw new Fail("Phone is not linked to any account. ", HttpStatus.BAD_REQUEST);
             Phone phone = p.get();
+            Hibernate.initialize(phone.getUser());
             via = "sms";
             u = Optional.of(phone.getUser());
         } else throw new Fail("Must provide an email or a phone number. ", HttpStatus.BAD_REQUEST);
         User user = u.get();
-        if(!user.isAccountNonExpired() || !user.isAccountNonLocked() || !user.isCredentialsNonExpired() || !user.isEnabled() || !user.isActive()) {
+        if(!user.isActive()) {
             throw new Fail("The account you are trying to reset password is not active. ", HttpStatus.UNAUTHORIZED);
         }
         String otp = generateHexOTP();
@@ -83,7 +86,6 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         } else {
             otp = "111111"; // No hay plata para APIs de SMS o WhatsApp.
         }
-
         var document = new SingleUseRequest();
         document.setUser(u.get());
         document.setAction(SingleUseRequestAction.RESET_PASSWORD);

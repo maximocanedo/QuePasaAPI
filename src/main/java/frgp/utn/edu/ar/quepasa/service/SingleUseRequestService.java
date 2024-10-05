@@ -6,7 +6,6 @@ import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface SingleUseRequestService {
 
     SingleUseRequest passwordResetRequest(PasswordResetRequest request);
