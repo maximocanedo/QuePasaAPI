@@ -20,6 +20,8 @@ public interface AuthenticationService {
 
     User getCurrentUserOrDie();
 
+    void validatePassword(String password);
+
     JwtAuthenticationResponse signup(SignUpRequest request);
     JwtAuthenticationResponse login(SigninRequest request);
 
