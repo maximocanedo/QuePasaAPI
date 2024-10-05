@@ -9,7 +9,6 @@ import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
 import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
 import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
@@ -23,13 +22,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.sql.Timestamp;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -63,7 +59,7 @@ public class AuthenticationControllerTests {
             userRepository.save(e);
             var req = new SigninRequest();
             req.setUsername("mockUser0001");
-            req.setPassword("P455w0&d+");
+            req.setPassword("M4x%$4gv4nt320rb4");
             this.token = authenticationService.login(req).getToken();
         }
         if(userRepository.findByUsername("mockUser0123").isPresent()) {
@@ -151,7 +147,7 @@ public class AuthenticationControllerTests {
     public void testLogin() throws Exception {
         var credentials = new SigninRequest();
         credentials.setUsername("mockUser0001");
-        credentials.setPassword("P455w0&d+");
+        credentials.setPassword("M4x%$4gv4nt320rb4");
         String body = objectMapper.writeValueAsString(credentials);
         mockMvc.perform(
                 post("/api/login")
@@ -434,7 +430,7 @@ public class AuthenticationControllerTests {
         var user = opt.get();
         var rq = new SigninRequest();
         rq.setUsername("mockUser0001");
-        rq.setPassword("P455w0&d+");
+        rq.setPassword("M4x%$4gv4nt320rb4");
         MvcResult res = mockMvc.perform(
                         post("/api/login")
                                 .contentType("application/json")
@@ -578,5 +574,18 @@ public class AuthenticationControllerTests {
 
     }
 
+    @Test
+    @Order(26)
+    @DisplayName("Obtener usuario autenticado")
+    public void testGetAuthenticatedUser() throws Exception {
+        mockMvc.perform(
+                get("/api/users/me")
+                        .header("Authorization", "Bearer " + token)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").exists())
+                .andExpect(jsonPath("$.username").isNotEmpty())
+                .andExpect(jsonPath("$.username").value("mockUser0001"));
+    }
 
 }

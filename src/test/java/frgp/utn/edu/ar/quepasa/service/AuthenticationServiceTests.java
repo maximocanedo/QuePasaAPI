@@ -37,6 +37,8 @@ public class AuthenticationServiceTests {
     private final String testUsername = "test5";
     private final String testPassword = "4nT0n10.¿0N$413Z";
     public User ANTONIO_GONZALEZ;
+    @Autowired
+    private Auth auth;
 
     @BeforeAll
     public void setup() {
@@ -269,6 +271,26 @@ public class AuthenticationServiceTests {
         assertTrue(opt.isPresent());
         ANTONIO_GONZALEZ = opt.get();
         assertFalse(ANTONIO_GONZALEZ.hasTotpEnabled());
+    }
+
+
+    @Test
+    @Order(12)
+    @DisplayName("Obtener usuario autenticado")
+    @WithMockUser("antonio.gonzalez.ok")
+    public void getAuthenticatedUser() {
+        assertDoesNotThrow(() -> {
+            User current = authenticationService.getCurrentUserOrDie();
+        });
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Obtener usuario autenticado sin sesión activa. ")
+    public void getAuthenticatedUserWithoutSession() {
+        assertThrows(Exception.class, () -> {
+            User current = authenticationService.getCurrentUserOrDie();
+        });
     }
 
 }
