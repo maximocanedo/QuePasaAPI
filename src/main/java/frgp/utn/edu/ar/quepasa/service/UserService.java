@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
 
-    Page<User> listUser(String query, Pageable pageable);
+    Page<User> search(String query, Pageable pageable);
 
     User findByUsername(String username);
     User update(UserPatchEditRequest user);

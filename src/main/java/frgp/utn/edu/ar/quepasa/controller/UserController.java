@@ -1,11 +1,5 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
@@ -29,11 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -122,9 +111,9 @@ public class UserController {
         return ResponseEntity.ok("Password reset. ");
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Page<User>> getAll(String q, Pageable pageable) {
-        return ResponseEntity.ok(userService.listUser(q, pageable));
+        return ResponseEntity.ok(userService.search(q, pageable));
     }
 
     @DeleteMapping("/me")
