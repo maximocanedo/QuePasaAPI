@@ -33,6 +33,7 @@ public class SingleUseRequest {
     public SingleUseRequestAction getAction() { return action; }
     public void setAction(SingleUseRequestAction action) { this.action = action; }
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", nullable = false)
     public User getUser() { return user; }

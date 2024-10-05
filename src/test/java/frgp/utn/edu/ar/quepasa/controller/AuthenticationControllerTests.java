@@ -6,7 +6,12 @@ import de.taimos.totp.TOTP;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
+import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
+import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.auth.Mail;
+import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
+import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import org.junit.jupiter.api.*;
@@ -17,6 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.sql.Timestamp;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -33,6 +42,7 @@ public class AuthenticationControllerTests {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private UserRepository userRepository;
+    @Autowired private MailRepository mailRepository;
     @Autowired private AuthenticationService authenticationService;
 
     private String token = "";
@@ -463,4 +473,110 @@ public class AuthenticationControllerTests {
                 )
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @Order(22)
+    @DisplayName("Solicitar cambio de contraseña")
+    public void testRequirePasswordReset() throws Exception {
+        var req = new PasswordResetRequest();
+        req.setUsername("mockUser0001");
+        req.setEmail("maximo.tomas.2@gmail.com");
+        var performance = mockMvc.perform(
+                post("/api/recover")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(req))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andReturn();
+    }
+
+    @Test
+    @Order(23)
+    @DisplayName("Solicitar cambio de contraseña: Correo incorrecto")
+    public void testRequirePasswordResetBadMail() throws Exception {
+        var req = new PasswordResetRequest();
+        req.setUsername("mockUser0001");
+        req.setEmail("nonExistentmail@gmail.com");
+        var performance = mockMvc.perform(
+                        post("/api/recover")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(req))
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andReturn();
+    }
+
+    @Test
+    @Order(24)
+    @DisplayName("Solicitar cambio de contraseña: Sólo nombre de usuario")
+    public void testRequirePasswordResetOnlyUsername() throws Exception {
+        var req = new PasswordResetRequest();
+        req.setUsername("mockUser0001");
+        var performance = mockMvc.perform(
+                        post("/api/recover")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(req))
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andReturn();
+    }
+
+    private UUID passwordResetID = null;
+
+    @Test
+    @Order(25)
+    @DisplayName("Solicitar cambio de contraseña por número de teléfono")
+    public void testRequirePasswordResetWithPhone() throws Exception {
+        var req = new PasswordResetRequest();
+        req.setUsername("mockUser0001");
+        req.setPhone("+541130388785");
+        var performance = mockMvc.perform(
+                        post("/api/recover")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(req))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andReturn();
+        var content = performance.getResponse().getContentAsString();
+        SingleUseRequest obj = objectMapper.readValue(content, SingleUseRequest.class);
+        passwordResetID = obj.getId();
+        var lastReq = new PasswordResetAttempt();
+        lastReq.setId(passwordResetID);
+        lastReq.setNewPassword("M4x%$4gv4nt320rb4");
+        lastReq.setCode("111111");
+        mockMvc.perform(
+                post("/api/recover/reset")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(lastReq))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.totpRequired").exists())
+                .andExpect(jsonPath("$.totpRequired").value(false));
+
+        lastReq.setCode("010101");
+        mockMvc.perform(
+                post("/api/recover/reset")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(lastReq))
+        )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.token").doesNotExist())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+    }
+
+
 }
