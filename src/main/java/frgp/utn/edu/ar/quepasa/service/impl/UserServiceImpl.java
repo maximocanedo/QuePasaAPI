@@ -85,6 +85,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Deprecated
+    public User save(User u) {
+        return userRepository.save(u);
+    }
+
+    @Override
     public void delete(String username) {
         User user = findByUsername(username);
         user.setActive(false);

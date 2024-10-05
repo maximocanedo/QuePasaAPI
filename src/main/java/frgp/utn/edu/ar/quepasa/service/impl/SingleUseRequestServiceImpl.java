@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
+import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
 import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
@@ -7,11 +8,11 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
-import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequestAction;
 import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.PhoneRepository;
 import frgp.utn.edu.ar.quepasa.repository.SingleUseRequestRepository;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
@@ -37,6 +38,8 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private AuthenticationService authenticationService;
     @Autowired private JwtService jwtService;
+    @Autowired
+    private UserRepository userRepository;
 
     public String generateHexOTP() {
         SecureRandom random = new SecureRandom();
@@ -92,9 +95,8 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         document.setActive(true);
         document.setHash(passwordEncoder.encode(otp));
         document.setRequested(new Timestamp(System.currentTimeMillis()));
-        document = singleUseRequestRepository.save(document);
+        document = singleUseRequestRepository.saveAndFlush(document);
         return document;
-
     }
 
     /**
@@ -113,10 +115,13 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         if(!passwordEncoder.matches(request.getCode(), document.getHash()))
             throw new Fail("Wrong code. ", HttpStatus.UNAUTHORIZED);
         document.setActive(false);
-        User user = document.getUser();
+        User user = userRepository
+                .findByUsername(document.getUser().getUsername())
+                .orElseThrow(() -> new Fail("Username not found. "));
         authenticationService.validatePassword(request.getNewPassword());
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        singleUseRequestRepository.save(document);
+        singleUseRequestRepository.saveAndFlush(document);
+        userRepository.save(user);
         // El usuario se autenticó, por lo que no es necesario emitir un token JWT parcial.
         var jwt = jwtService.generateToken(user, false);
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();

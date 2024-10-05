@@ -15,6 +15,6 @@ public interface UserService extends UserDetailsService {
     User update(String username, UserPatchEditRequest user);
 
     void updatePassword(String newPassword);
-
+    User save(User u);
     void delete(String username);
 }

@@ -27,7 +27,7 @@ public class Phone {
 
     @Id
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
