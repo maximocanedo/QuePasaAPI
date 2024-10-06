@@ -27,6 +27,7 @@ import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
+import frgp.utn.edu.ar.quepasa.service.validators.users.*;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.jetbrains.annotations.NotNull;
@@ -92,37 +93,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void validatePassword(String password) {
-        if (password == null || password.isEmpty()) {
-            throw new Fail("Password is empty. ", HttpStatus.BAD_REQUEST);
-        }
-        if (password.length() < 8) {
-            throw new Fail("Password length is less than 8. ", HttpStatus.BAD_REQUEST);
-        }
-
-        boolean hasUpperCase = false;
-        boolean hasLowerCase = false;
-        boolean hasDigit = false;
-        boolean hasSpecialChar = false;
-
-        for (char c : password.toCharArray()) {
-            if (Character.isUpperCase(c)) hasUpperCase = true;
-            else if (Character.isLowerCase(c)) hasLowerCase = true;
-            else if (Character.isDigit(c)) hasDigit = true;
-            else if (!Character.isLetterOrDigit(c)) hasSpecialChar = true;
-        }
-
-        if (!hasUpperCase)
-            throw new Fail("Password lacks one upper case letter. ", HttpStatus.BAD_REQUEST);
-
-        if (!hasLowerCase)
-            throw new Fail("Password lacks one lower case letter. ", HttpStatus.BAD_REQUEST);
-
-        if (!hasDigit)
-            throw new Fail("Password lacks one number. ", HttpStatus.BAD_REQUEST);
-
-        if (!hasSpecialChar)
-            throw new Fail("Password lacks one special symbol. ", HttpStatus.BAD_REQUEST);
+    public String validatePassword(String password) {
+        return new PasswordValidatorBuilder(password)
+                .lengthIsEightCharactersOrMore()
+                .hasOneUpperCaseLetter()
+                .hasOneLowerCaseLetter()
+                .hasOneDigit()
+                .hasOneSpecialCharacter()
+                .build();
     }
 
     @Override
@@ -131,22 +109,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .findActiveNeighbourhoodById(request.getNeighbourhoodId())
                 .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
 
-        Optional<User> check = userRepository
-                .findByUsername(request.getUsername());
-        if(check.isPresent()) throw new Fail("Username not available. ", HttpStatus.CONFLICT);
-        validatePassword(request.getPassword());
+        var name = new NameValidatorBuilder(request.getName())
+                .validateCompoundNames()
+                .build();
+        var username = new UsernameValidatorBuilder(request.getUsername())
+                .meetsMinimumLength()
+                .meetsMaximumLength()
+                .doesntHaveIllegalCharacters()
+                .doesntHaveTwoDotsOrUnderscoresInARow()
+                .neitherStartsNorEndsWithDoubleDotsOrUnderscores()
+                .isAvailable(userRepository)
+                .build();
+        var password = new PasswordValidatorBuilder(request.getPassword())
+                .lengthIsEightCharactersOrMore()
+                .hasOneUpperCaseLetter()
+                .hasOneLowerCaseLetter()
+                .hasOneDigit()
+                .hasOneSpecialCharacter()
+                .build();
+
         var user = new User();
-        user.setName(request.getName());
-        user.setUsername(request.getUsername());
+        user.setName(name);
+        user.setUsername(username);
         user.setAddress("");
         user.setNeighbourhood(n);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.USER);
+
         userRepository.save(user);
+
         var jwt = jwtService.generateToken(user, false);
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();
         e.setToken(jwt);
         e.setTotpRequired(false);
+
         return e;
     }
 
@@ -176,7 +172,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(user.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
         TOTPData data = generateSecret(user.getUsername());
         try {
-            byte[] qr = generateQRCodeImage(data.getUrl(), 250, 250);
+            byte[] qr = generateQRCodeImage(data.getUrl());
             user.setTotp(data.getSecretAsHex());
             userRepository.save(user);
             return qr;
@@ -185,11 +181,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private byte[] generateQRCodeImage(String text, int width, int height) throws WriterException, IOException {
+    private byte[] generateQRCodeImage(String text) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         Map<EncodeHintType, Object> hintMap = new HashMap<>();
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hintMap);
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 250, 250, hintMap);
 
         try (ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream()) {
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
@@ -255,16 +251,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Mail requestMailVerificationCode(@NotNull VerificationRequest request) throws MessagingException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
-        validateMail(request.getSubject());
+
+        var subject = new MailValidatorBuilder(request.getSubject())
+                .isValidAddress()
+                .build();
+
         int code = generateOTP();
         String hash = generateVerificationCodeHash(code);
         Mail mail = new Mail();
-        mail.setMail(request.getSubject());
+        mail.setMail(subject);
         mail.setUser(me);
         mail.setHash(hash);
         mail.setRequestedAt(new Timestamp(System.currentTimeMillis()));
         mail.setVerified(false);
         mailRepository.save(mail);
+
         try {
             mailSenderServiceImpl.send(request.getSubject(), mailSenderServiceImpl.otp(code), mailSenderServiceImpl.otp(code));
         } catch(MessagingException e) {
@@ -304,24 +305,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
        int code = 111111;
        String hash = generateVerificationCodeHash(code);
+       String phoneNumber = new PhoneValidatorBuilder(request.getSubject())
+               .isValidPhoneNumber()
+               .format().build();
        Phone phone = new Phone();
-       PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-       Phonenumber.PhoneNumber parsedPhoneNumber;
-       try {
-           parsedPhoneNumber = phoneUtil.parse(request.getSubject(), "AR");
-           if (!phoneUtil.isValidNumber(parsedPhoneNumber)) {
-               throw new Fail("Invalid phone number. ", HttpStatus.BAD_REQUEST);
-           }
-       } catch (NumberParseException e) {
-           throw new Fail("Error parsing phone number. ", HttpStatus.BAD_REQUEST);
-       }
-       String formattedPhoneNumber = phoneUtil.format(parsedPhoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-       phone.setPhone(formattedPhoneNumber);
+       phone.setPhone(phoneNumber);
        phone.setUser(me);
        phone.setHash(hash);
        phone.setRequestedAt(new Timestamp(System.currentTimeMillis()));
        phone.setVerified(false);
        phoneRepository.save(phone);
+
        return phone;
     }
 

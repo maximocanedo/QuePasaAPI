@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,6 +65,13 @@ public class PostController {
         User me = authenticationService.getCurrentUserOrDie();
         postService.delete(id, me);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+    }
+
+
+
+    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
+    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 
 }

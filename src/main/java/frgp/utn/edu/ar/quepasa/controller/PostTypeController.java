@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,4 +52,10 @@ public class PostTypeController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
+
+
+    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
+    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+    }
 }

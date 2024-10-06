@@ -20,7 +20,7 @@ public interface AuthenticationService {
 
     User getCurrentUserOrDie();
 
-    void validatePassword(String password);
+    String validatePassword(String password);
 
     JwtAuthenticationResponse signup(SignUpRequest request);
     JwtAuthenticationResponse login(SigninRequest request);

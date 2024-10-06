@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,5 +65,12 @@ public class EventController {
     public ResponseEntity<?> deleteEvent(@PathVariable UUID id) {
         eventService.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+    }
+
+
+
+    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
+    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 }

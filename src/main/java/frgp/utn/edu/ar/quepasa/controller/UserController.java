@@ -10,6 +10,7 @@ import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
@@ -145,5 +146,10 @@ public class UserController {
     @ExceptionHandler(Fail.class)
     public ResponseEntity<ResponseError> handleFail(Fail e) {
         return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
+    }
+
+    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
+    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 }
