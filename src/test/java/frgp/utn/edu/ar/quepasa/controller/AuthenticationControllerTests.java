@@ -109,7 +109,7 @@ public class AuthenticationControllerTests {
         request.setUsername("root");
         request.setPassword("Correct.#Passw0rd");
         request.setNeighbourhoodId(1);
-        request.setName("Usuario de prueba de controlador #2");
+        request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
                         post("/api/signup")
@@ -117,8 +117,10 @@ public class AuthenticationControllerTests {
                                 .content(json)
                 )
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").isNotEmpty());
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("username"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
     }
 
     @Test
@@ -129,7 +131,7 @@ public class AuthenticationControllerTests {
         request.setUsername("test.0034");
         request.setPassword("adfafa");
         request.setNeighbourhoodId(1);
-        request.setName("Usuario de prueba de controlador #3");
+        request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
                         post("/api/signup")
@@ -137,8 +139,31 @@ public class AuthenticationControllerTests {
                                 .content(json)
                 )
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").isNotEmpty());
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("password"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    @DisplayName("Registro de usuario con nombre de usuario inválido")
+    public void testSignUp_badUsername() throws Exception {
+        SignUpRequest request = new SignUpRequest();
+        request.setUsername(".beep..boop__.ok_");
+        request.setPassword("adfafa");
+        request.setNeighbourhoodId(1);
+        request.setName("Usuario de prueba de controlador");
+        String json = objectMapper.writeValueAsString(request);
+        mockMvc.perform(
+                        post("/api/signup")
+                                .contentType("application/json")
+                                .content(json)
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("username"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
     }
 
     @Test
@@ -156,7 +181,9 @@ public class AuthenticationControllerTests {
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.token").isNotEmpty());
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.field").doesNotExist())
+                .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
     @Test
@@ -257,8 +284,10 @@ public class AuthenticationControllerTests {
                                 .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").isNotEmpty());
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("mail"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
 
     }
 
@@ -390,8 +419,13 @@ public class AuthenticationControllerTests {
                                 .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").isNotEmpty());
+                .andExpect(jsonPath("$.phone").doesNotExist())
+                .andExpect(jsonPath("$.verified").doesNotExist())
+                .andExpect(jsonPath("$.requestedAt").doesNotExist())
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("phone"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
 
     }
 
@@ -477,7 +511,7 @@ public class AuthenticationControllerTests {
         var req = new PasswordResetRequest();
         req.setUsername("mockUser0001");
         req.setEmail("maximo.tomas.2@gmail.com");
-        var performance = mockMvc.perform(
+        mockMvc.perform(
                 post("/api/recover")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(req))
@@ -525,8 +559,6 @@ public class AuthenticationControllerTests {
                 .andReturn();
     }
 
-    private UUID passwordResetID = null;
-
     @Test
     @Order(25)
     @DisplayName("Solicitar cambio de contraseña por número de teléfono")
@@ -545,7 +577,7 @@ public class AuthenticationControllerTests {
                 .andReturn();
         var content = performance.getResponse().getContentAsString();
         SingleUseRequest obj = objectMapper.readValue(content, SingleUseRequest.class);
-        passwordResetID = obj.getId();
+        UUID passwordResetID = obj.getId();
         var lastReq = new PasswordResetAttempt();
         lastReq.setId(passwordResetID);
         lastReq.setNewPassword("M4x%$4gv4nt320rb4");

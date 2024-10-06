@@ -1,5 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.validators;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -13,6 +16,7 @@ public class ValidatorBuilder<T> {
 
     public OnInvalidateAction onInvalidateAction = OnInvalidateAction.THROW_EXCEPTION;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ValidationError extends RuntimeException {
         private final String field;
         private final Set<String> errors;
@@ -20,7 +24,9 @@ public class ValidatorBuilder<T> {
             this.field = field;
             this.errors = errors;
         }
+        @JsonProperty
         public String getField() { return field; }
+        @JsonProperty
         public Set<String> getErrors() { return errors; }
     }
 
