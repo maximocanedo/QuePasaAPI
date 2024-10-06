@@ -8,6 +8,7 @@ import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.utils.JwtTestUtils;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.*;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,8 +39,6 @@ public class AuthenticationServiceTests {
     private final String testUsername = "test5";
     private final String testPassword = "4nT0n10.¿0N$413Z";
     public User ANTONIO_GONZALEZ;
-    @Autowired
-    private Auth auth;
 
     @BeforeAll
     public void setup() {
@@ -83,11 +83,44 @@ public class AuthenticationServiceTests {
         req.setUsername(testUsername);
         req.setPassword(testPassword);
         req.setNeighbourhoodId(1);
-        req.setName("Usuario de prueba 1");
-        JwtAuthenticationResponse res = authenticationService.signup(req);
+        req.setName("Usuario de prueba");
+        var res = new AtomicReference<JwtAuthenticationResponse>();
+        assertDoesNotThrow(() -> {
+            res.set(authenticationService.signup(req));
+        }, "Error al intentar registrar. ");
         assertNotNull(res, "Respuesta de registro es nula. ");
-        assertTrue(JwtTestUtils.isJwt(res.getToken()), "No genera un token JWT válido. ");
+        assertTrue(JwtTestUtils.isJwt(res.get().getToken()), "No genera un token JWT válido. ");
 
+    }
+
+    @Test
+    @DisplayName("Registrar un usuario: Mala contraseña")
+    public void testSignupWithBadPassword() {
+        SignUpRequest req = new SignUpRequest();
+        req.setUsername("maximo.canedo");
+        req.setPassword("Maximo999");
+        req.setNeighbourhoodId(1);
+        req.setName("Usuario de prueba");
+        var res = new AtomicReference<JwtAuthenticationResponse>(null);
+        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+            res.set(authenticationService.signup(req));
+        }, "Error al intentar registrar. ");
+        assertNull(res.get(), "Respuesta de registro es nula. ");
+    }
+
+    @Test
+    @DisplayName("Registrar un usuario: Mal nombre de usuario")
+    public void testSignupWithBadUsername() {
+        SignUpRequest req = new SignUpRequest();
+        req.setUsername(".r..__ok.");
+        req.setPassword("Maximo999");
+        req.setNeighbourhoodId(1);
+        req.setName("Usuario de prueba");
+        var res = new AtomicReference<JwtAuthenticationResponse>(null);
+        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+            res.set(authenticationService.signup(req));
+        }, "Error al intentar registrar. ");
+        assertNull(res.get(), "Respuesta de registro es nula. ");
     }
 
     @Test
@@ -280,7 +313,7 @@ public class AuthenticationServiceTests {
     @WithMockUser("antonio.gonzalez.ok")
     public void getAuthenticatedUser() {
         assertDoesNotThrow(() -> {
-            User current = authenticationService.getCurrentUserOrDie();
+            authenticationService.getCurrentUserOrDie();
         });
     }
 
@@ -289,7 +322,7 @@ public class AuthenticationServiceTests {
     @DisplayName("Obtener usuario autenticado sin sesión activa. ")
     public void getAuthenticatedUserWithoutSession() {
         assertThrows(Exception.class, () -> {
-            User current = authenticationService.getCurrentUserOrDie();
+            authenticationService.getCurrentUserOrDie();
         });
     }
 

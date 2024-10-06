@@ -17,6 +17,7 @@ import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
+import frgp.utn.edu.ar.quepasa.service.validators.users.PasswordValidatorBuilder;
 import jakarta.mail.MessagingException;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
      */
     @Override
     public JwtAuthenticationResponse passwordResetAttempt(PasswordResetAttempt request) {
-        Optional<SingleUseRequest> opt = singleUseRequestRepository.findById(request.getId());
+        var opt = singleUseRequestRepository.findById(request.getId());
         if(opt.isEmpty()) throw new Fail("Request with id " + request.getId() + " was not found. ", HttpStatus.NOT_FOUND);
         var document = opt.get();
         if(document.isExpired())
@@ -114,19 +115,25 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
             throw new Fail("Cannot use " + document.getAction().name() + " request to recover a password. ", HttpStatus.BAD_REQUEST);
         if(!passwordEncoder.matches(request.getCode(), document.getHash()))
             throw new Fail("Wrong code. ", HttpStatus.UNAUTHORIZED);
-        document.setActive(false);
-        User user = userRepository
+        var user = userRepository
                 .findByUsername(document.getUser().getUsername())
                 .orElseThrow(() -> new Fail("Username not found. "));
-        authenticationService.validatePassword(request.getNewPassword());
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        var password = new PasswordValidatorBuilder(request.getNewPassword())
+                .lengthIsEightCharactersOrMore()
+                .hasOneUpperCaseLetter()
+                .hasOneLowerCaseLetter()
+                .hasOneDigit()
+                .hasOneSpecialCharacter()
+                .build();
+        document.setActive(false);
+        user.setPassword(passwordEncoder.encode(password));
         singleUseRequestRepository.saveAndFlush(document);
         userRepository.save(user);
         // El usuario se autenticó, por lo que no es necesario emitir un token JWT parcial.
         var jwt = jwtService.generateToken(user, false);
         JwtAuthenticationResponse e = new JwtAuthenticationResponse();
         e.setToken(jwt);
-        e.setTotpRequired(user.hasTotpEnabled());
+        e.setTotpRequired(false);
         return e;
     }
 }

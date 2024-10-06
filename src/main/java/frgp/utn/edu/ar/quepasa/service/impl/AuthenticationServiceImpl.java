@@ -327,8 +327,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Phone verifyPhone(CodeVerificationRequest request) throws AuthenticationFailedException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+        var number = new PhoneValidatorBuilder(request.getSubject()).format().build();
         Phone phone = phoneRepository
-                .findByPhoneAndUser(request.getSubject(), me)
+                .findByPhoneAndUser(number, me)
                 .orElseThrow(() -> new Fail("Phone not found. ", HttpStatus.BAD_REQUEST));
         if(phone.isVerified()) return phone;
         if(passwordEncoder.matches(request.getCode(), phone.getHash())) {
