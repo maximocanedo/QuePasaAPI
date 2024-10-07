@@ -14,8 +14,8 @@ POST {{base}}/api/login
 Content-Type: application/json
 
 {
-  "username": "mockUser0001",
-  "password": "P455w0&d+"
+  "username": "bocelli.andrea",
+  "password": "Abc.1234$6789"
 }
 
 
@@ -24,11 +24,9 @@ Content-Type: application/json
 
 ### Iniciar sesión con TOTP
 POST {{base}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXJ0aWFsIjp0cnVlLCJzdWIiOiJib2NlbGxpLmFuZHJlYSIsImlhdCI6MTcyODI5OTIyMiwiZXhwIjoxNzI4MzAwNjYyfQ.Pb-tsQzw8-J94Agb1KyU6NoPio7Cu__v8659b3xlsIc
 
-{
-  "username": "bocelli.andrea",
-  "password": "Abc.1234$6789"
-}
+518434
 
 ### Solicitar código de verificación de correo electrónico
 POST {{base}}/api/users/me/mail
