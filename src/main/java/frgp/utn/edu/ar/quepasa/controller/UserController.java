@@ -38,23 +38,23 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<?> getUserById(@PathVariable String username) {
+    public ResponseEntity<?> findUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
     @PatchMapping("/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserPatchEditRequest user) {
+    public ResponseEntity<?> update(@PathVariable String username, @RequestBody UserPatchEditRequest user) {
         return ResponseEntity.ok(userService.update(username, user));
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+    public ResponseEntity<?> disable(@PathVariable String username) {
         userService.delete(username);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/me/mail")
-    public ResponseEntity<Mail> saveMail(@RequestBody String sub) throws AuthenticationCredentialsNotFoundException, MessagingException {
+    public ResponseEntity<Mail> requestMailVerificationCode(@RequestBody String sub) throws AuthenticationCredentialsNotFoundException, MessagingException {
         VerificationRequest verificationRequest = new VerificationRequest();
         verificationRequest.setSubject(sub);
         Mail mail = authenticationService.requestMailVerificationCode(verificationRequest);
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PostMapping("/me/phone")
-    public ResponseEntity<Phone> savePhone(@RequestBody String content) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
+    public ResponseEntity<Phone> requestPhoneVerificationCode(@RequestBody String content) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
         VerificationRequest req = new VerificationRequest();
         req.setSubject(content);
         Phone phone = authenticationService.requestSMSVerificationCode(req);
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getMe() {
+    public ResponseEntity<User> me() {
         User me = authenticationService.getCurrentUserOrDie();
         return new ResponseEntity<>(me, HttpStatus.OK);
     }

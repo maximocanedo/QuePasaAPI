@@ -167,7 +167,34 @@ public class User implements UserDetails {
     @Override
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        var userRole = new SimpleGrantedAuthority("USER");
+        var neighbourRole = new SimpleGrantedAuthority("NEIGHBOUR");
+        var contributorRole = new SimpleGrantedAuthority("CONTRIBUTOR");
+        var organizationRole = new SimpleGrantedAuthority("ORGANIZATION");
+        var govtRole = new SimpleGrantedAuthority("GOVT");
+        var modRole = new SimpleGrantedAuthority("MOD");
+        var adminRole = new SimpleGrantedAuthority("ADMIN");
+        return switch(role) {
+            case Role.USER -> List.of(userRole);
+            case Role.NEIGHBOUR -> List.of(
+                    userRole, neighbourRole
+            );
+            case Role.CONTRIBUTOR -> List.of(
+                    userRole, neighbourRole, contributorRole
+            );
+            case Role.ORGANIZATION -> List.of(
+                    userRole, neighbourRole, contributorRole, organizationRole
+            );
+            case Role.GOVT -> List.of(
+                    userRole, neighbourRole, contributorRole, organizationRole, govtRole
+            );
+            case Role.MOD -> List.of(
+                    userRole, neighbourRole, contributorRole, organizationRole, govtRole, modRole
+            );
+            case Role.ADMIN -> List.of(
+                    userRole, neighbourRole, contributorRole, organizationRole, govtRole, modRole, adminRole
+            );
+        };
     }
 
     @Override
