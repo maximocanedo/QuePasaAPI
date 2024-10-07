@@ -42,9 +42,8 @@ public class SecurityConfig {
                                     "/api/login/totp",
                                     "/api/recover",
                                     "/api/recover/reset"
-                            ).permitAll()
-                            .anyRequest().authenticated();
-                    
+                            ).permitAll();
+
                     // Sección usuarios
                     request.requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
@@ -52,6 +51,11 @@ public class SecurityConfig {
                             .hasAuthority(Role.USER.name());
                     // Fin sección usuarios
 
+                    // Otras secciones van acá.
+
+
+                    // Resto de endpoints.
+                    request.anyRequest().authenticated();
                 })
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

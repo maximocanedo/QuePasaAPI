@@ -15,12 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -35,6 +36,26 @@ public class UserServiceTests {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    @DisplayName("Buscar usuario por nombre de usuario. ")
+    void findByUsername_UserFound_ReturnsUser() {
+        String username = "testUser";
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        User foundUser = userService.findByUsername(username);
+        assertNotNull(foundUser);
+        assertEquals(username, foundUser.getUsername());
+    }
+
+    @Test
+    @DisplayName("Buscar usuario por nombre de usuario: Usuario que no existe. ")
+    void findByUsername_UserNotFound_Throws() {
+        String username = "unknownUser";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        assertThrows(UsernameNotFoundException.class, () -> userService.findByUsername(username));
     }
 
     @Test
