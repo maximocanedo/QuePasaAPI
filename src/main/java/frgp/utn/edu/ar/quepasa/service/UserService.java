@@ -11,6 +11,9 @@ public interface UserService extends UserDetailsService {
     Page<User> search(String query, Pageable pageable);
 
     User findByUsername(String username);
+
+    User update(UserPatchEditRequest data, User user);
+
     User update(UserPatchEditRequest user);
     User update(String username, UserPatchEditRequest user);
 

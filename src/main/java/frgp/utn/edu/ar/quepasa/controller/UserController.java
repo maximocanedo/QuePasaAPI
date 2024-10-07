@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @PatchMapping("/{username}")
-    public ResponseEntity<?> update(@PathVariable String username, @RequestBody UserPatchEditRequest user) {
-        return ResponseEntity.ok(userService.update(username, user));
+    public ResponseEntity<?> update(@PathVariable String username, @RequestBody UserPatchEditRequest request) {
+        return ResponseEntity.ok(userService.update(username, request));
     }
 
     @DeleteMapping("/{username}")
@@ -102,8 +102,8 @@ public class UserController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<?> updateMe(@RequestBody UserPatchEditRequest user) {
-        return ResponseEntity.ok(userService.update(user));
+    public ResponseEntity<?> updateMe(@RequestBody UserPatchEditRequest request) {
+        return ResponseEntity.ok(userService.update(request));
     }
 
     @PostMapping("/me/password")
