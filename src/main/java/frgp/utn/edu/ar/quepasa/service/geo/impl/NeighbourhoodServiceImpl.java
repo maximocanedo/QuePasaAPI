@@ -9,17 +9,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class NeighbourhoodServiceImpl {
+public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     @Autowired
     private NeighbourhoodRepository neighbourhoodRepository;
 
     // Crear un nuevo barrio
+    @Override
     public Neighbourhood createNeighbourhood(Neighbourhood neighbourhood) {
         return neighbourhoodRepository.save(neighbourhood);
     }
 
     // Obtener todos los barrios
+    @Override
     public List<Neighbourhood> getAllNeighbourhoods(boolean activeOnly) {
         if (activeOnly) {
             return neighbourhoodRepository.findByActiveTrue();
@@ -28,6 +30,7 @@ public class NeighbourhoodServiceImpl {
     }
 
     // Obtener un barrio por su ID
+    @Override
     public Optional<Neighbourhood> getNeighbourhoodById(long id, boolean activeOnly) {
         if (activeOnly) {
             return neighbourhoodRepository.findActiveNeighbourhoodById(id);
@@ -36,16 +39,19 @@ public class NeighbourhoodServiceImpl {
     }
 
     // Buscar barrios por nombre
+    @Override
     public List<Neighbourhood> searchNeighbourhoodsByName(String name) {
         return neighbourhoodRepository.findByNameContainingIgnoreCase(name);
     }
 
     // Actualizar un barrio existente
+    @Override
     public Neighbourhood updateNeighbourhood(Neighbourhood updatedNeighbourhood) {
         return neighbourhoodRepository.save(updatedNeighbourhood);
     }
 
     // Eliminar un barrio
+    @Override
     public void deleteNeighbourhood(long id) {
         Optional<Neighbourhood> neighbourhoodOptional = neighbourhoodRepository.findById(id);
         if (neighbourhoodOptional.isPresent()) {
