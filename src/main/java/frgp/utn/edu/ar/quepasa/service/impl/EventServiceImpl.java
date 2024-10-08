@@ -1,9 +1,11 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -57,7 +60,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event create(EventPatchEditRequest event, User owner) {
+    public Event create(EventPostRequest event, User owner) {
         /*TODO
         *  -Validacion info*/
         Event newEvent = new Event();
@@ -76,22 +79,26 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event update(UUID id, EventPatchEditRequest newEvent) {
+    public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws AccessDeniedException {
         /*TODO
          *  -Validacion info*/
-        return eventRepository.findById(id).map(
-                event -> {
-                    if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
-                    if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
-                    if (newEvent.getStartDate() != null) event.setStart(newEvent.getStartDate());
-                    if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
-                    if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
-                    if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
-                    if (newEvent.getAddress() != null) event.setAddress(newEvent.getAddress());
-                    return eventRepository.save(event);
-                }
-                )
+        Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+        if (!event.getOwner().getUsername().equals(owner.getUsername())
+                && !owner.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Insufficient permissions");
+        }
+
+        if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
+        if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
+        if (newEvent.getStartDate() != null) event.setStart(newEvent.getStartDate());
+        if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
+        if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
+        if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
+        if (newEvent.getAddress() != null) event.setAddress(newEvent.getAddress());
+
+        eventRepository.save(event);
+        return event;
     }
 
     @Override
