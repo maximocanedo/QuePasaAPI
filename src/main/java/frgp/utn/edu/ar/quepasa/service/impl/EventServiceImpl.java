@@ -10,6 +10,7 @@ import frgp.utn.edu.ar.quepasa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -29,25 +30,25 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> getEvents(String query, Pageable pageable) {
         return eventRepository.search(query, pageable, true)
-                .orElseThrow(() -> new RuntimeException("No Events found"));
+                .orElseThrow(() -> new ResourceNotFoundException("No Events found"));
     }
 
     @Override
     public Event findById(UUID id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
     }
 
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) {
         return eventRepository.findByOwner(owner, pageable)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
     }
 
     @Override
     public Page<Event> findByUsername(String username, Pageable pageable) {
         return eventRepository.findByOwnerUsername(username, pageable)
-                .orElseThrow(() -> new RuntimeException("No Events found"));
+                .orElseThrow(() -> new ResourceNotFoundException("No Events found"));
     }
 
     @Override
@@ -83,7 +84,7 @@ public class EventServiceImpl implements EventService {
                     return eventRepository.save(event);
                 }
                 )
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
     }
 
     @Override
@@ -95,7 +96,7 @@ public class EventServiceImpl implements EventService {
     public Event addNeighbourhoodsToEvent(UUID eventId, Set<Long> neighbourhoodIds) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
-            throw new RuntimeException("Evento no encontrado.");
+            throw new ResourceNotFoundException("Evento no encontrado.");
         }
 
         Event event = eventOptional.get();
@@ -113,7 +114,7 @@ public class EventServiceImpl implements EventService {
     public Event removeNeighbourhoodsFromEvent(UUID eventId, Set<Long> neighbourhoodIds) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
-            throw new RuntimeException("Evento no encontrado.");
+            throw new ResourceNotFoundException("Evento no encontrado.");
         }
 
         Event event = eventOptional.get();
