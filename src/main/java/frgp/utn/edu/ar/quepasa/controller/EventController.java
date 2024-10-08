@@ -11,6 +11,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +33,13 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="name,asc") String sort) {
+    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) {
         /*TODO: sort por campo*/
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
         return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
     }
 
