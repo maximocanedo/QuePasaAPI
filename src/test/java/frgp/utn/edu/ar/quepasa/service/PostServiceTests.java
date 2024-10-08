@@ -436,4 +436,80 @@ public class PostServiceTests {
         assertEquals("Insufficient permissions", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Eliminar post por ID.")
+    void deletePost_PostFound_ReturnsNoContent() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        assertDoesNotThrow(() -> {
+            postService.delete(id, mockUser);
+        });
+    }
+
+
+    @Test
+    @DisplayName("Eliminar post por ID, ID inexistente.")
+    void deletePost_PostNotFound_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        when(postRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postService.delete(id, mockUser);
+        });
+
+        assertEquals("Post not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Eliminar post por ID, permisos insuficientes.")
+    void deletePost_AccessDenied_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+        String username2 = "ronald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        User mockUser2 = new User();
+        mockUser2.setUsername(username2);
+        mockUser2.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+            postService.delete(id, mockUser2);
+        });
+
+        assertEquals("Insufficient permissions", exception.getMessage());
+    }
+
 }
