@@ -48,6 +48,91 @@ public class PostServiceTests {
     }
 
     @Test
+    @DisplayName("Buscar post por ID.")
+    void findById_PostFound_ReturnsPost() {
+        Integer id = 1;
+        Post mockPost = new Post();
+        mockPost.setId(id);
+
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        Post foundPost = postService.findById(id);
+        assertNotNull(foundPost);
+        assertEquals(id, foundPost.getId());
+    }
+
+    @Test
+    @DisplayName("Buscar post por ID, ID inexistente.")
+    void findById_PostNotFound_ThrowsException() {
+        Integer id = 955;
+
+        when(postRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postService.findById(id);
+        });
+
+        assertEquals("Post not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Buscar posts.")
+    void findPosts_PostsFound_ReturnsPosts() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Post post = new Post();
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findAll(pageable)).thenReturn(postPage);
+
+        Page<Post> posts = postService.listPost(pageable);
+
+        assertNotNull(posts);
+        assertFalse(posts.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Buscar posts por OP.")
+    void findByOp_PostsFound_ReturnsPosts() {
+        Integer opId = 4;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        User op = new User();
+        op.setId(opId);
+
+        when(userRepository.findById(opId)).thenReturn(Optional.of(op));
+
+        Post post = new Post();
+        post.setOriginalPoster(op);
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByOriginalPoster(op, pageable)).thenReturn(postPage);
+
+        Page<Post> foundPosts = postService.findByOp(opId, pageable);
+
+        assertNotNull(foundPosts);
+        assertFalse(foundPosts.isEmpty());
+
+        foundPosts.forEach(foundPost -> {
+            assertEquals(opId, foundPost.getOriginalPoster().getId());
+        });
+    }
+
+    @Test
+    @DisplayName("Buscar posts por OP, OP inexistente.")
+    void findByOp_PostNotFound_ThrowsException() {
+        User op = new User();
+        op.setId(955);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(postRepository.findByOriginalPoster(op, pageable)).thenReturn(Page.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postService.findByOp(op.getId(), pageable);
+        });
+    }
+
+    @Test
     @DisplayName("Crear post.")
     void createPost_PostNew_ReturnsPost() {
         String username = "donald";
