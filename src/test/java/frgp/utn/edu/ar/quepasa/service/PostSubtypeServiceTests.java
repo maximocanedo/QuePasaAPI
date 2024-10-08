@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -207,4 +208,136 @@ public class PostSubtypeServiceTests {
 
         assertEquals("Insufficient permissions", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Modificar subtipo de post por ID.")
+    void updateSubtype_SubtypeFound_GoodData() {
+        Integer id = 1;
+        Integer idType = 4;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostType mockType = new PostType();
+        mockType.setId(idType);
+
+        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
+
+        PostSubtype mockSubtype = new PostSubtype();
+        mockSubtype.setId(id);
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        PostSubtypeRequest request = new PostSubtypeRequest();
+        request.setType(idType);
+        request.setDescription("Entretenimiento");
+
+        AtomicReference<PostSubtype> createdSubtype = new AtomicReference<>();
+        assertDoesNotThrow(() -> {
+            createdSubtype.set(postSubtypeService.update(id, request, mockUser));
+        });
+        assertNotNull(createdSubtype.get());
+        assertEquals(request.getDescription(), createdSubtype.get().getDescription());
+    }
+
+    @Test
+    @DisplayName("Modificar subtipo de post por ID, de un subtipo inexistente.")
+    void updateSubtype_SubtypeNotFound_ThrowsException() {
+        Integer id = 1;
+        Integer idType = 4;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostType mockType = new PostType();
+        mockType.setId(idType);
+
+        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.empty());
+
+        PostSubtypeRequest request = new PostSubtypeRequest();
+        request.setType(idType);
+        request.setDescription("Entretenimiento");
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postSubtypeService.update(id, request, mockUser);
+        });
+
+        assertEquals("Subtype not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar subtipo de post por ID, tipo inexistente.")
+    void updateSubtype_TypeNotFound_ThrowsException() {
+        Integer id = 1;
+        Integer idType = 4;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
+
+        PostSubtype mockSubtype = new PostSubtype();
+        mockSubtype.setId(id);
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        PostSubtypeRequest request = new PostSubtypeRequest();
+        request.setType(idType);
+        request.setDescription("Entretenimiento");
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            postSubtypeService.update(id, request, mockUser);
+        });
+
+        assertEquals("Type not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar subtipo de post por ID, permisos insuficientes.")
+    void updateSubtype_AccessDenied_ThrowsException() {
+        Integer id = 1;
+        Integer idType = 4;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostType mockType = new PostType();
+        mockType.setId(idType);
+
+        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
+
+        PostSubtype mockSubtype = new PostSubtype();
+        mockSubtype.setId(id);
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        PostSubtypeRequest request = new PostSubtypeRequest();
+        request.setType(idType);
+        request.setDescription("Entretenimiento");
+
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+            postSubtypeService.update(id, request, mockUser);
+        });
+
+        assertEquals("Insufficient permissions", exception.getMessage());
+    }
+
 }
