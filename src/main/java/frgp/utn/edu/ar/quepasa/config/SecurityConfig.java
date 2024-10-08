@@ -47,7 +47,9 @@ public class SecurityConfig {
                     // Sección usuarios
                     request.requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
-                    request.requestMatchers(HttpMethod.GET, "/api/users/me", "/api/users/me/**")
+                    request.requestMatchers(HttpMethod.PATCH, "/api/users/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers("/api/users/me", "/api/users/me/**")
                             .hasAuthority(Role.USER.name());
                     // Fin sección usuarios
 
