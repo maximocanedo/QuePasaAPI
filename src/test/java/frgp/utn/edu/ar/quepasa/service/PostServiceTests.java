@@ -250,4 +250,190 @@ public class PostServiceTests {
         assertEquals("Neighbourhood not found", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Modificar post por ID.")
+    void updatePost_PostFound_GoodData() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
+        mockPost.setSubtype(new PostSubtype());
+        mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
+        mockPost.setTags("dollar,1 million,earndollars");
+
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        var request = new PostPatchEditRequest();
+        request.setDescription("Soy una descripcion");
+        request.setTags("descripcion,breve");
+
+        AtomicReference<Post> foundPost = new AtomicReference<>();
+        assertDoesNotThrow(() -> {
+            foundPost.set(postService.update(id, request, mockUser));
+        });
+        assertNotNull(foundPost.get());
+        assertEquals(id, foundPost.get().getId());
+        assertEquals("Soy una descripcion", foundPost.get().getDescription());
+        assertEquals("descripcion,breve", foundPost.get().getTags());
+    }
+
+    @Test
+    @DisplayName("Modificar post por ID, de un post no existente.")
+    void updatePost_PostNotFound_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
+        mockPost.setSubtype(new PostSubtype());
+        mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
+        mockPost.setTags("dollar,1 million,earndollars");
+
+        when(postRepository.findById(id)).thenReturn(Optional.empty());
+
+        var request = new PostPatchEditRequest();
+        request.setDescription("Soy una descripcion");
+        request.setTags("descripcion,breve");
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postService.update(id, request, mockUser);
+        });
+
+        assertEquals("Post not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar post por ID, subtipo inexistente.")
+    void updatePost_SubtypeNotFound_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+        Integer subId = 4;
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        PostSubtype subtype = new PostSubtype();
+        subtype.setId(subId);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.empty());
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
+        mockPost.setSubtype(subtype);
+        mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
+        mockPost.setTags("dollar,1 million,earndollars");
+
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        var request = new PostPatchEditRequest();
+        request.setSubtype(subId);
+        request.setDescription("Soy una descripcion");
+        request.setTags("descripcion,breve");
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            postService.update(id, request, mockUser);
+        });
+
+        assertEquals("Subtype not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar post por ID, barrio inexistente.")
+    void updatePost_NeighbourhoodNotFound_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+        long neighId = 4;
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        Neighbourhood neighbourhood = new Neighbourhood();
+        neighbourhood.setId(neighId);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(neighbourhoodRepository.findById(neighId)).thenReturn(Optional.empty());
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
+        mockPost.setSubtype(new PostSubtype());
+        mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
+        mockPost.setNeighbourhood(neighbourhood);
+        mockPost.setTags("dollar,1 million,earndollars");
+
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        var request = new PostPatchEditRequest();
+        request.setDescription("Soy una descripcion");
+        request.setNeighbourhood(neighId);
+        request.setTags("descripcion,breve");
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            postService.update(id, request, mockUser);
+        });
+
+        assertEquals("Neighbourhood not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar post por ID, permisos insuficientes.")
+    void updatePost_AccessDenied_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+        String username2 = "ronald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        User mockUser2 = new User();
+        mockUser2.setUsername(username2);
+        mockUser2.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post mockPost = new Post();
+        mockPost.setId(id);
+        mockPost.setOriginalPoster(mockUser);
+        mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
+        mockPost.setSubtype(new PostSubtype());
+        mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
+        mockPost.setTags("dollar,1 million,earndollars");
+
+        when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
+
+        var request = new PostPatchEditRequest();
+        request.setDescription("Soy una descripcion");
+        request.setTags("descripcion,breve");
+
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+            postService.update(id, request, mockUser2);
+        });
+
+        assertEquals("Insufficient permissions", exception.getMessage());
+    }
+
 }
