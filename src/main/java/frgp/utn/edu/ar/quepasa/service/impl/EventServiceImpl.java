@@ -49,7 +49,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) {
         return eventRepository.findByOwner(owner, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("No Events found."));
     }
 
     @Override
