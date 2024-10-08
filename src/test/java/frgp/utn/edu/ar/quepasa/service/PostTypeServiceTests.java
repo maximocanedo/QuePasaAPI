@@ -195,7 +195,7 @@ public class PostTypeServiceTests {
     }
 
     @Test
-    @DisplayName("Eliminar post por ID.")
+    @DisplayName("Eliminar tipo de post por ID.")
     void deleteType_TypeFound_ReturnsNoContent() {
         Integer id = 1;
         String username = "donald";
@@ -217,7 +217,7 @@ public class PostTypeServiceTests {
     }
 
     @Test
-    @DisplayName("Eliminar post por ID, ID inexistente.")
+    @DisplayName("Eliminar tipo de post por ID, ID inexistente.")
     void deleteType_TypeNotFound_ThrowsException() {
         Integer id = 1;
         String username = "donald";
@@ -238,7 +238,7 @@ public class PostTypeServiceTests {
     }
 
     @Test
-    @DisplayName("Eliminar post por ID, permisos insuficientes.")
+    @DisplayName("Eliminar tipo de post por ID, permisos insuficientes.")
     void deleteType_AccessDenied_ThrowsException() {
         Integer id = 1;
         String username = "donald";
