@@ -37,7 +37,7 @@ public class EventServiceTest {
 
     @Test
     @DisplayName("Obtener Todos los Eventos Activos")
-    void findAllEvents_EventsFound_ReturnAllEvents() {
+    void findAllActiveEvents_EventsFound_ReturnAllEvents() {
         Pageable pageable = PageRequest.of(0, 10);
 
         Event event1 = new Event();
@@ -55,6 +55,28 @@ public class EventServiceTest {
         assertEquals(2, events.getTotalElements());
         assertTrue(events.getContent().get(0).isActive());
         assertTrue(events.getContent().get(1).isActive());
+    }
+
+    @Test
+    @DisplayName("Obtener Todos los Eventos Inactivos")
+    void findAllInactiveEvents_EventsFound_ReturnAllEvents() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Event event1 = new Event();
+        event1.setActive(false);
+        Event event2 = new Event();
+        event2.setActive(false);
+
+        Page<Event> mockPage = new PageImpl<>(Arrays.asList(event1, event2));
+        when(eventRepository.search("", pageable, true)).thenReturn(mockPage);
+
+        Page<Event> events = eventService.getEvents("", pageable, true);
+
+        assertNotNull(events);
+        assertFalse(events.isEmpty());
+        assertEquals(2, events.getTotalElements());
+        assertFalse(events.getContent().get(0).isActive());
+        assertFalse(events.getContent().get(1).isActive());
     }
 
     @Test
