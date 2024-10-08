@@ -41,6 +41,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.create(event, me));
     }
 
+    @PostMapping("/{eventId}/rsvp")
+    public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) {
+        User me = authenticationService.getCurrentUserOrDie();
+        return ResponseEntity.ok(eventService.confirmEventAssistance(eventId, me));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.findById(id));

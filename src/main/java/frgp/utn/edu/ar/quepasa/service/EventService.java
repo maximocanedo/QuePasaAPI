@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Event;
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +21,8 @@ public interface EventService {
     Page<Event> findByUsername(String username, Pageable pageable);
 
     Event create(EventPatchEditRequest event, User owner);
+
+    EventRsvp confirmEventAssistance(UUID eventId, User user);
 
     Event update(UUID id, EventPatchEditRequest newEvent);
 
