@@ -1,11 +1,12 @@
 package frgp.utn.edu.ar.quepasa.model;
-
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -22,6 +23,7 @@ public class Event {
     private Timestamp createdAt;
     private Audience audience;
     private boolean active;
+    private Set<Neighbourhood> neighbourhoods;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -58,6 +60,15 @@ public class Event {
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public void setAudience(Audience audience) { this.audience = audience; }
     public void setActive(boolean active) { this.active = active; }
+    
+    @ManyToMany
+    @JoinTable(
+        name = "event_neighbourhoods",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "neighbourhood_id")
+    )
+    public Set<Neighbourhood> getNeighbourhoods() { return neighbourhoods; }
+    public void setNeighbourhoods(Set<Neighbourhood> neighbourhoods) { this.neighbourhoods = neighbourhoods; }
 
 
 }
