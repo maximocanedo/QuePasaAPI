@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-public class EventPatchEditRequest {
+public class EventPostRequest {
     private String title = null;
     private String description = null;
     private String address = null;
@@ -20,7 +20,7 @@ public class EventPatchEditRequest {
     private EventCategory category = null;
     private Audience audience = null;
 
-    public EventPatchEditRequest() {}
+    public EventPostRequest() {}
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
