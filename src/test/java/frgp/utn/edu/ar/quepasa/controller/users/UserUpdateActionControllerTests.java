@@ -8,21 +8,18 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.util.Optional;
 
@@ -39,14 +36,12 @@ public class UserUpdateActionControllerTests {
     @MockBean private UserRepository userRepository;
     @MockBean private NeighbourhoodRepository neighbourhoodRepository;
     @MockBean private PictureRepository pictureRepository;
+
     @MockBean(answer = Answers.RETURNS_MOCKS) private AuthenticationService authenticationService;
     private NapoleonBonaparteInspiredData data = new NapoleonBonaparteInspiredData();
+
     @MockBean(answer = Answers.RETURNS_MOCKS)
     private MockMvc mockMvc;
-    @Autowired
-    private UserServiceImpl userService;
-    @Autowired
-    private DefaultMockMvcBuilder mockMvcBuilder;
 
     @BeforeAll
     public void setUp() {
