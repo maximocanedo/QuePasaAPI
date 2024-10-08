@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,5 +13,9 @@ public interface NeighbourhoodRepository extends JpaRepository<Neighbourhood, Lo
 
     @Query("SELECT n FROM Neighbourhood n WHERE n.id = :id AND n.active")
     Optional<Neighbourhood> findActiveNeighbourhoodById(long id);
+ 
+    List<Neighbourhood> findByNameContainingIgnoreCase(String name);
+
+    List<Neighbourhood> findByActiveTrue();
 
 }
