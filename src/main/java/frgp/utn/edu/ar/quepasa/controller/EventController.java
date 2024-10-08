@@ -32,9 +32,10 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="name,asc") String sort) {
+        /*TODO: sort por campo*/
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(eventService.getEvents(q, pageable));
+        return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
     }
 
     @PostMapping

@@ -14,7 +14,7 @@ import java.util.Set;
 
 
 public interface EventService {
-    Page<Event> getEvents(String query, Pageable pageable);
+    Page<Event> getEvents(String query, Pageable pageable, boolean active);
 
     Event findById(UUID id);
 

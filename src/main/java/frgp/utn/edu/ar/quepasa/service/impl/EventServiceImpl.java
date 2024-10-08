@@ -36,8 +36,8 @@ public class EventServiceImpl implements EventService {
     private EventRsvpRepository eventRsvpRepository;
 
     @Override
-    public Page<Event> getEvents(String query, Pageable pageable) {
-        return eventRepository.search(query, pageable, true)
+    public Page<Event> getEvents(String query, Pageable pageable, boolean active) {
+        return eventRepository.search(query, pageable, active)
                 .orElseThrow(() -> new ResourceNotFoundException("No Events found."));
     }
 
