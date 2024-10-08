@@ -340,4 +340,71 @@ public class PostSubtypeServiceTests {
         assertEquals("Insufficient permissions", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Eliminar subtipo por ID.")
+    void deleteSubtype_SubtypeFound_ReturnsNoContent() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostSubtype mockSubtype = new PostSubtype();
+        mockSubtype.setId(id);
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        assertDoesNotThrow(() -> {
+            postSubtypeService.delete(id, mockUser);
+        });
+    }
+
+    @Test
+    @DisplayName("Eliminar subtipo por ID, ID inexistente.")
+    void deleteSubtype_SubtypeNotFound_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postSubtypeService.delete(id, mockUser);
+        });
+
+        assertEquals("Subtype not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Eliminar subtipo por ID, permisos insuficientes.")
+    void deleteSubtype_AccessDenied_ThrowsException() {
+        Integer id = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostSubtype mockSubtype = new PostSubtype();
+        mockSubtype.setId(id);
+
+        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+            postSubtypeService.delete(id, mockUser);
+        });
+
+        assertEquals("Insufficient permissions", exception.getMessage());
+    }
+
 }
