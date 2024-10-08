@@ -3,7 +3,9 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
+import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,12 +14,17 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
     @Autowired
     private EventRepository eventRepository;
+    
+    @Autowired
+    private NeighbourhoodRepository neighbourhoodRepository;
 
     @Override
     public Page<Event> getEvents(String query, Pageable pageable) {
@@ -83,4 +90,42 @@ public class EventServiceImpl implements EventService {
     public void delete(UUID id) {
         eventRepository.deleteById(id);
     }
+
+    @Override
+    public Event addNeighbourhoodsToEvent(UUID eventId, Set<Long> neighbourhoodIds) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new RuntimeException("Evento no encontrado.");
+        }
+
+        Event event = eventOptional.get();
+        Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
+
+        for (Long neighbourhoodId : neighbourhoodIds) {
+            neighbourhoodRepository.findById(neighbourhoodId).ifPresent(neighbourhoods::add);
+        }
+
+        event.setNeighbourhoods(neighbourhoods);
+        return eventRepository.save(event);
+    }
+
+    @Override
+    public Event removeNeighbourhoodsFromEvent(UUID eventId, Set<Long> neighbourhoodIds) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new RuntimeException("Evento no encontrado.");
+        }
+
+        Event event = eventOptional.get();
+        Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
+
+        for (Long neighbourhoodId : neighbourhoodIds) {
+            neighbourhoodRepository.findById(neighbourhoodId).ifPresent(neighbourhoods::remove);
+        }
+
+        event.setNeighbourhoods(neighbourhoods);
+        return eventRepository.save(event);
+    }
+
+
 }

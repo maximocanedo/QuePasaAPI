@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -73,4 +74,17 @@ public class EventController {
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
+
+    @PostMapping("/{eventId}/neighbourhoods")
+    public ResponseEntity<Event> addNeighbourhoodsToEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
+        Event updatedEvent = eventService.addNeighbourhoodsToEvent(eventId, neighbourhoodIds);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/{eventId}/neighbourhoods")
+    public ResponseEntity<Event> removeNeighbourhoodsFromEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
+        Event updatedEvent = eventService.removeNeighbourhoodsFromEvent(eventId, neighbourhoodIds);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
 }
