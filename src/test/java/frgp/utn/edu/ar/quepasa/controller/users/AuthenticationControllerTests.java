@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.controller;
+package frgp.utn.edu.ar.quepasa.controller.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;

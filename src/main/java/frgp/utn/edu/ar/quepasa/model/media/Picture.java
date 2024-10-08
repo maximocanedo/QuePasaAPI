@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model.media;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -50,6 +51,7 @@ public class Picture {
      * Devuelve el usuario que subió la imagen.
      */
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(nullable = false, name = "owner")
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }

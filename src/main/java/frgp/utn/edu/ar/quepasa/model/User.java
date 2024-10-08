@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -82,6 +83,7 @@ public class User implements UserDetails {
     /**
      * Devuelve la foto de perfil, la cual es opcional.
      */
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "profile_picture", referencedColumnName = "id")
     public Picture getProfilePicture() { return profilePicture; }

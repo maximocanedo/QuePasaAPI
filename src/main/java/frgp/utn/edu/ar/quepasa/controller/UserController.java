@@ -102,8 +102,9 @@ public class UserController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<?> updateMe(@RequestBody UserPatchEditRequest request) {
-        return ResponseEntity.ok(userService.update(request));
+    public ResponseEntity<User> updateMe(@RequestBody UserPatchEditRequest request) {
+        User updated = userService.update(request);
+        return ResponseEntity.ok().body(updated);
     }
 
     @PostMapping("/me/password")

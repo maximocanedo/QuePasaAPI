@@ -98,8 +98,7 @@ public class UserServiceImpl implements UserService {
                     .build();
             user.setProfilePicture(picture);
         }
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     /**
