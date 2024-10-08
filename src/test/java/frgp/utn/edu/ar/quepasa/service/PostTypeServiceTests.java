@@ -90,9 +90,6 @@ public class PostTypeServiceTests {
         mockUser.setUsername(username);
         mockUser.setRole(Role.ADMIN);
 
-        PostType mockType = new PostType();
-        mockType.setDescription(description);
-
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         AtomicReference<PostType> createdPost = new AtomicReference<>();
@@ -114,13 +111,84 @@ public class PostTypeServiceTests {
         mockUser.setUsername(username);
         mockUser.setRole(Role.USER);
 
-        PostType mockType = new PostType();
-        mockType.setDescription(description);
-
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
             postTypeService.create(description, mockUser);
+        });
+
+        assertEquals("Insufficient permissions", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar tipo de post por ID.")
+    void updateType_TypeFound_GoodData() {
+        Integer id = 1;
+        String description = "Recreativo";
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostType mockType = new PostType();
+        mockType.setDescription(description);
+
+        when(postTypeRepository.findById(id)).thenReturn(Optional.of(mockType));
+
+        AtomicReference<PostType> createdPost = new AtomicReference<>();
+
+        assertDoesNotThrow(() -> {
+            createdPost.set(postTypeService.update(1, description, mockUser));
+        });
+        assertNotNull(createdPost.get());
+        assertEquals(description, createdPost.get().getDescription());
+    }
+
+    @Test
+    @DisplayName("Modificar tipo de post por ID, de un tipo no existente.")
+    void updateType_TypeNotFound_ThrowsException() {
+        Integer id = 1;
+        String description = "Recreativo";
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.ADMIN);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        when(postTypeRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postTypeService.update(id, description, mockUser);
+        });
+
+        assertEquals("Type not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Modificar tipo de post por ID, permisos insuficientes.")
+    void updateType_AccessDenied_ThrowsException() {
+        Integer id = 1;
+        String description = "Recreativo";
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        PostType mockType = new PostType();
+        mockType.setDescription(description);
+
+        when(postTypeRepository.findById(id)).thenReturn(Optional.of(mockType));
+
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+            postTypeService.update(id, description, mockUser);
         });
 
         assertEquals("Insufficient permissions", exception.getMessage());
