@@ -14,6 +14,8 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
+import frgp.utn.edu.ar.quepasa.service.validators.PostSubtypeObjectValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,7 +55,7 @@ public class PostServiceImpl implements PostService {
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return postRepository.findByOriginalPoster(user, pageable);
+        return postRepository.findByOwner(user, pageable);
     }
 
     @Override
@@ -62,12 +64,14 @@ public class PostServiceImpl implements PostService {
         post.setOwner(originalPoster);
         post.setAudience((newPost.getAudience()));
         post.setTitle(newPost.getTitle());
-        PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
-                .orElseThrow(() -> new ResourceNotFoundException("Subtype not found"));
+        var subtype = new PostSubtypeObjectValidatorBuilder(newPost.getSubtype(), postSubtypeRepository)
+                .isActive(postSubtypeRepository)
+                .build();
         post.setSubtype(subtype);
         post.setDescription(newPost.getDescription());
-        Neighbourhood neighbourhood = neighbourhoodRepository.findById(newPost.getNeighbourhood())
-                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found"));
+        var neighbourhood = new NeighbourhoodObjectValidatorBuilder(newPost.getNeighbourhood(), neighbourhoodRepository)
+                .isActive(neighbourhoodRepository)
+                .build();
         post.setNeighbourhood(neighbourhood);
         post.setTimestamp(newPost.getTimestamp());
         post.setTags(newPost.getTags());
