@@ -50,9 +50,8 @@ public class PostSubtypeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePostSubtype(@PathVariable Integer id) throws AccessDeniedException {
-        User me = authenticationService.getCurrentUserOrDie();
-        postSubtypeService.delete(id, me);
+    public ResponseEntity<?> deletePostSubtype(@PathVariable Integer id)  {
+        postSubtypeService.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
