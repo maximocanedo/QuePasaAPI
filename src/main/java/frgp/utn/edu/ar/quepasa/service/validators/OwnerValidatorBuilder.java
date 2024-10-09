@@ -4,21 +4,24 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 import java.util.Objects;
 
 public class OwnerValidatorBuilder {
 
-    private AuthenticationService authenticationService;
-    private Ownable object;
+    @NotNull
+    private final AuthenticationService authenticationService;
+    private final Ownable object;
     private boolean result;
     private String message;
 
-    public OwnerValidatorBuilder(Ownable object, AuthenticationService authenticationService) {
+    public OwnerValidatorBuilder(@NotNull Ownable object, @NotNull AuthenticationService authenticationService) {
         this.object = object;
         this.authenticationService = authenticationService;
         this.result = true;
+        this.message = "";
     }
 
     public OwnerValidatorBuilder isOwner() {

@@ -88,7 +88,7 @@ public class UserServiceTests {
         mockUser.setUsername(username);
         mockUser.setName("Chocolate con albahaca");
         mockUser.setAddress("Alvear 5050");
-        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(authenticationService.getCurrentUser()).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
         var request = new UserPatchEditRequest();
         request.setName("Arroz con leche");

@@ -44,17 +44,15 @@ public class SecurityConfig {
                             ).permitAll();
 
                     // Sección usuarios
+                    request.requestMatchers(HttpMethod.PATCH, "/api/users/me")
+                                    .authenticated();
                     request.requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/users/**")
                             .hasAuthority(Role.ADMIN.name());
-                    request.requestMatchers("/api/users/me", "/api/users/me/**")
-                            .hasAuthority(Role.USER.name());
                     // Fin sección usuarios
 
                     // Sección tipos de publicaciones
-                    request.requestMatchers(HttpMethod.GET, "/api/post-types/**")
-                            .hasAuthority(Role.USER.name());
                     request.requestMatchers(HttpMethod.POST, "/api/post-types", "/api/post-types/**")
                             .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/post-types/**")
@@ -64,8 +62,6 @@ public class SecurityConfig {
                     // Fin sección tipos de publicaciones
 
                     // Sección subtipos de publicaciones
-                    request.requestMatchers(HttpMethod.GET, "/api/post-subtypes/**")
-                            .hasAuthority(Role.USER.name());
                     request.requestMatchers(HttpMethod.POST, "/api/post-subtypes", "/api/post-subtypes/**")
                             .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/post-subtypes/**")
@@ -75,8 +71,6 @@ public class SecurityConfig {
                     // Fin sección subtipos de publicaciones
 
                     // Sección publicaciones
-                    request.requestMatchers(HttpMethod.GET, "/api/posts/**")
-                            .hasAuthority(Role.USER.name());
                     request.requestMatchers(HttpMethod.GET, "/api/posts/op/{id}")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.GET, "/api/posts/me")

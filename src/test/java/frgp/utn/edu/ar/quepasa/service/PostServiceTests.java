@@ -106,7 +106,7 @@ public class PostServiceTests {
         post.setOwner(op);
         Page<Post> postPage = new PageImpl<>(List.of(post));
 
-        when(postRepository.findByOriginalPoster(op, pageable)).thenReturn(postPage);
+        when(postRepository.findByOwner(op, pageable)).thenReturn(postPage);
 
         Page<Post> foundPosts = postService.findByOp(opId, pageable);
 
@@ -125,7 +125,7 @@ public class PostServiceTests {
         op.setId(955);
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(postRepository.findByOriginalPoster(op, pageable)).thenReturn(Page.empty());
+        when(postRepository.findByOwner(op, pageable)).thenReturn(Page.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             postService.findByOp(op.getId(), pageable);

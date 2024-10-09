@@ -60,6 +60,7 @@ public class Picture implements Ownable {
     @JsonBackReference
     @JoinColumn(nullable = false, name = "owner")
     public User getOwner() { return owner; }
+    @Override
     public void setOwner(User owner) { this.owner = owner; }
 
     @JsonSerialize(using = MediaTypeSerializer.class)

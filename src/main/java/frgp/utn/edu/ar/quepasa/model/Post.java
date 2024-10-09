@@ -41,6 +41,7 @@ public class Post implements Ownable {
     @ManyToOne
     @JoinColumn(name = "op", nullable = false)
     public User getOwner() { return owner; }
+    @Override
     public void setOwner(User user) { this.owner = user; }
 
     /**

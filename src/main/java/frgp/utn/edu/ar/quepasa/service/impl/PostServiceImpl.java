@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return postRepository.findByOriginalPoster(user, pageable);
+        return postRepository.findByOwner(user, pageable);
     }
 
     @Override

@@ -47,7 +47,10 @@ public class RoleUpdateRequest implements Ownable {
     @Transient
     @JsonIgnore
     public User getOwner() { return requester; }
-
+    @Override
+    @Transient
+    @JsonIgnore
+    public void setOwner(User owner) { requester = owner; }
     /**
      * Devuelve el rol que el solicitante desea obtener.
      */

@@ -38,6 +38,7 @@ public class Document implements Ownable {
     @ManyToOne
     @JoinColumn(name = "owner")
     public User getOwner() { return owner; }
+    @Override
     public void setOwner(User owner) { this.owner = owner; }
 
     /**

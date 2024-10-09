@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    Page<Post> findByOriginalPoster(User originalPoster, Pageable pageable);
+    Page<Post> findByOwner(User owner, Pageable pageable);
 }

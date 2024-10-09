@@ -46,6 +46,11 @@ public class Comment implements Ownable {
     @Transient
     @JsonIgnore
     public User getOwner() { return author; }
+    @Override
+    @Transient
+    @JsonIgnore
+    public void setOwner(User owner) { author = owner; }
+
 
     /**
      * Devuelve la hora de publicación.

@@ -30,6 +30,8 @@ public class DataInitializator implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        return;
+        /*
         Country argentina = new Country();
         argentina.setIso3("ARG");
         argentina.setLabel("República Argentina");
@@ -68,7 +70,7 @@ public class DataInitializator implements CommandLineRunner {
         } else {
             //userRepository.delete(rootUser);
             //userRepository.save(rootUser);
-        }
+        }*/
     }
 
 }
