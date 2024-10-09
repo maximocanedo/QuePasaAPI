@@ -45,9 +45,8 @@ public class PostSubtypeController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePostSubtype(@PathVariable Integer id, @RequestBody PostSubtypeRequest subtype) throws AccessDeniedException {
-        User me = authenticationService.getCurrentUserOrDie();
-        return ResponseEntity.ok(postSubtypeService.update(id, subtype, me));
+    public ResponseEntity<?> updatePostSubtype(@PathVariable Integer id, @RequestBody PostSubtypeRequest subtype) {
+        return ResponseEntity.ok(postSubtypeService.update(id, subtype));
     }
 
     @DeleteMapping("/{id}")

@@ -175,13 +175,6 @@ public class PostSubtypeServiceTests {
     void updateSubtype_SubtypeFound_GoodData() {
         Integer id = 1;
         Integer idType = 4;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostType mockType = new PostType();
         mockType.setId(idType);
@@ -199,7 +192,7 @@ public class PostSubtypeServiceTests {
 
         AtomicReference<PostSubtype> createdSubtype = new AtomicReference<>();
         assertDoesNotThrow(() -> {
-            createdSubtype.set(postSubtypeService.update(id, request, mockUser));
+            createdSubtype.set(postSubtypeService.update(id, request));
         });
         assertNotNull(createdSubtype.get());
         assertEquals(request.getDescription(), createdSubtype.get().getDescription());
@@ -210,13 +203,6 @@ public class PostSubtypeServiceTests {
     void updateSubtype_SubtypeNotFound_ThrowsException() {
         Integer id = 1;
         Integer idType = 4;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostType mockType = new PostType();
         mockType.setId(idType);
@@ -230,7 +216,7 @@ public class PostSubtypeServiceTests {
         request.setDescription("Entretenimiento");
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            postSubtypeService.update(id, request, mockUser);
+            postSubtypeService.update(id, request);
         });
 
         assertEquals("Subtype not found", exception.getMessage());
@@ -241,13 +227,6 @@ public class PostSubtypeServiceTests {
     void updateSubtype_TypeNotFound_ThrowsException() {
         Integer id = 1;
         Integer idType = 4;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
 
@@ -261,44 +240,10 @@ public class PostSubtypeServiceTests {
         request.setDescription("Entretenimiento");
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            postSubtypeService.update(id, request, mockUser);
+            postSubtypeService.update(id, request);
         });
 
         assertEquals("Type not found", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Modificar subtipo de post por ID, permisos insuficientes.")
-    void updateSubtype_AccessDenied_ThrowsException() {
-        Integer id = 1;
-        Integer idType = 4;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.USER);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-
-        PostType mockType = new PostType();
-        mockType.setId(idType);
-
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
-
-        PostSubtype mockSubtype = new PostSubtype();
-        mockSubtype.setId(id);
-
-        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
-
-        PostSubtypeRequest request = new PostSubtypeRequest();
-        request.setType(idType);
-        request.setDescription("Entretenimiento");
-
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            postSubtypeService.update(id, request, mockUser);
-        });
-
-        assertEquals("Insufficient permissions", exception.getMessage());
     }
 
     @Test

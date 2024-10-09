@@ -17,7 +17,7 @@ public interface PostSubtypeService {
 
     PostSubtype create(PostSubtypeRequest newSubtype);
 
-    PostSubtype update(Integer id, PostSubtypeRequest newSubtype, User author) throws AccessDeniedException;
+    PostSubtype update(Integer id, PostSubtypeRequest newSubtype);
 
     void delete(Integer id, User author) throws AccessDeniedException;
 }
