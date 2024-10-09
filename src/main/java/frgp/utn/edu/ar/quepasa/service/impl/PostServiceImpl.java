@@ -82,21 +82,25 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
+        /* TODO: Implementar cuando #104 esté resuelto
         ownerService.of(post)
                 .isOwner()
                 .or()
                 .isAdmin()
                 .orElseFail();
+         */
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
-            PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
-                    .orElseThrow(() -> new ResourceNotFoundException("Subtype not found"));
+            var subtype = new PostSubtypeObjectValidatorBuilder(newPost.getSubtype(), postSubtypeRepository)
+                    .isActive(postSubtypeRepository)
+                    .build();
             post.setSubtype(subtype);
         }
         if(newPost.getDescription() != null) post.setDescription(newPost.getDescription());
         if(newPost.getNeighbourhood() != null) {
-            Neighbourhood neighbourhood = neighbourhoodRepository.findById(newPost.getNeighbourhood())
-                    .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found"));
+            var neighbourhood = new NeighbourhoodObjectValidatorBuilder(newPost.getNeighbourhood(), neighbourhoodRepository)
+                    .isActive(neighbourhoodRepository)
+                    .build();
             post.setNeighbourhood(neighbourhood);
         }
         if(newPost.getTags() != null) post.setTags(newPost.getTags());
@@ -107,6 +111,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
+        /* TODO: Implementar cuando #104 esté resuelto
         ownerService.of(post)
                 .isOwner()
                 .or()
@@ -114,6 +119,7 @@ public class PostServiceImpl implements PostService {
                 .or()
                 .isModerator()
                 .orElseFail();
+         */
         post.setActive(false);
         postRepository.save(post);
     }
