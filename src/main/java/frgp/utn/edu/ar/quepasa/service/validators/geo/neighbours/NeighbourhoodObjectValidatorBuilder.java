@@ -11,6 +11,9 @@ public class NeighbourhoodObjectValidatorBuilder extends ValidatorBuilder<Neighb
     public NeighbourhoodObjectValidatorBuilder(Neighbourhood value) {
         super(value, "neighbourhood");
     }
+    public NeighbourhoodObjectValidatorBuilder(Long id, NeighbourhoodRepository repository) {
+        super(repository.findById(id).orElseThrow(), "neighbourhood");
+    }
 
     public NeighbourhoodObjectValidatorBuilder isActive(NeighbourhoodRepository repository) {
         Optional<Neighbourhood> optional = repository.findById(getValue().getId());
