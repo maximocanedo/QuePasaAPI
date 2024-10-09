@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
@@ -17,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -74,13 +74,13 @@ public class EventController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws AccessDeniedException {
+    public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.update(id, event, me));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable UUID id) throws Fail {
         eventService.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
@@ -90,11 +90,6 @@ public class EventController {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
         return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)

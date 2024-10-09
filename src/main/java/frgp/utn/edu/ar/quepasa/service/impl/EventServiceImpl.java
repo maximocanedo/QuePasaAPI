@@ -2,22 +2,22 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.EventService;
+import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -26,6 +26,9 @@ import java.util.UUID;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
+    @Autowired
+    private OwnerService ownerService;
+
     @Autowired
     private EventRepository eventRepository;
     
@@ -78,15 +81,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws AccessDeniedException {
+    public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail {
         /*TODO
          *  -Validacion info*/
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
-        if (!event.getOwner().getUsername().equals(owner.getUsername())
-                && !owner.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
+        ownerService.of(event)
+                .isOwner()
+                .or()
+                .isAdmin()
+                .orElseFail();
 
         if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
         if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
@@ -112,8 +116,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void delete(UUID id) {
-        eventRepository.deleteById(id);
+    public void delete(UUID id) throws Fail {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+        ownerService.of(event)
+                .isOwner()
+                .or()
+                .isAdmin()
+                .or()
+                .isModerator()
+                .orElseFail();
+        event.setActive(false);
+        eventRepository.save(event);
     }
 
     @Override
