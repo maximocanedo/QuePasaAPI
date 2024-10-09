@@ -12,6 +12,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,8 @@ import java.nio.file.AccessDeniedException;
 
 @Service("postService")
 public class PostServiceImpl implements PostService {
+
+    @Autowired private OwnerService ownerService;
 
     @Autowired
     private PostRepository postRepository;
@@ -56,7 +59,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post create(PostCreateRequest newPost, User originalPoster) {
         Post post = new Post();
-        post.setOriginalPoster(originalPoster);
+        post.setOwner(originalPoster);
         post.setAudience((newPost.getAudience()));
         post.setTitle(newPost.getTitle());
         PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
@@ -75,10 +78,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
-        if(!post.getOriginalPoster().getUsername().equals(originalPoster.getUsername())
-                && !originalPoster.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
+        ownerService.of(post)
+                .isOwner()
+                .or()
+                .isAdmin()
+                .orElseFail();
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
             PostSubtype subtype = postSubtypeRepository.findById(newPost.getSubtype())
@@ -99,7 +103,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
-        if(!post.getOriginalPoster().getUsername().equals(originalPoster.getUsername())
+        if(!post.getOwner().getUsername().equals(originalPoster.getUsername())
                 && !originalPoster.getRole().equals(Role.ADMIN)) {
             throw new AccessDeniedException("Insufficient permissions");
         }

@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-public class Event {
+public class Event implements Ownable {
 
     private UUID id;
     private String title;
@@ -32,6 +32,7 @@ public class Event {
     public String getTitle() { return title; }
     @Column(nullable = false)
     public String getDescription() { return description; }
+    @Override
     @ManyToOne(fetch = FetchType.LAZY)
     public User getOwner() { return owner; }
     @Column(nullable = false)

@@ -11,10 +11,10 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "posts")
-public class Post {
+public class Post implements Ownable {
     
     private Integer id;
-    private User originalPoster;
+    private User owner;
     private Audience audience = Audience.NEIGHBORHOOD;
     private String title;
     private PostSubtype subtype;
@@ -37,10 +37,11 @@ public class Post {
     /**
      * Devuelve el usuario asociado a la publicación.
      */
+    @Override
     @ManyToOne
     @JoinColumn(name = "op", nullable = false)
-    public User getOriginalPoster() { return originalPoster; }
-    public void setOriginalPoster(User user) { this.originalPoster = user; }
+    public User getOwner() { return owner; }
+    public void setOwner(User user) { this.owner = user; }
 
     /**
      * Devuelve la audiencia de la publicación.

@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.model.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name="documents")
-public class Document {
+public class Document implements Ownable {
     private UUID id;
     private User owner;
     private String description;
@@ -33,6 +34,7 @@ public class Document {
     /**
      * Devuelve el usuario dueño del documento.
      */
+    @Override
     @ManyToOne
     @JoinColumn(name = "owner")
     public User getOwner() { return owner; }

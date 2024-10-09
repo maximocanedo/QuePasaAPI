@@ -7,6 +7,7 @@ import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeDeserializer;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeSerializer;
+import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "pictures")
-public class Picture {
+public class Picture implements Ownable {
     private UUID id;
     private String description;
     private boolean active = true;
@@ -54,6 +55,7 @@ public class Picture {
     /**
      * Devuelve el usuario que subió la imagen.
      */
+    @Override
     @ManyToOne
     @JsonBackReference
     @JoinColumn(nullable = false, name = "owner")

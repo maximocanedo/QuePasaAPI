@@ -1,5 +1,7 @@
 package frgp.utn.edu.ar.quepasa.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -15,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "roleUpdateRequests")
-public class RoleUpdateRequest {
+public class RoleUpdateRequest implements Ownable {
     private UUID id;
     private User requester;
     private Role requestedRole;
@@ -40,6 +42,11 @@ public class RoleUpdateRequest {
     @JoinColumn(name = "requester", nullable = false)
     public User getRequester() { return requester; }
     public void setRequester(User requester) { this.requester = requester; }
+
+    @Override
+    @Transient
+    @JsonIgnore
+    public User getOwner() { return requester; }
 
     /**
      * Devuelve el rol que el solicitante desea obtener.

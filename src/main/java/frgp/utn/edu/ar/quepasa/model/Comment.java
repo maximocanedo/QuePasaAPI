@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "comments")
-public class Comment {
+public class Comment implements Ownable {
     private UUID id;
     private String content;
     private User author;
@@ -40,6 +41,11 @@ public class Comment {
     @JoinColumn(nullable=false, name = "author")
     public User getAuthor() { return author; }
     public void setAuthor(User author) { this.author = author; }
+
+    @Override
+    @Transient
+    @JsonIgnore
+    public User getOwner() { return author; }
 
     /**
      * Devuelve la hora de publicación.

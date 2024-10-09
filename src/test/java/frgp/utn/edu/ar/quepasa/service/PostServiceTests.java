@@ -103,7 +103,7 @@ public class PostServiceTests {
         when(userRepository.findById(opId)).thenReturn(Optional.of(op));
 
         Post post = new Post();
-        post.setOriginalPoster(op);
+        post.setOwner(op);
         Page<Post> postPage = new PageImpl<>(List.of(post));
 
         when(postRepository.findByOriginalPoster(op, pageable)).thenReturn(postPage);
@@ -114,7 +114,7 @@ public class PostServiceTests {
         assertFalse(foundPosts.isEmpty());
 
         foundPosts.forEach(foundPost -> {
-            assertEquals(opId, foundPost.getOriginalPoster().getId());
+            assertEquals(opId, foundPost.getOwner().getId());
         });
     }
 
@@ -169,7 +169,7 @@ public class PostServiceTests {
             createdPost.set(postService.create(request, mockUser));
         });
         assertNotNull(createdPost.get());
-        assertEquals(username, createdPost.get().getOriginalPoster().getUsername());
+        assertEquals(username, createdPost.get().getOwner().getUsername());
         assertEquals(subId, createdPost.get().getSubtype().getId());
         assertEquals(neighId, createdPost.get().getNeighbourhood().getId());
     }
@@ -264,7 +264,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
         mockPost.setSubtype(new PostSubtype());
         mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
@@ -300,7 +300,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
         mockPost.setSubtype(new PostSubtype());
         mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
@@ -338,7 +338,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
         mockPost.setSubtype(subtype);
         mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
@@ -377,7 +377,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
         mockPost.setSubtype(new PostSubtype());
         mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
@@ -417,7 +417,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         mockPost.setTitle("Siga los pasos de esta publicación y gane 1 millón de dólares");
         mockPost.setSubtype(new PostSubtype());
         mockPost.setDescription("Haga click aquí: www.1milliondollars100percentrealnofake.com");
@@ -450,7 +450,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
 
         assertDoesNotThrow(() -> {
@@ -473,7 +473,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         when(postRepository.findById(id)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -502,7 +502,7 @@ public class PostServiceTests {
 
         Post mockPost = new Post();
         mockPost.setId(id);
-        mockPost.setOriginalPoster(mockUser);
+        mockPost.setOwner(mockUser);
         when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
 
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
