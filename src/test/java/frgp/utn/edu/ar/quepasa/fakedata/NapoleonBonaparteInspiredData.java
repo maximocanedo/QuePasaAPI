@@ -59,6 +59,7 @@ public class NapoleonBonaparteInspiredData {
     public Country unitedKingdom() {
         Country uk = new Country();
         uk.setIso3("GBR");
+        uk.setActive(true);
         uk.setLabel("United Kingdom of Great Britain and Northern Ireland");
         return uk;
     }
@@ -68,6 +69,7 @@ public class NapoleonBonaparteInspiredData {
         stHelena.setIso3("UK-SHN");
         stHelena.setLabel("Saint Helena, Ascension and Tristan da Cunha");
         stHelena.setCountry(unitedKingdom());
+        stHelena.setActive(true);
         stHelena.setDenomination(SubnationalDivisionDenomination.TERRITORY);
         return stHelena;
     }
@@ -76,6 +78,7 @@ public class NapoleonBonaparteInspiredData {
         City jamestown = new City();
         jamestown.setId(1819);
         jamestown.setName("Jamestown");
+        jamestown.setActive(true);
         jamestown.setSubdivision(saintHelena());
         return jamestown;
     }
@@ -84,6 +87,7 @@ public class NapoleonBonaparteInspiredData {
         Neighbourhood longwood = new Neighbourhood();
         longwood.setCity(jamestown());
         longwood.setId(1819001);
+        longwood.setActive(true);
         longwood.setName("Longwood");
         return longwood;
     }
@@ -103,6 +107,7 @@ public class NapoleonBonaparteInspiredData {
     public Country italia() {
         Country italia = new Country();
         italia.setIso3("ITA");
+        italia.setActive(true);
         italia.setLabel("Repubblica Italiana");
         return italia;
     }
@@ -111,6 +116,7 @@ public class NapoleonBonaparteInspiredData {
         SubnationalDivision toscana = new SubnationalDivision();
         toscana.setIso3("IT-52");
         toscana.setLabel("Toscana");
+        toscana.setActive(true);
         toscana.setCountry(italia());
         toscana.setDenomination(SubnationalDivisionDenomination.REGION);
         return toscana;
@@ -121,6 +127,7 @@ public class NapoleonBonaparteInspiredData {
         portoferraio.setId(1819);
         portoferraio.setName("Portoferraio");
         portoferraio.setSubdivision(toscana());
+        portoferraio.setActive(true);
         return portoferraio;
     }
 
@@ -128,6 +135,7 @@ public class NapoleonBonaparteInspiredData {
         Neighbourhood villaDeiMulini = new Neighbourhood();
         villaDeiMulini.setCity(portoferraio());
         villaDeiMulini.setId(1819002);
+        villaDeiMulini.setActive(true);
         villaDeiMulini.setName("Villa dei Mulini");
         return villaDeiMulini;
     }
@@ -136,8 +144,8 @@ public class NapoleonBonaparteInspiredData {
         Picture art = new Picture();
         art.setOwner(napoleon);
         art.setId(random1);
-        art.setActive(true);
         art.setMediaType(MediaType.IMAGE_PNG);
+        art.setActive(true);
         art.setUploadedAt(new Timestamp(-5238504372L));
         art.setDescription("Napoleón Cruzando los Alpes. Óleo sobre lienzo, por Jacques-Louis David en 1805.");
         return art;

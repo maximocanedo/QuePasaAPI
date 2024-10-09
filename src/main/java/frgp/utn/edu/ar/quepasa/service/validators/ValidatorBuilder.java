@@ -2,7 +2,14 @@ package frgp.utn.edu.ar.quepasa.service.validators;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -16,6 +23,33 @@ public class ValidatorBuilder<T> {
 
     public OnInvalidateAction onInvalidateAction = OnInvalidateAction.THROW_EXCEPTION;
 
+    public static class ValidationErrorSerializer extends JsonSerializer<ValidationError> {
+        @Override
+        public void serialize(ValidationError value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeStartObject();
+            gen.writeStringField("field", value.getField());
+            gen.writeArrayFieldStart("errors");
+            for (String error : value.getErrors()) {
+                gen.writeString(error);
+            }
+            gen.writeEndArray();
+            gen.writeEndObject();
+        }
+    }
+
+    public static class ValidationErrorDeserializer extends JsonDeserializer<ValidationError> {
+        @Override
+        public ValidationError deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode node = p.getCodec().readTree(p);
+            String field = node.get("field").asText();
+            Set<String> errors = new HashSet<>();
+            node.get("errors").forEach(errorNode -> errors.add(errorNode.asText()));
+            return new ValidationError(field, errors);
+        }
+    }
+
+    @JsonSerialize(using = ValidationErrorSerializer.class)
+    @JsonDeserialize(using = ValidationErrorDeserializer.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ValidationError extends RuntimeException {
         private final String field;

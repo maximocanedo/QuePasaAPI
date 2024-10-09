@@ -1,36 +1,31 @@
 package frgp.utn.edu.ar.quepasa.controller.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import frgp.utn.edu.ar.quepasa.controller.UserController;
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.JwtService;
+import frgp.utn.edu.ar.quepasa.service.UserService;
+import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -38,10 +33,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -52,7 +48,7 @@ public class UserUpdateActionControllerTests {
     @MockBean private UserRepository userRepository;
     @MockBean private NeighbourhoodRepository neighbourhoodRepository;
     @MockBean private PictureRepository pictureRepository;
-    @MockBean private AuthenticationService authenticationService;
+    @Mock private AuthenticationServiceImpl authenticationService;
     private NapoleonBonaparteInspiredData data = new NapoleonBonaparteInspiredData();
     @Autowired ObjectMapper objectMapper;
     @Autowired private MockMvc mockMvc;
@@ -61,9 +57,10 @@ public class UserUpdateActionControllerTests {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         User napoleon = data.napoleonBonaparte();
+
         when(userRepository.findByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
         when(userRepository.findByUsername(data.mariaLuisaDeAustria().getUsername())).thenReturn(Optional.of(data.mariaLuisaDeAustria()));
-       // when(userService.loadUserByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
+        //when(userService.loadUserByUsername(napoleon.getUsername())).thenReturn(napoleon);
         when(neighbourhoodRepository.findById(data.longwood().getId())).thenReturn(Optional.of(data.longwood()));
         when(neighbourhoodRepository.findById(data.villaDeiMulini().getId())).thenReturn(Optional.of(data.villaDeiMulini()));
         when(neighbourhoodRepository.findActiveNeighbourhoodById(data.longwood().getId())).thenReturn(Optional.of(data.longwood()));
@@ -73,39 +70,40 @@ public class UserUpdateActionControllerTests {
         when(pictureRepository.findById(data.autorretrato().getId())).thenReturn(Optional.of(data.autorretrato()));
         when(pictureRepository.findById(data.autorretratoDeOtraPersona().getId())).thenReturn(Optional.of(data.autorretratoDeOtraPersona()));
 
-        when(authenticationService.getCurrentUserOrDie()).thenReturn(napoleon);
-        given(authenticationService.getCurrentUser()).willReturn(Optional.of(napoleon));
-
         assertNotNull(mockMvc);
         assertNotNull(authenticationService);
-        setUpSecurityContext(napoleon);
     }
 
-    private void setUpSecurityContext(User user) {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-
-        SecurityContextHolder.setContext(securityContext);
+    public void loginAs(User user) {
+        when(authenticationService.getCurrentUser()).thenReturn(Optional.of(user));
     }
+
 
 
     @Test
     @WithMockUser(username = "napoleon.bonaparte", roles = {"USER"})
     @DisplayName("Modificar usuario: Solicitud completa, autenticado")
     public void fullRequest_Authenticated() throws Exception {
-        given(userRepository.findByUsername(ArgumentMatchers.anyString())).willReturn(Optional.of(data.napoleonBonaparte()));
+        loginAs(data.napoleonBonaparte());
         var request = fullRequestFile();
+        when(neighbourhoodRepository.findById(data.longwood().getId())).thenReturn(Optional.of(data.longwood()));
+        when(neighbourhoodRepository.findById(data.villaDeiMulini().getId())).thenReturn(Optional.of(data.villaDeiMulini()));
+        when(neighbourhoodRepository.findActiveNeighbourhoodById(data.longwood().getId())).thenReturn(Optional.of(data.longwood()));
+        when(neighbourhoodRepository.findActiveNeighbourhoodById(data.villaDeiMulini().getId())).thenReturn(Optional.of(data.villaDeiMulini()));
+        when(pictureRepository.findById(data.napoleonCruzandoLosAlpes().getId())).thenReturn(Optional.of(data.napoleonCruzandoLosAlpes()));
+        when(pictureRepository.findById(data.autorretrato().getId())).thenReturn(Optional.of(data.autorretrato()));
+        when(pictureRepository.findById(data.autorretratoDeOtraPersona().getId())).thenReturn(Optional.of(data.autorretratoDeOtraPersona()));
+
         var response = mockMvc.perform(patch("/api/users/me")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(asJsonString(request))
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(data.napoleonBonaparte().getUsername()))
-                .andExpect(jsonPath("$.nonExistent.path").value(data.napoleonBonaparte().getUsername()))
+                .andExpect(jsonPath("$.name").value(request.getName()))
+                .andExpect(jsonPath("$.address").value(request.getAddress()))
+                .andExpect(jsonPath("$.picture.id").value(request.getPicture().getId()))
+                .andExpect(jsonPath("$.neighbourhood").value(request.getNeighbourhood().getId()))
                 .andReturn();
         assertNotNull(response);
         assertFalse(response.getResponse().getContentAsString().isBlank());
