@@ -28,11 +28,8 @@ public class PostTypeServiceImpl implements PostTypeService {
     }
 
     @Override
-    public PostType create(String description, User author) throws AccessDeniedException {
+    public PostType create(String description) {
         PostType type = new PostType();
-        if(!author.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
         type.setDescription(description);
         postTypeRepository.save(type);
         return type;

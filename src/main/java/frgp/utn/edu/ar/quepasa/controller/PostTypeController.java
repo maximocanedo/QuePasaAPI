@@ -23,9 +23,8 @@ public class PostTypeController {
     private AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<?> createPostType(@RequestBody String description) throws AccessDeniedException {
-        User me = authenticationService.getCurrentUserOrDie();
-        return ResponseEntity.ok(postTypeService.create(description, me));
+    public ResponseEntity<?> createPostType(@RequestBody String description) {
+        return ResponseEntity.ok(postTypeService.create(description));
     }
 
     @GetMapping("/all")

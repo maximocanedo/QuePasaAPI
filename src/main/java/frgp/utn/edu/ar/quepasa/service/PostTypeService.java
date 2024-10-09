@@ -12,7 +12,7 @@ public interface PostTypeService {
 
     PostType findById(Integer id);
 
-    PostType create(String description, User author) throws AccessDeniedException;
+    PostType create(String description);
 
     PostType update(Integer id, String description, User author) throws AccessDeniedException;
 

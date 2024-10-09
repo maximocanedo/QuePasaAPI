@@ -84,40 +84,14 @@ public class PostTypeServiceTests {
     @DisplayName("Crear tipo de post.")
     void createType_TypeNew_ReturnsType() {
         String description = "Recreativo";
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         AtomicReference<PostType> createdPost = new AtomicReference<>();
 
         assertDoesNotThrow(() -> {
-            createdPost.set(postTypeService.create(description, mockUser));
+            createdPost.set(postTypeService.create(description));
         });
         assertNotNull(createdPost.get());
         assertEquals(description, createdPost.get().getDescription());
-    }
-
-    @Test
-    @DisplayName("Crear tipo de post. Permisos insuficientes.")
-    void createType_AccessDenied_ThrowsException() {
-        String description = "Recreativo";
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.USER);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            postTypeService.create(description, mockUser);
-        });
-
-        assertEquals("Insufficient permissions", exception.getMessage());
     }
 
     @Test
