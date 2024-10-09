@@ -80,7 +80,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable UUID id) throws Fail {
         eventService.delete(id);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }

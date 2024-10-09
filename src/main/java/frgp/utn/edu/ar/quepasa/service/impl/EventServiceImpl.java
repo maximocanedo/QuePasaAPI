@@ -116,8 +116,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void delete(UUID id) {
-        eventRepository.deleteById(id);
+    public void delete(UUID id) throws Fail {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+        ownerService.of(event)
+                .isOwner()
+                .or()
+                .isAdmin()
+                .or()
+                .isModerator()
+                .orElseFail();
+        event.setActive(false);
+        eventRepository.save(event);
     }
 
     @Override
