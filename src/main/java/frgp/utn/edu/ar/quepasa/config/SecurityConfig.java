@@ -85,6 +85,16 @@ public class SecurityConfig {
                             .hasAuthority(Role.NEIGHBOUR.name());
                     // Fin sección publicaciones
 
+                    // Seccion eventos
+                    request.requestMatchers(HttpMethod.GET, "/api/events/**")
+                            .hasAuthority(Role.USER.name());
+                    request.requestMatchers(HttpMethod.GET, "/api/events/op/{id}")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.GET, "/api/events/me")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.POST, "/api/events", "api/events/**")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+
                     // Resto de endpoints.
                     request.anyRequest().authenticated();
                 })
