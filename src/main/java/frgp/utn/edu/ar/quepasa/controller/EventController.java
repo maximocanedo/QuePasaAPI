@@ -1,6 +1,8 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
@@ -9,10 +11,13 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,15 +33,26 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(eventService.getEvents(q, pageable));
+    public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) {
+        /*TODO: sort por campo*/
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
     }
 
     @PostMapping
-    public ResponseEntity<?> createEvent(@RequestBody EventPatchEditRequest event) {
+    public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.create(event, me));
+    }
+
+    @PostMapping("/{eventId}/rsvp")
+    public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) {
+        User me = authenticationService.getCurrentUserOrDie();
+        return ResponseEntity.ok(eventService.confirmEventAssistance(eventId, me));
     }
 
     @GetMapping("/{id}")
@@ -58,8 +74,9 @@ public class EventController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) {
-        return ResponseEntity.ok(eventService.update(id, event));
+    public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws AccessDeniedException {
+        User me = authenticationService.getCurrentUserOrDie();
+        return ResponseEntity.ok(eventService.update(id, event, me));
     }
 
     @DeleteMapping("/{id}")
@@ -68,7 +85,17 @@ public class EventController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
+    /// Excepciones
+    ///
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
+        return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {

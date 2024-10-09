@@ -13,23 +13,6 @@ Content-Type: application/json
   "audience": "PUBLIC"
 }
 
-### Consultar evento
-GET {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc
-Authorization: Bearer {{token}}
-
-### Consultar eventos del usuario autenticado
-GET {{base}}/api/events/me?page=0&size=10
-Authorization: Bearer {{token}}
-
-### Consultar eventos de un usuario por nombre de usuario
-GET {{base}}/api/events/user/bocelli.andrea?page=0&size=10
-Authorization: Bearer {{token}}
-
-### Consultar eventos
-GET {{base}}/api/events?q=&page=0&size=10&sort=name,asc
-Authorization: Bearer {{token}}
-
-
 ### Modificar evento
 PATCH {{base}}/api/events/3dbc881f-6802-454f-aea0-a1a423c54a8b
 Authorization: Bearer {{token}}
@@ -44,6 +27,35 @@ Content-Type: application/json
   "category": "EDUCATIVE",
   "audience": "PUBLIC"
 }
+
+### Asistencia a evento
+POST {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/rsvp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Consultar evento
+GET {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad
+Authorization: Bearer {{token}}
+
+### Consultar eventos del usuario autenticado
+GET {{base}}/api/events/me?page=0&size=10
+Authorization: Bearer {{token}}
+
+### Consultar eventos de un usuario por nombre de usuario
+GET {{base}}/api/events/user/bocelli.andrea?page=0&size=10
+Authorization: Bearer {{token}}
+
+### Consultar eventos activos
+GET {{base}}/api/events?q=&page=0&size=10&active=true&sort=
+Authorization: Bearer {{token}}
+
+### Consultar eventos inactivos
+GET {{base}}/api/events?q=&page=0&size=10&active=false&sort=
+Authorization: Bearer {{token}}
+
+### Consultar eventos sorting por titulo
+GET {{base}}/api/events?q=&page=0&size=10&active=&sort=title,asc
+Authorization: Bearer {{token}}
 
 ### Eliminar evento
 DELETE {{base}}/api/events/3dbc881f-6802-454f-aea0-a1a423c54a8b
