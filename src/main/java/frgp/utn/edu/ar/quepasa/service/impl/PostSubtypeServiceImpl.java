@@ -42,11 +42,8 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     }
 
     @Override
-    public PostSubtype create(PostSubtypeRequest newSubtype, User author) throws AccessDeniedException {
+    public PostSubtype create(PostSubtypeRequest newSubtype) {
         PostSubtype subtype = new PostSubtype();
-        if(!author.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
         PostType type = postTypeRepository.findById(newSubtype.getType())
                 .orElseThrow(() -> new ResourceNotFoundException("Type not found"));
         subtype.setType(type);

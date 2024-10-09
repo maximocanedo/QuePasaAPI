@@ -23,9 +23,8 @@ public class PostSubtypeController {
     private AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<?> createPostSubtype(@RequestBody PostSubtypeRequest subtype) throws AccessDeniedException {
-        User me = authenticationService.getCurrentUserOrDie();
-        return ResponseEntity.ok(postSubtypeService.create(subtype, me));
+    public ResponseEntity<?> createPostSubtype(@RequestBody PostSubtypeRequest subtype) {
+        return ResponseEntity.ok(postSubtypeService.create(subtype));
     }
 
     @GetMapping("/all")

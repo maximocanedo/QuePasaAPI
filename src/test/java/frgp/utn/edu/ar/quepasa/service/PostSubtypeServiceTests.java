@@ -133,17 +133,11 @@ public class PostSubtypeServiceTests {
     @DisplayName("Crear subtipo de post.")
     void createSubtype_SubtypeNew_ReturnsSubtype() {
         Integer idType = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
 
         PostType mockType = new PostType();
         mockType.setId(idType);
 
         when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(1);
@@ -152,7 +146,7 @@ public class PostSubtypeServiceTests {
         AtomicReference<PostSubtype> createdSubtype = new AtomicReference<>();
 
         assertDoesNotThrow(() -> {
-           createdSubtype.set(postSubtypeService.create(request, mockUser));
+           createdSubtype.set(postSubtypeService.create(request));
         });
         assertNotNull(createdSubtype.get());
         assertEquals(idType, createdSubtype.get().getType().getId());
@@ -162,51 +156,18 @@ public class PostSubtypeServiceTests {
     @DisplayName("Crear subtipo de post. Tipo inexistente.")
     void createSubtype_SubtypeNotFound_ThrowsException() {
         Integer idType = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
 
         when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(1);
         request.setDescription("Entretenimiento");
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            postSubtypeService.create(request, mockUser);
+            postSubtypeService.create(request);
         });
 
         assertEquals("Type not found", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Crear subtipo de post. Permisos insuficientes.")
-    void createSubtype_AccessDenied_ThrowsException() {
-        Integer idType = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.USER);
-
-        PostType mockType = new PostType();
-        mockType.setId(idType);
-
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-
-        PostSubtypeRequest request = new PostSubtypeRequest();
-        request.setType(1);
-        request.setDescription("Entretenimiento");
-
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            postSubtypeService.create(request, mockUser);
-        });
-
-        assertEquals("Insufficient permissions", exception.getMessage());
     }
 
     @Test
