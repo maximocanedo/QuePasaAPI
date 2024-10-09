@@ -9,6 +9,7 @@ import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
+import org.springframework.http.MediaType;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -136,6 +137,7 @@ public class NapoleonBonaparteInspiredData {
         art.setOwner(napoleon);
         art.setId(random1);
         art.setActive(true);
+        art.setMediaType(MediaType.IMAGE_PNG);
         art.setUploadedAt(new Timestamp(-5238504372L));
         art.setDescription("Napoleón Cruzando los Alpes. Óleo sobre lienzo, por Jacques-Louis David en 1805.");
         return art;
@@ -145,6 +147,7 @@ public class NapoleonBonaparteInspiredData {
         Picture art = new Picture();
         art.setOwner(napoleon);
         art.setId(random2);
+        art.setMediaType(MediaType.IMAGE_PNG);
         art.setActive(true);
         art.setUploadedAt(new Timestamp(-4986043572L));
         art.setDescription("Retrato de Napoleón en su gabinete de trabajo. Óleo sobre lienzo, por Jacques-Louis David en 1812.");
@@ -156,6 +159,7 @@ public class NapoleonBonaparteInspiredData {
         art.setOwner(mariaLuisa);
         art.setId(random3);
         art.setActive(true);
+        art.setMediaType(MediaType.IMAGE_PNG);
         art.setUploadedAt(new Timestamp(-4986049972L));
         art.setDescription("Retrato del Dr. Fulano de Tal.");
         return art;

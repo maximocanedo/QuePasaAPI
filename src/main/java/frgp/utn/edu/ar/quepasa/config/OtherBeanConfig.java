@@ -1,5 +1,7 @@
 package frgp.utn.edu.ar.quepasa.config;
 
+import frgp.utn.edu.ar.quepasa.service.JwtService;
+import frgp.utn.edu.ar.quepasa.service.impl.JwtServiceImpl;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,11 @@ public class OtherBeanConfig {
                     }
                 });
         return session;
+    }
+
+    @Bean
+    public JwtService jwtService() {
+        return new JwtServiceImpl();
     }
 
 }

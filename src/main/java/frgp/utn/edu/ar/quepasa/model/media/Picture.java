@@ -1,8 +1,12 @@
 package frgp.utn.edu.ar.quepasa.model.media;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
+import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeDeserializer;
+import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeSerializer;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
 import org.springframework.http.MediaType;
@@ -56,6 +60,8 @@ public class Picture {
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
 
+    @JsonSerialize(using = MediaTypeSerializer.class)
+    @JsonDeserialize(using = MediaTypeDeserializer.class)
     @Convert(converter = MediaTypeConverter.class)
     @Column(nullable = false)
     public MediaType getMediaType() { return mediaType; }
