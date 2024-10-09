@@ -103,10 +103,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
-        if(!post.getOwner().getUsername().equals(originalPoster.getUsername())
-                && !originalPoster.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
+        ownerService.of(post)
+                .isOwner()
+                .or()
+                .isAdmin()
+                .or()
+                .isModerator()
+                .orElseFail();
         post.setActive(false);
         postRepository.save(post);
     }
