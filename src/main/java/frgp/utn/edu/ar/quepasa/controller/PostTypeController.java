@@ -39,9 +39,8 @@ public class PostTypeController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePostType(@PathVariable Integer id, @RequestBody String description) throws AccessDeniedException {
-        User me = authenticationService.getCurrentUserOrDie();
-        return ResponseEntity.ok(postTypeService.update(id, description, me));
+    public ResponseEntity<?> updatePostType(@PathVariable Integer id, @RequestBody String description) {
+        return ResponseEntity.ok(postTypeService.update(id, description));
     }
 
     @DeleteMapping("/{id}")
