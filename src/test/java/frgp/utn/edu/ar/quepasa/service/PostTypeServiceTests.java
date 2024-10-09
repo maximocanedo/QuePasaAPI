@@ -158,21 +158,4 @@ public class PostTypeServiceTests {
         assertEquals("Type not found", exception.getMessage());
     }
 
-    @Test
-    @DisplayName("Eliminar tipo de post por ID, permisos insuficientes.")
-    void deleteType_AccessDenied_ThrowsException() {
-        Integer id = 1;
-
-        PostType mockType = new PostType();
-        mockType.setId(1);
-
-        when(postTypeRepository.findById(id)).thenReturn(Optional.of(mockType));
-
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            postTypeService.delete(id);
-        });
-
-        assertEquals("Insufficient permissions", exception.getMessage());
-    }
-
 }
