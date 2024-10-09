@@ -61,6 +61,7 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.DELETE, "/api/post-types/**")
                             .hasAuthority(Role.ADMIN.name());
+                    // Fin sección tipos de publicaciones
 
                     // Sección subtipos de publicaciones
                     request.requestMatchers(HttpMethod.GET, "/api/post-subtypes/**")
@@ -71,6 +72,18 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.DELETE, "/api/post-subtypes/**")
                             .hasAuthority(Role.ADMIN.name());
+                    // Fin sección subtipos de publicaciones
+
+                    // Sección publicaciones
+                    request.requestMatchers(HttpMethod.GET, "/api/posts/**")
+                            .hasAuthority(Role.USER.name());
+                    request.requestMatchers(HttpMethod.GET, "/api/posts/op/{id}")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.GET, "/api/posts/me")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.POST, "/api/posts", "api/posts/**")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    // Fin sección publicaciones
 
                     // Resto de endpoints.
                     request.anyRequest().authenticated();
