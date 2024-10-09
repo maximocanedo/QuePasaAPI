@@ -44,11 +44,8 @@ public class PostTypeServiceImpl implements PostTypeService {
     }
 
     @Override
-    public void delete(Integer id, User author) throws AccessDeniedException {
+    public void delete(Integer id) {
         PostType type = findById(id);
-        if(!author.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Insufficient permissions");
-        }
         type.setActive(false);
         postTypeRepository.save(type);
     }

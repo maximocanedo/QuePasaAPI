@@ -16,5 +16,5 @@ public interface PostTypeService {
 
     PostType update(Integer id, String description);
 
-    void delete(Integer id, User author) throws AccessDeniedException;
+    void delete(Integer id);
 }

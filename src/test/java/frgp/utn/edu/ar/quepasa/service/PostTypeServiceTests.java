@@ -133,13 +133,6 @@ public class PostTypeServiceTests {
     @DisplayName("Eliminar tipo de post por ID.")
     void deleteType_TypeFound_ReturnsNoContent() {
         Integer id = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostType mockType = new PostType();
         mockType.setId(1);
@@ -147,7 +140,7 @@ public class PostTypeServiceTests {
         when(postTypeRepository.findById(id)).thenReturn(Optional.of(mockType));
 
         assertDoesNotThrow(() -> {
-            postTypeService.delete(id, mockUser);
+            postTypeService.delete(id);
         });
     }
 
@@ -155,18 +148,11 @@ public class PostTypeServiceTests {
     @DisplayName("Eliminar tipo de post por ID, ID inexistente.")
     void deleteType_TypeNotFound_ThrowsException() {
         Integer id = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.ADMIN);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         when(postTypeRepository.findById(id)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            postTypeService.delete(id, mockUser);
+            postTypeService.delete(id);
         });
 
         assertEquals("Type not found", exception.getMessage());
@@ -176,13 +162,6 @@ public class PostTypeServiceTests {
     @DisplayName("Eliminar tipo de post por ID, permisos insuficientes.")
     void deleteType_AccessDenied_ThrowsException() {
         Integer id = 1;
-        String username = "donald";
-
-        User mockUser = new User();
-        mockUser.setUsername(username);
-        mockUser.setRole(Role.USER);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
         PostType mockType = new PostType();
         mockType.setId(1);
@@ -190,7 +169,7 @@ public class PostTypeServiceTests {
         when(postTypeRepository.findById(id)).thenReturn(Optional.of(mockType));
 
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            postTypeService.delete(id, mockUser);
+            postTypeService.delete(id);
         });
 
         assertEquals("Insufficient permissions", exception.getMessage());
