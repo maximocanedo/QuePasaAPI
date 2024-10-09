@@ -1,6 +1,5 @@
 package frgp.utn.edu.ar.quepasa.config;
 
-import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,15 @@ public class SecurityConfig {
                             .hasAuthority(Role.USER.name());
                     // Fin sección usuarios
 
-                    // Otras secciones van acá.
-
+                    // Sección tipos de publicaciones
+                    request.requestMatchers(HttpMethod.GET, "/api/post-types/**")
+                            .hasAuthority(Role.USER.name());
+                    request.requestMatchers(HttpMethod.POST, "/api/post-types", "/api/post-types/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.PATCH, "/api/post-types/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.DELETE, "/api/post-types/**")
+                            .hasAuthority(Role.ADMIN.name());
 
                     // Resto de endpoints.
                     request.anyRequest().authenticated();
@@ -91,8 +97,5 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
-
-
-
 
 }
