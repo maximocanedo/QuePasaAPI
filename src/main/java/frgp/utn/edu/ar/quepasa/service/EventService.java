@@ -28,7 +28,7 @@ public interface EventService {
 
     Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail;
 
-    void delete(UUID id);
+    void delete(UUID id) throws Fail;
 
     Event addNeighbourhoodsToEvent(UUID eventId, Set<Long> neighbourhoodIds);
 
