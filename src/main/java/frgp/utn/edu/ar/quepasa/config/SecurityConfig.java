@@ -62,6 +62,16 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.DELETE, "/api/post-types/**")
                             .hasAuthority(Role.ADMIN.name());
 
+                    // Sección subtipos de publicaciones
+                    request.requestMatchers(HttpMethod.GET, "/api/post-subtypes/**")
+                            .hasAuthority(Role.USER.name());
+                    request.requestMatchers(HttpMethod.POST, "/api/post-subtypes", "/api/post-subtypes/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.PATCH, "/api/post-subtypes/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.DELETE, "/api/post-subtypes/**")
+                            .hasAuthority(Role.ADMIN.name());
+
                     // Resto de endpoints.
                     request.anyRequest().authenticated();
                 })
