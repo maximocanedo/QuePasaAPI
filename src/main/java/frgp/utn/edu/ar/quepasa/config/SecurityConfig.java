@@ -28,8 +28,18 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableTransactionManagement
 public class SecurityConfig {
 
-    @Lazy @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Lazy @Autowired private UserService userService;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private UserService userService;
+
+    @Autowired @Lazy
+    public void setJwtAuthenticationFilter(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    @Autowired @Lazy
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

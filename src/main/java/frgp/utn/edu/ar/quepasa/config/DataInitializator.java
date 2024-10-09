@@ -20,18 +20,32 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializator implements CommandLineRunner {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private CountryRepository countryRepository;
-    @Autowired private SubnationalDivisionRepository subnationalDivisionRepository;
-    @Autowired private CityRepository cityRepository;
-    @Autowired private NeighbourhoodRepository neighbourhoodRepository;
+    private final UserRepository userRepository;
+    private final CountryRepository countryRepository;
+    private final SubnationalDivisionRepository subnationalDivisionRepository;
+    private final CityRepository cityRepository;
+    private final NeighbourhoodRepository neighbourhoodRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    public DataInitializator(
+            UserRepository userRepository,
+            CountryRepository countryRepository,
+            SubnationalDivisionRepository subnationalDivisionRepository,
+            CityRepository cityRepository,
+            NeighbourhoodRepository neighbourhoodRepository,
+            PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.countryRepository = countryRepository;
+        this.subnationalDivisionRepository = subnationalDivisionRepository;
+        this.cityRepository = cityRepository;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @Override
     public void run(String... args) throws Exception {
-        return;
-        /*
         Country argentina = new Country();
         argentina.setIso3("ARG");
         argentina.setLabel("República Argentina");
@@ -70,7 +84,7 @@ public class DataInitializator implements CommandLineRunner {
         } else {
             //userRepository.delete(rootUser);
             //userRepository.save(rootUser);
-        }*/
+        }
     }
 
 }
