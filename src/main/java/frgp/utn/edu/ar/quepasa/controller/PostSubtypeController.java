@@ -17,10 +17,14 @@ import java.nio.file.AccessDeniedException;
 @RestController
 @RequestMapping("/api/post-subtypes")
 public class PostSubtypeController {
-    @Autowired
-    private PostSubtypeService postSubtypeService;
-    @Autowired
-    private AuthenticationService authenticationService;
+
+    private final PostSubtypeService postSubtypeService;
+    private final AuthenticationService authenticationService;
+
+    public PostSubtypeController(PostSubtypeService postSubtypeService, AuthenticationService authenticationService) {
+        this.postSubtypeService = postSubtypeService;
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createPostSubtype(@RequestBody PostSubtypeRequest subtype) {

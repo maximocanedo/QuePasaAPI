@@ -20,11 +20,14 @@ import java.nio.file.AccessDeniedException;
 @Service("postSubtypeService")
 public class PostSubtypeServiceImpl implements PostSubtypeService {
 
-    @Autowired
-    private PostSubtypeRepository postSubtypeRepository;
+    private final PostSubtypeRepository postSubtypeRepository;
 
-    @Autowired
-    private PostTypeRepository postTypeRepository;
+    private final PostTypeRepository postTypeRepository;
+
+    public PostSubtypeServiceImpl(PostSubtypeRepository postSubtypeRepository, PostTypeRepository postTypeRepository) {
+        this.postSubtypeRepository = postSubtypeRepository;
+        this.postTypeRepository = postTypeRepository;
+    }
 
     @Override
     public Page<PostSubtype> listPostSubtypes(Pageable pageable) { return postSubtypeRepository.findAll(pageable); }
