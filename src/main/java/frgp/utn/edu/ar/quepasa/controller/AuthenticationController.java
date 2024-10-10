@@ -19,10 +19,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class AuthenticationController {
+
+    private final AuthenticationService authenticationService;
+    private final SingleUseRequestService singleUseRequestService;
+
     @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
-    SingleUseRequestService singleUseRequestService;
+    public AuthenticationController(AuthenticationService authenticationService, SingleUseRequestService singleUseRequestService) {
+        this.authenticationService = authenticationService;
+        this.singleUseRequestService = singleUseRequestService;
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<JwtAuthenticationResponse> signup(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signup(request));

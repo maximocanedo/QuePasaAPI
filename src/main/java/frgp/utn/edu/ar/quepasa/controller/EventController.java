@@ -9,6 +9,7 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +25,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
+
     private final EventService eventService;
     private final AuthenticationService authenticationService;
 
-    EventController(EventService eventService, AuthenticationService authenticationService) {
+    @Autowired
+    public EventController(EventService eventService, AuthenticationService authenticationService) {
         this.eventService = eventService;
         this.authenticationService = authenticationService;
     }

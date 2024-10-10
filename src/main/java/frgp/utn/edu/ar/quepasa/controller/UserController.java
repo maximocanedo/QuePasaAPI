@@ -32,7 +32,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    UserController(UserService userService, AuthenticationService authenticationService) {
+    public UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
     }

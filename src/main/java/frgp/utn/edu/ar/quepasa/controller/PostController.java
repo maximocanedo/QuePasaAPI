@@ -19,10 +19,14 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/api/posts")
 public class PostController {
 
+    private final PostService postService;
+    private final AuthenticationService authenticationService;
+
     @Autowired
-    private PostService postService;
-    @Autowired
-    private AuthenticationService authenticationService;
+    public PostController(PostService postService, AuthenticationService authenticationService) {
+        this.postService = postService;
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {
@@ -66,8 +70,6 @@ public class PostController {
         postService.delete(id, me);
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
-
-
 
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
