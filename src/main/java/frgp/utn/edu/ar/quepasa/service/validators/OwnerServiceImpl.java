@@ -2,16 +2,17 @@ package frgp.utn.edu.ar.quepasa.service.validators;
 
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class OwnerServiceImpl implements frgp.utn.edu.ar.quepasa.service.OwnerService {
 
-    @Autowired @NotNull
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
+
+    public OwnerServiceImpl(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public OwnerValidatorBuilder of(Ownable object) {

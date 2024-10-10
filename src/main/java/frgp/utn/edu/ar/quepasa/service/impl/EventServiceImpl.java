@@ -26,17 +26,25 @@ import java.util.UUID;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
-    @Autowired
-    private OwnerService ownerService;
+
+    private final OwnerService ownerService;
+    private final EventRepository eventRepository;
+    private final NeighbourhoodRepository neighbourhoodRepository;
+    private final EventRsvpRepository eventRsvpRepository;
 
     @Autowired
-    private EventRepository eventRepository;
-    
-    @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
+    public EventServiceImpl(
+            OwnerService ownerService,
+            EventRepository eventRepository,
+            NeighbourhoodRepository neighbourhoodRepository,
+            EventRsvpRepository eventRsvpRepository
+    ) {
+        this.ownerService = ownerService;
+        this.eventRepository = eventRepository;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+        this.eventRsvpRepository = eventRsvpRepository;
+    }
 
-    @Autowired
-    private EventRsvpRepository eventRsvpRepository;
 
     @Override
     public Page<Event> getEvents(String query, Pageable pageable, boolean active) {

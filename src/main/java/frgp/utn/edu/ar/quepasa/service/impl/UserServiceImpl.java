@@ -6,7 +6,6 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
-import frgp.utn.edu.ar.quepasa.service.Auth;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
@@ -25,19 +24,29 @@ import org.springframework.stereotype.Service;
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
+    private AuthenticationService authenticationService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final NeighbourhoodRepository neighbourhoodRepository;
+    private final PictureRepository pictureRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserServiceImpl(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            NeighbourhoodRepository neighbourhoodRepository,
+            PictureRepository pictureRepository
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+        this.pictureRepository = pictureRepository;
+    }
 
     @Autowired @Lazy
-    private AuthenticationService authenticationService;
-    @Autowired
-    private Auth auth;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
-    @Autowired
-    private PictureRepository pictureRepository;
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

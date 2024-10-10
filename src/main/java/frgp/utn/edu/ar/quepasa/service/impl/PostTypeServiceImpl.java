@@ -1,8 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.model.PostType;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
-
 @Service("postTypeService")
 public class PostTypeServiceImpl implements PostTypeService {
 
+    private final PostTypeRepository postTypeRepository;
+
     @Autowired
-    private PostTypeRepository postTypeRepository;
+    public PostTypeServiceImpl(PostTypeRepository postTypeRepository) {
+        this.postTypeRepository = postTypeRepository;
+    }
 
     @Override
     public Page<PostType> listPostTypes(Pageable pageable) { return postTypeRepository.findAll(pageable); }

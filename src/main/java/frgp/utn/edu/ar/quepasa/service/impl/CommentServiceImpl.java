@@ -12,8 +12,12 @@ import java.util.UUID;
 
 public class CommentServiceImpl implements CommentService {
 
+    private final CommentRepository commentRepository;
+
     @Autowired
-    private CommentRepository commentRepository;
+    public CommentServiceImpl(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     public Comment findById(UUID id) {
         return commentRepository.findById(id)

@@ -6,7 +6,6 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
@@ -28,19 +27,26 @@ import java.nio.file.AccessDeniedException;
 @Service("postService")
 public class PostServiceImpl implements PostService {
 
-    @Autowired private OwnerService ownerService;
+    private final OwnerService ownerService;
+    private final PostRepository postRepository;
+    private final PostSubtypeRepository postSubtypeRepository;
+    private final UserRepository userRepository;
+    private final NeighbourhoodRepository neighbourhoodRepository;
 
     @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private PostSubtypeRepository postSubtypeRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
+    public PostServiceImpl(
+            OwnerService ownerService,
+            PostRepository postRepository,
+            PostSubtypeRepository postSubtypeRepository,
+            UserRepository userRepository,
+            NeighbourhoodRepository neighbourhoodRepository
+    ) {
+        this.ownerService = ownerService;
+        this.postRepository = postRepository;
+        this.postSubtypeRepository = postSubtypeRepository;
+        this.userRepository = userRepository;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+    }
 
     @Override
     public Page<Post> listPost(Pageable pageable) { return postRepository.findAll(pageable); }

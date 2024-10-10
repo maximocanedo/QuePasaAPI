@@ -1,24 +1,23 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import de.taimos.totp.TOTP;
 import de.taimos.totp.TOTPData;
 import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
+import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.PhoneRepository;
@@ -41,8 +40,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
-import de.taimos.totp.TOTP;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -59,15 +56,35 @@ import java.util.regex.Pattern;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JwtService jwtService;
-    @Autowired private AuthenticationManager authenticationManager;
-    @Autowired private MailSenderService mailSenderServiceImpl;
-    @Autowired private MailRepository mailRepository;
-    @Autowired private PhoneRepository phoneRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final MailSenderService mailSenderService;
+    private final MailRepository mailRepository;
+    private final PhoneRepository phoneRepository;
+    private final NeighbourhoodRepository neighbourhoodRepository;
+
     @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
+    public AuthenticationServiceImpl(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            AuthenticationManager authenticationManager,
+            MailSenderService mailSenderService,
+            MailRepository mailRepository,
+            PhoneRepository phoneRepository,
+            NeighbourhoodRepository neighbourhoodRepository
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.mailSenderService = mailSenderService;
+        this.mailRepository = mailRepository;
+        this.phoneRepository = phoneRepository;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+    }
 
     /**
      * <b>Devuelve el usuario autenticado</b>
@@ -267,7 +284,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         mailRepository.save(mail);
 
         try {
-            mailSenderServiceImpl.send(request.getSubject(), mailSenderServiceImpl.otp(code), mailSenderServiceImpl.otp(code));
+            mailSenderService.send(request.getSubject(), mailSenderService.otp(code), mailSenderService.otp(code));
         } catch(MessagingException e) {
             e.printStackTrace();
             throw e;

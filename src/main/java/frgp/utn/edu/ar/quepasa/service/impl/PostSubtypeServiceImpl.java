@@ -3,8 +3,6 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.PostType;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
@@ -14,16 +12,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
-
 @Service("postSubtypeService")
 public class PostSubtypeServiceImpl implements PostSubtypeService {
 
-    @Autowired
-    private PostSubtypeRepository postSubtypeRepository;
+    private final PostSubtypeRepository postSubtypeRepository;
+    private final PostTypeRepository postTypeRepository;
 
     @Autowired
-    private PostTypeRepository postTypeRepository;
+    public PostSubtypeServiceImpl(PostSubtypeRepository postSubtypeRepository, PostTypeRepository postTypeRepository) {
+        this.postSubtypeRepository = postSubtypeRepository;
+        this.postTypeRepository = postTypeRepository;
+    }
 
     @Override
     public Page<PostSubtype> listPostSubtypes(Pageable pageable) { return postSubtypeRepository.findAll(pageable); }

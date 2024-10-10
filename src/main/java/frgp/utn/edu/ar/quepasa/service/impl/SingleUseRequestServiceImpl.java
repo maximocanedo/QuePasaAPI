@@ -13,7 +13,6 @@ import frgp.utn.edu.ar.quepasa.repository.MailRepository;
 import frgp.utn.edu.ar.quepasa.repository.PhoneRepository;
 import frgp.utn.edu.ar.quepasa.repository.SingleUseRequestRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
@@ -32,15 +31,32 @@ import java.util.Optional;
 @Service("singleUseRequestService")
 public class SingleUseRequestServiceImpl implements SingleUseRequestService {
 
-    @Autowired private SingleUseRequestRepository singleUseRequestRepository;
-    @Autowired private MailSenderService mailSenderService;
-    @Autowired private MailRepository mailRepository;
-    @Autowired private PhoneRepository phoneRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private AuthenticationService authenticationService;
-    @Autowired private JwtService jwtService;
+    private final SingleUseRequestRepository singleUseRequestRepository;
+    private final MailSenderService mailSenderService;
+    private final MailRepository mailRepository;
+    private final PhoneRepository phoneRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public SingleUseRequestServiceImpl(
+            SingleUseRequestRepository singleUseRequestRepository,
+            MailSenderService mailSenderService,
+            MailRepository mailRepository,
+            PhoneRepository phoneRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            UserRepository userRepository
+    ) {
+        this.singleUseRequestRepository = singleUseRequestRepository;
+        this.mailSenderService = mailSenderService;
+        this.mailRepository = mailRepository;
+        this.phoneRepository = phoneRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+    }
 
     public String generateHexOTP() {
         SecureRandom random = new SecureRandom();
