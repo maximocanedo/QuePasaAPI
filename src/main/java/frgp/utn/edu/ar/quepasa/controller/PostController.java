@@ -19,10 +19,13 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/api/posts")
 public class PostController {
 
-    @Autowired
-    private PostService postService;
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final PostService postService;
+    private final AuthenticationService authenticationService;
+
+    public PostController(PostService postService, AuthenticationService authenticationService) {
+        this.postService = postService;
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {

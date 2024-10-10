@@ -28,19 +28,24 @@ import java.nio.file.AccessDeniedException;
 @Service("postService")
 public class PostServiceImpl implements PostService {
 
-    @Autowired private OwnerService ownerService;
+    private final OwnerService ownerService;
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
-    @Autowired
-    private PostSubtypeRepository postSubtypeRepository;
+    private final PostSubtypeRepository postSubtypeRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
+    private final NeighbourhoodRepository neighbourhoodRepository;
+
+    public PostServiceImpl(OwnerService ownerService, PostRepository postRepository, PostSubtypeRepository postSubtypeRepository,
+                           UserRepository userRepository, NeighbourhoodRepository neighbourhoodRepository) {
+        this.ownerService = ownerService;
+        this.postRepository = postRepository;
+        this.postSubtypeRepository = postSubtypeRepository;
+        this.userRepository = userRepository;
+        this.neighbourhoodRepository = neighbourhoodRepository;
+    }
 
     @Override
     public Page<Post> listPost(Pageable pageable) { return postRepository.findAll(pageable); }
