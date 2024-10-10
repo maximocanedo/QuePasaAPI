@@ -10,15 +10,9 @@ import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,17 +39,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserUpdateActionControllerTests {
 
-    @MockBean private UserRepository userRepository;
-    @MockBean private NeighbourhoodRepository neighbourhoodRepository;
-    @MockBean private PictureRepository pictureRepository;
-    @Mock private AuthenticationServiceImpl authenticationService;
+    private UserRepository userRepository;
+    private NeighbourhoodRepository neighbourhoodRepository;
+    private PictureRepository pictureRepository;
+    private AuthenticationServiceImpl authenticationService;
     private NapoleonBonaparteInspiredData data = new NapoleonBonaparteInspiredData();
-    @Autowired ObjectMapper objectMapper;
-    @Autowired private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    public void setupMocks() {
+        this.authenticationService = Mockito.mock(AuthenticationServiceImpl.class);
+        this.pictureRepository = Mockito.mock(PictureRepository.class);
+        this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
+        this.userRepository = Mockito.mock(UserRepository.class);
+        User napoleon = data.napoleonBonaparte();
+
+        when(userRepository.findByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
+        when(userRepository.findByUsername(data.mariaLuisaDeAustria().getUsername())).thenReturn(Optional.of(data.mariaLuisaDeAustria()));
+    }
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Autowired
+    public void setMockMvc(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @BeforeAll
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         User napoleon = data.napoleonBonaparte();
 
         when(userRepository.findByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
