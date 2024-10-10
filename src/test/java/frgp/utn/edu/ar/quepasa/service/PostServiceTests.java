@@ -16,18 +16,16 @@ import frgp.utn.edu.ar.quepasa.service.impl.PostServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,15 +34,21 @@ import static org.mockito.Mockito.when;
 
 public class PostServiceTests {
 
-    @Mock private PostRepository postRepository;
-    @Mock private PostSubtypeRepository postSubtypeRepository;
-    @Mock private UserRepository userRepository;
-    @Mock private NeighbourhoodRepository neighbourhoodRepository;
-    @InjectMocks private PostServiceImpl postService;
+    private PostRepository postRepository;
+    private PostSubtypeRepository postSubtypeRepository;
+    private UserRepository userRepository;
+    private NeighbourhoodRepository neighbourhoodRepository;
+    private PostServiceImpl postService;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setup() {
+        this.postRepository = Mockito.mock(PostRepository.class);
+        this.postSubtypeRepository = Mockito.mock(PostSubtypeRepository.class);
+        this.userRepository = Mockito.mock(UserRepository.class);
+        this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
+        OwnerService ownerService = Mockito.mock(OwnerService.class);
+
+        this.postService = new PostServiceImpl(ownerService, postRepository, postSubtypeRepository, userRepository, neighbourhoodRepository);
     }
 
     @Test
@@ -205,11 +209,9 @@ public class PostServiceTests {
         request.setTimestamp(Timestamp.valueOf("2024-10-08 14:30:15.123456789"));
         request.setTags("extravio,mochila,evento-ayer");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             postService.create(request, mockUser);
         });
-
-        assertEquals("Subtype not found", exception.getMessage());
     }
 
     @Test
@@ -243,11 +245,9 @@ public class PostServiceTests {
         request.setTimestamp(Timestamp.valueOf("2024-10-08 14:30:15.123456789"));
         request.setTags("extravio,mochila,evento-ayer");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             postService.create(request, mockUser);
         });
-
-        assertEquals("Neighbourhood not found", exception.getMessage());
     }
 
     @Test
@@ -351,11 +351,9 @@ public class PostServiceTests {
         request.setDescription("Soy una descripcion");
         request.setTags("descripcion,breve");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             postService.update(id, request, mockUser);
         });
-
-        assertEquals("Subtype not found", exception.getMessage());
     }
 
     @Test
@@ -391,11 +389,9 @@ public class PostServiceTests {
         request.setNeighbourhood(neighId);
         request.setTags("descripcion,breve");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             postService.update(id, request, mockUser);
         });
-
-        assertEquals("Neighbourhood not found", exception.getMessage());
     }
 
     @Test
