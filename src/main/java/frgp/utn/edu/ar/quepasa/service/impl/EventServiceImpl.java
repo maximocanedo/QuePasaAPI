@@ -6,12 +6,15 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
+import frgp.utn.edu.ar.quepasa.service.validators.events.EventDateValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,12 +70,45 @@ public class EventServiceImpl implements EventService {
         /*TODO
         *  -Validacion info*/
         Event newEvent = new Event();
+        if (event.getTitle() == null) {
+            throw new Fail("Title is required.");
+        }
         newEvent.setTitle(event.getTitle());
+        if (event.getDescription() == null) {
+            throw new Fail("Description is required.");
+        }
         newEvent.setDescription(event.getDescription());
-        newEvent.setStart(event.getStartDate());
-        newEvent.setEnd(event.getEndDate());
+        if (event.getStartDate() == null) {
+            throw new Fail("Start date is required.");
+        }
+        var startDate = new EventDateValidatorBuilder(event.getStartDate()).isNotPast().build();
+        newEvent.setStart(startDate);
+        if (event.getEndDate() == null) {
+            throw new Fail("End date is required.");
+        }
+        var endDate = new EventDateValidatorBuilder(event.getEndDate()).isNotPast().isNotBefore(startDate).build();
+        newEvent.setEnd(endDate);
+        if (event.getCategory() == null) {
+            throw new Fail("Category is required.");
+        }
+        try {
+            EventCategory.valueOf(String.valueOf(event.getCategory()));
+        } catch (IllegalArgumentException e) {
+            throw new Fail("Invalid category.");
+        }
         newEvent.setCategory(event.getCategory());
+        if (event.getAudience() == null) {
+            throw new Fail("Audience is required.");
+        }
+        try {
+            Audience.valueOf(String.valueOf(event.getAudience()));
+        } catch (IllegalArgumentException e) {
+            throw new Fail("Invalid audience.");
+        }
         newEvent.setAudience(event.getAudience());
+        if (event.getAddress() == null) {
+            throw new Fail("Address is required.");
+        }
         newEvent.setAddress(event.getAddress());
         newEvent.setActive(true);
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
@@ -83,8 +119,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail {
-        /*TODO
-         *  -Validacion info*/
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
         ownerService.of(event)
@@ -93,14 +127,46 @@ public class EventServiceImpl implements EventService {
                 .isAdmin()
                 .orElseFail();
 
-        if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
-        if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
-        if (newEvent.getStartDate() != null) event.setStart(newEvent.getStartDate());
-        if (newEvent.getEndDate() != null) event.setEnd(newEvent.getEndDate());
-        if (newEvent.getCategory() != null) event.setCategory(newEvent.getCategory());
-        if (newEvent.getAudience() != null) event.setAudience(newEvent.getAudience());
-        if (newEvent.getAddress() != null) event.setAddress(newEvent.getAddress());
-
+        if (newEvent.getTitle() == null) {
+            throw new Fail("Title is required.");
+        }
+        event.setTitle(newEvent.getTitle());
+        if (newEvent.getDescription() == null) {
+            throw new Fail("Description is required.");
+        }
+        event.setDescription(newEvent.getDescription());
+        if (newEvent.getStartDate() == null) {
+            throw new Fail("Start date is required.");
+        }
+        var startDate = new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build();
+        event.setStart(startDate);
+        if (newEvent.getEndDate() == null) {
+            throw new Fail("End date is required.");
+        }
+        var endDate = new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(startDate).build();
+        event.setEnd(endDate);
+        if (newEvent.getCategory() == null) {
+            throw new Fail("Category is required.");
+        }
+        try {
+            EventCategory.valueOf(String.valueOf(newEvent.getCategory()));
+        } catch (IllegalArgumentException e) {
+            throw new Fail("Invalid category.");
+        }
+        event.setCategory(newEvent.getCategory());
+        if (newEvent.getAudience() == null) {
+            throw new Fail("Audience is required.");
+        }
+        try {
+            Audience.valueOf(String.valueOf(newEvent.getAudience()));
+        } catch (IllegalArgumentException e) {
+            throw new Fail("Invalid audience.");
+        }
+        event.setAudience(newEvent.getAudience());
+        if (newEvent.getAddress() == null) {
+            throw new Fail("Address is required.");
+        }
+        event.setAddress(newEvent.getAddress());
         eventRepository.save(event);
         return event;
     }

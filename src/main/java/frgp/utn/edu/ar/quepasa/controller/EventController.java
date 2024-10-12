@@ -36,7 +36,6 @@ public class EventController {
 
     @GetMapping
     public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) {
-        /*TODO: sort por campo*/
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
