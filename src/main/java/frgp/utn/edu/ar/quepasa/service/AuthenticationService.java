@@ -12,13 +12,14 @@ import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public interface AuthenticationService {
     Optional<User> getCurrentUser();
 
-    User getCurrentUserOrDie();
+    @NotNull User getCurrentUserOrDie();
 
     String validatePassword(String password);
 

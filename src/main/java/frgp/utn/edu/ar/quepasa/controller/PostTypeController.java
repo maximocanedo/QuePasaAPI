@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class PostTypeController {
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public PostTypeController(PostTypeService postTypeService) {
+    public PostTypeController(PostTypeService postTypeService, AuthenticationService authenticationService) {
         this.postTypeService = postTypeService;
         this.authenticationService = authenticationService;
     }

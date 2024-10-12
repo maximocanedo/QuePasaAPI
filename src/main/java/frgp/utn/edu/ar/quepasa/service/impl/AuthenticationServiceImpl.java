@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * <b>Devuelve el usuario autenticado, o lanza una excepción. </b>
      */
     @Override
-    public User getCurrentUserOrDie() throws AuthenticationCredentialsNotFoundException {
+    public @NotNull User getCurrentUserOrDie() throws AuthenticationCredentialsNotFoundException {
         return getCurrentUser()
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("No user authenticated. "));
     }
