@@ -20,4 +20,6 @@ public interface UserService extends UserDetailsService {
     void updatePassword(String newPassword);
     User save(User u);
     void delete(String username);
+
+    void delete();
 }

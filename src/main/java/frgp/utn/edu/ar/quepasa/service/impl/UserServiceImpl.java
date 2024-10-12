@@ -143,4 +143,11 @@ public class UserServiceImpl implements UserService {
         user.setActive(false);
         userRepository.save(user);
     }
+
+    @Override
+    public void delete() {
+        User current = authenticationService.getCurrentUserOrDie();
+        current.setActive(false);
+        userRepository.save(current);
+    }
 }
