@@ -2,6 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 
 
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
@@ -11,10 +12,12 @@ import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.pictures.PictureObjectValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidatorBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,7 +80,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User update(String username, UserPatchEditRequest data) {
-        User user = findByUsername(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new Fail("User not found. ", HttpStatus.NOT_FOUND));
         return update(data, user);
     }
 
@@ -86,7 +89,7 @@ public class UserServiceImpl implements UserService {
      * <p>De uso interno, realiza las modificaciones a partir de la solicitud. </p>
      */
     @Override
-    public User update(UserPatchEditRequest data, User user) {
+    public User update(@NotNull UserPatchEditRequest data, @NotNull User user) {
         if(data.getName() != null) {
             var name = new NameValidatorBuilder(data.getName())
                     .validateCompoundNames()

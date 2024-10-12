@@ -39,26 +39,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserUpdateActionControllerTests {
 
+    @MockBean
     private UserRepository userRepository;
+
+    @MockBean
     private NeighbourhoodRepository neighbourhoodRepository;
+
+    @MockBean
     private PictureRepository pictureRepository;
+
+    @MockBean
     private AuthenticationServiceImpl authenticationService;
+
     private NapoleonBonaparteInspiredData data = new NapoleonBonaparteInspiredData();
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
     private MockMvc mockMvc;
 
+/*
     @BeforeEach
     public void setupMocks() {
-        this.authenticationService = Mockito.mock(AuthenticationServiceImpl.class);
+       /* this.authenticationService = Mockito.mock(AuthenticationServiceImpl.class);
         this.pictureRepository = Mockito.mock(PictureRepository.class);
         this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
         this.userRepository = Mockito.mock(UserRepository.class);
-        User napoleon = data.napoleonBonaparte();
+        //User napoleon = data.napoleonBonaparte();
 
-        when(userRepository.findByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
-        when(userRepository.findByUsername(data.mariaLuisaDeAustria().getUsername())).thenReturn(Optional.of(data.mariaLuisaDeAustria()));
+//        when(userRepository.findByUsername(napoleon.getUsername())).thenReturn(Optional.of(napoleon));
+  //      when(userRepository.findByUsername(data.mariaLuisaDeAustria().getUsername())).thenReturn(Optional.of(data.mariaLuisaDeAustria()));
     }
-
+*/
     @Autowired
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
