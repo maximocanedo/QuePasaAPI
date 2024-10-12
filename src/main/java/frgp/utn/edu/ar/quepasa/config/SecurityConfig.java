@@ -60,6 +60,9 @@ public class SecurityConfig {
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/users/**")
                             .hasAuthority(Role.ADMIN.name());
+
+                    request.requestMatchers(HttpMethod.GET, "/api/countries", "/api/countries/**")
+                                    .permitAll();
                     // Fin sección usuarios
 
                     // Sección tipos de publicaciones

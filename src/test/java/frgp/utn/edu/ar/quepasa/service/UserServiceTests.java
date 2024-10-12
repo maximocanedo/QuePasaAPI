@@ -435,6 +435,6 @@ public class UserServiceTests {
         assertTrue(result.isEmpty());
         verify(userRepository, times(1)).search("nonexistent", pageable, true);
     }
-    
+
 
 }

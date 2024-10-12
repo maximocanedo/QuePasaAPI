@@ -5,6 +5,8 @@ import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +33,8 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public List<Country> getAllCountries() {
-        return countryRepository.findAll();
+    public Page<Country> search(String q, Pageable pageable) {
+        return countryRepository.search(q, pageable);
     }
 
     @Override

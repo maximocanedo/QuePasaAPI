@@ -13,7 +13,7 @@ public interface CountryService {
 
     Country save(Country country);
     List<Country> saveAll(List<Country> countries);
-    List<Country> getAllCountries();
+    Page<Country> search(String q, Pageable pageable);
     Optional<Country> getCountry(String iso3);
     void delete(Country country);
     Optional<Country> update(Country country);
