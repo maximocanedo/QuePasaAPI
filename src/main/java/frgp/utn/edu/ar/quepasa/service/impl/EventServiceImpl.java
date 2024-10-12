@@ -67,8 +67,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event create(EventPostRequest event, User owner) {
-        /*TODO
-        *  -Validacion info*/
         Event newEvent = new Event();
         if (event.getTitle() == null) {
             throw new Fail("Title is required.");
