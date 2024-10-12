@@ -66,13 +66,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event create(EventPostRequest event, User owner) {
+    public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
-        if (event.getTitle() == null) {
+        if (event.getTitle().isEmpty()) {
             throw new Fail("Title is required.");
         }
         newEvent.setTitle(event.getTitle());
-        if (event.getDescription() == null) {
+        if (event.getDescription().isEmpty()) {
             throw new Fail("Description is required.");
         }
         newEvent.setDescription(event.getDescription());
@@ -120,16 +120,16 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
         ownerService.of(event)
-                .isOwner()
-                .or()
                 .isAdmin()
+                .or()
+                .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle() == null) {
+        if (newEvent.getTitle().isEmpty()) {
             throw new Fail("Title is required.");
         }
         event.setTitle(newEvent.getTitle());
-        if (newEvent.getDescription() == null) {
+        if (newEvent.getTitle().isEmpty()) {
             throw new Fail("Description is required.");
         }
         event.setDescription(newEvent.getDescription());

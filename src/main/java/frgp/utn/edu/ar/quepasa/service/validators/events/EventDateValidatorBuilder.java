@@ -11,14 +11,14 @@ public class EventDateValidatorBuilder extends ValidatorBuilder<LocalDateTime> {
 
     public EventDateValidatorBuilder isNotPast() {
         if (getValue().isBefore(LocalDateTime.now())) {
-            super.invalidate("La fecha del evento no puede ser pasada. ");
+            super.invalidate("La fecha del evento no puede ser antes de la fecha actual. ");
         }
         return this;
     }
 
     public EventDateValidatorBuilder isNotBefore(LocalDateTime date) {
         if (getValue().isBefore(date)) {
-            super.invalidate("La fecha del evento no puede ser antes de la fecha actual. ");
+            super.invalidate("La fecha del evento no puede ser antes de la fecha de su comienzo. ");
         }
         return this;
     }

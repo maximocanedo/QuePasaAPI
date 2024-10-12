@@ -22,7 +22,7 @@ public interface EventService {
 
     Page<Event> findByUsername(String username, Pageable pageable);
 
-    Event create(EventPostRequest event, User owner);
+    Event create(EventPostRequest event, User owner) throws Fail;
 
     EventRsvp confirmEventAssistance(UUID eventId, User user);
 

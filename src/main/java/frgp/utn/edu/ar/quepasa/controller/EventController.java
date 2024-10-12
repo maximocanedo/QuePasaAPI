@@ -45,7 +45,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) {
+    public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.create(event, me));
     }
@@ -91,6 +91,11 @@ public class EventController {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
         return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Fail.class)
+    public ResponseEntity<?> handleFail(Fail e) {
+        return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
