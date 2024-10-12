@@ -11,8 +11,12 @@ import java.util.Optional;
 @Service
 public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
+    private final NeighbourhoodRepository neighbourhoodRepository;
+
     @Autowired
-    private NeighbourhoodRepository neighbourhoodRepository;
+    public NeighbourhoodServiceImpl(NeighbourhoodRepository neighbourhoodRepository) {
+        this.neighbourhoodRepository = neighbourhoodRepository;
+    }
 
     // Crear un nuevo barrio
     @Override

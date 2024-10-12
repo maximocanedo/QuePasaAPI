@@ -25,11 +25,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
+
     private final EventService eventService;
     private final AuthenticationService authenticationService;
 
     @Autowired
-    EventController(EventService eventService, AuthenticationService authenticationService) {
+    public EventController(EventService eventService, AuthenticationService authenticationService) {
         this.eventService = eventService;
         this.authenticationService = authenticationService;
     }

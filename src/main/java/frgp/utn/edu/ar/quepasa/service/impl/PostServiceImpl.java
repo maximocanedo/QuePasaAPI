@@ -6,7 +6,6 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
@@ -29,17 +28,19 @@ import java.nio.file.AccessDeniedException;
 public class PostServiceImpl implements PostService {
 
     private final OwnerService ownerService;
-
     private final PostRepository postRepository;
-
     private final PostSubtypeRepository postSubtypeRepository;
-
     private final UserRepository userRepository;
-
     private final NeighbourhoodRepository neighbourhoodRepository;
 
-    public PostServiceImpl(OwnerService ownerService, PostRepository postRepository, PostSubtypeRepository postSubtypeRepository,
-                           UserRepository userRepository, NeighbourhoodRepository neighbourhoodRepository) {
+    @Autowired
+    public PostServiceImpl(
+            OwnerService ownerService,
+            PostRepository postRepository,
+            PostSubtypeRepository postSubtypeRepository,
+            UserRepository userRepository,
+            NeighbourhoodRepository neighbourhoodRepository
+    ) {
         this.ownerService = ownerService;
         this.postRepository = postRepository;
         this.postSubtypeRepository = postSubtypeRepository;

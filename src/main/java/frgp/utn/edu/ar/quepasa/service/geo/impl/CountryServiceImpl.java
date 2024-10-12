@@ -13,9 +13,12 @@ import java.util.Optional;
 @Service
 public class CountryServiceImpl implements CountryService {
 
-    @Autowired
-    @Lazy
     private CountryRepository countryRepository;
+
+    @Autowired @Lazy
+    public void setCountryRepository(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
 
     @Override
     public Country save(Country country) {

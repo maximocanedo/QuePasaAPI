@@ -29,13 +29,19 @@ import java.util.UUID;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
+  
     private final OwnerService ownerService;
     private final EventRepository eventRepository;
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final EventRsvpRepository eventRsvpRepository;
 
     @Autowired
-    public EventServiceImpl(OwnerService ownerService, EventRepository eventRepository, NeighbourhoodRepository neighbourhoodRepository, EventRsvpRepository eventRsvpRepository) {
+    public EventServiceImpl(
+            OwnerService ownerService,
+            EventRepository eventRepository,
+            NeighbourhoodRepository neighbourhoodRepository,
+            EventRsvpRepository eventRsvpRepository
+    ) {
         this.ownerService = ownerService;
         this.eventRepository = eventRepository;
         this.neighbourhoodRepository = neighbourhoodRepository;

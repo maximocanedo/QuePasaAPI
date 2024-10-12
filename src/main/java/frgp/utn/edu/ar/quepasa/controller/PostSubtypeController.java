@@ -1,8 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
-
 @RestController
 @RequestMapping("/api/post-subtypes")
 public class PostSubtypeController {
 
     private final PostSubtypeService postSubtypeService;
+
     private final AuthenticationService authenticationService;
 
+    @Autowired
     public PostSubtypeController(PostSubtypeService postSubtypeService, AuthenticationService authenticationService) {
         this.postSubtypeService = postSubtypeService;
         this.authenticationService = authenticationService;

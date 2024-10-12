@@ -1,7 +1,5 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
-
 @RestController
 @RequestMapping("/api/post-types")
 public class PostTypeController {
@@ -20,7 +16,8 @@ public class PostTypeController {
     private final PostTypeService postTypeService;
     private final AuthenticationService authenticationService;
 
-    public PostTypeController(PostTypeService postTypeService, AuthenticationService authenticationService) {
+    @Autowired
+    public PostTypeController(PostTypeService postTypeService) {
         this.postTypeService = postTypeService;
         this.authenticationService = authenticationService;
     }

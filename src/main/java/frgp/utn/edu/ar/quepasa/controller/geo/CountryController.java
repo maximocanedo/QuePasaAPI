@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller.geo;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
+import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.CountryService;
 import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,12 @@ import java.util.Optional;
 @RequestMapping("/api/countries")
 public class CountryController {
 
-    @Lazy @Autowired private CountryService countryService;
+    private CountryService countryService;
+
+    @Lazy @Autowired
+    public void setCountryService(CountryService countryService) {
+        this.countryService = countryService;
+    }
 
     @GetMapping("/{iso}")
     public ResponseEntity<Optional<Country>> getCountry(@PathVariable String iso) {

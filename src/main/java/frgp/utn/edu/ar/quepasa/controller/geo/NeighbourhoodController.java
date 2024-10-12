@@ -13,8 +13,12 @@ import java.util.Optional;
 @RequestMapping("/api/neighbourhoods")
 public class NeighbourhoodController {
 
+    private final NeighbourhoodService neighbourhoodService;
+
     @Autowired
-    private NeighbourhoodService neighbourhoodService;
+    public NeighbourhoodController(NeighbourhoodService neighbourhoodService) {
+        this.neighbourhoodService = neighbourhoodService;
+    }
 
     // Crear un nuevo barrio
     @PostMapping

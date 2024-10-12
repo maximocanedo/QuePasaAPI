@@ -19,7 +19,12 @@ import java.util.Optional;
 @RequestMapping("/api/pictures")
 public class PictureController {
 
-    @Autowired @Lazy private PictureService pictureService;
+    private PictureService pictureService;
+
+    @Autowired @Lazy
+    public void setPictureService(PictureService pictureService) {
+        this.pictureService = pictureService;
+    }
 
     @PostMapping
     public ResponseEntity<Picture> upload(

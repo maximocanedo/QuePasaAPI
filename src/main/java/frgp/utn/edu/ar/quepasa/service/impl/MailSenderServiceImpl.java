@@ -13,7 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailSenderServiceImpl implements frgp.utn.edu.ar.quepasa.service.MailSenderService {
 
-    @Autowired private Session mailSession;
+    private final Session mailSession;
+
+    @Autowired
+    public MailSenderServiceImpl(Session mailSession) {
+        this.mailSession = mailSession;
+    }
 
     @Override
     public void send(String to, String subject, String body) throws AddressException, MessagingException {
