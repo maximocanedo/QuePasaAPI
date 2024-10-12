@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +24,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,14 +33,16 @@ import static org.mockito.Mockito.when;
 
 public class PostSubtypeServiceTests {
 
-    @Mock private PostSubtypeRepository postSubtypeRepository;
-    @Mock private PostTypeRepository postTypeRepository;
-    @Mock private UserRepository userRepository;
-    @InjectMocks private PostSubtypeServiceImpl postSubtypeService;
+    private PostSubtypeRepository postSubtypeRepository;
+    private PostTypeRepository postTypeRepository;
+    private PostSubtypeServiceImpl postSubtypeService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        this.postSubtypeRepository = Mockito.mock(PostSubtypeRepository.class);
+        this.postTypeRepository = Mockito.mock(PostTypeRepository.class);
+
+        this.postSubtypeService = new PostSubtypeServiceImpl(postSubtypeRepository, postTypeRepository);
     }
 
     @Test
@@ -167,7 +171,7 @@ public class PostSubtypeServiceTests {
             postSubtypeService.create(request);
         });
 
-        assertEquals("Type not found", exception.getMessage());
+        assertEquals("No value present", exception.getMessage());
     }
 
     @Test
@@ -239,11 +243,11 @@ public class PostSubtypeServiceTests {
         request.setType(idType);
         request.setDescription("Entretenimiento");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             postSubtypeService.update(id, request);
         });
 
-        assertEquals("Type not found", exception.getMessage());
+        assertEquals("No value present", exception.getMessage());
     }
 
     @Test

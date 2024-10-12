@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
+import frgp.utn.edu.ar.quepasa.service.validators.PostTypeObjectValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +44,9 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     @Override
     public PostSubtype create(PostSubtypeRequest newSubtype) {
         PostSubtype subtype = new PostSubtype();
-        PostType type = postTypeRepository.findById(newSubtype.getType())
-                .orElseThrow(() -> new ResourceNotFoundException("Type not found"));
+        var type = new PostTypeObjectValidatorBuilder(newSubtype.getType(), postTypeRepository)
+                .isActive(postTypeRepository)
+                .build();
         subtype.setType(type);
         subtype.setDescription(newSubtype.getDescription());
         postSubtypeRepository.save(subtype);
@@ -54,8 +56,9 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     @Override
     public PostSubtype update(Integer id, PostSubtypeRequest newSubtype) {
         PostSubtype subtype = findById(id);
-        PostType type = postTypeRepository.findById(newSubtype.getType())
-                .orElseThrow(() -> new ResourceNotFoundException("Type not found"));
+        var type = new PostTypeObjectValidatorBuilder(newSubtype.getType(), postTypeRepository)
+                .isActive(postTypeRepository)
+                .build();
         subtype.setType(type);
         subtype.setDescription(newSubtype.getDescription());
         postSubtypeRepository.save(subtype);

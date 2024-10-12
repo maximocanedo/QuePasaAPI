@@ -16,9 +16,12 @@ public class PostSubtypeController {
 
     private final PostSubtypeService postSubtypeService;
 
+    private final AuthenticationService authenticationService;
+
     @Autowired
-    public PostSubtypeController(PostSubtypeService postSubtypeService) {
+    public PostSubtypeController(PostSubtypeService postSubtypeService, AuthenticationService authenticationService) {
         this.postSubtypeService = postSubtypeService;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping

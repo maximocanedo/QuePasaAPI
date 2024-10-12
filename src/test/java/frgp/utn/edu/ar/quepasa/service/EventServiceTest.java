@@ -9,9 +9,7 @@ import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +24,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class EventServiceTest {
-    @Mock private EventRepository eventRepository;
-    @Mock private EventRsvpRepository eventRsvpRepository;
-    @Mock private NeighbourhoodRepository neighbourhoodRepository;
-    @InjectMocks private EventServiceImpl eventService;
+    private EventRepository eventRepository;
+    private EventRsvpRepository eventRsvpRepository;
+    private NeighbourhoodRepository neighbourhoodRepository;
+    private EventServiceImpl eventService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        this.eventRepository = Mockito.mock(EventRepository.class);
+        this.eventRsvpRepository = Mockito.mock(EventRsvpRepository.class);
+        this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
+        OwnerService ownerService = Mockito.mock(OwnerService.class);
+        this.eventService = new EventServiceImpl(ownerService, eventRepository, neighbourhoodRepository, eventRsvpRepository);
     }
 
 

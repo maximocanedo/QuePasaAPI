@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,13 +28,14 @@ import static org.mockito.Mockito.when;
 
 public class PostTypeServiceTests {
 
-    @Mock private PostTypeRepository postTypeRepository;
-    @Mock private UserRepository userRepository;
-    @InjectMocks private PostTypeServiceImpl postTypeService;
+    private PostTypeRepository postTypeRepository;
+    private PostTypeServiceImpl postTypeService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        this.postTypeRepository = Mockito.mock(PostTypeRepository.class);
+
+        this.postTypeService = new PostTypeServiceImpl(postTypeRepository);
     }
 
     @Test

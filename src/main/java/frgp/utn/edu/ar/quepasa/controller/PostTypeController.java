@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 public class PostTypeController {
 
     private final PostTypeService postTypeService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     public PostTypeController(PostTypeService postTypeService) {
         this.postTypeService = postTypeService;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping
