@@ -6,12 +6,15 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,39 +33,48 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
+@Transactional
 public class OwnerServiceTests {
 
-    @MockBean
-    private UserRepository userRepository;
-    @Mock private AuthenticationServiceImpl authenticationService;
-    @InjectMocks
-    private OwnerServiceImpl ownerService;
+    private final UserRepository userRepository;
+    private final AuthenticationServiceImpl authenticationService;
+    private final OwnerServiceImpl ownerService;
 
     User mockUser = new User();
 
+    public OwnerServiceTests() {
+        userRepository = Mockito.mock(UserRepository.class);
+        authenticationService = Mockito.mock(AuthenticationServiceImpl.class);
+        ownerService = new OwnerServiceImpl(authenticationService);
+    }
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         var username = "albahaca";
         mockUser.setUsername(username);
         mockUser.setName("Chocolate con albahaca");
         mockUser.setAddress("Alvear 5050");
-        when(authenticationService.getCurrentUser()).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
     }
 
 
     @Test
-    @WithMockUser(username = "root")
+    @WithMockUser(username = "root", roles = { "ADMIN" })
     public void test() {
+        User mockUser = new User();
+        var username = "albahaca";
+        mockUser.setUsername(username);
+        mockUser.setName("Chocolate con albahaca");
+        mockUser.setAddress("Alvear 5050");
         Ownable post = new Post();
         post.setOwner(mockUser);
         when(authenticationService.getCurrentUser()).thenReturn(Optional.of(mockUser));
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
 
         assertDoesNotThrow(() -> {
             ownerService.of(post)
                     .isOwner()
+                    .isAdmin()
                     .orElseFail();
         });
     }

@@ -127,7 +127,6 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
         ownerService.of(event)
                 .isAdmin()
-                .or()
                 .isOwner()
                 .orElseFail();
 
@@ -192,9 +191,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
         ownerService.of(event)
                 .isOwner()
-                .or()
                 .isAdmin()
-                .or()
                 .isModerator()
                 .orElseFail();
         event.setActive(false);
