@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,19 +28,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(SpringExtension.class)
 @Transactional
+@SpringBootTest()
+@ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Controladores de entidades subnacionales")
 public class StateControllerTests {
-
     @Autowired
     private MockMvc mockMvc;
-    private SubnationalDivisionRepository repository;
-    private CountryRepository countries;
+    private final SubnationalDivisionRepository repository;
+    private final CountryRepository countries;
     private SubnationalDivisionServiceImpl service;
-    @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public StateControllerTests() {
         repository = Mockito.mock(SubnationalDivisionRepository.class);
@@ -54,9 +54,7 @@ public class StateControllerTests {
 
     }
 
-
     @Test
-    @WithMockUser(username = "root", roles = "ADMIN")
     @DisplayName("Crear registro de estado")
     public void create() throws Exception {
         var argentina = new Country();
@@ -64,12 +62,11 @@ public class StateControllerTests {
         var file = new SubnationalDivision();
         file.setLabel("Provincia Cisplatina");
         file.setCountry(argentina);
-        file.setIso3("AR-URU");
+        file.setIso3("AR-URY");
         file.setDenomination(SubnationalDivisionDenomination.PROVINCE);
-        when(repository.existsByIso3("AR-URU")).thenReturn(false);
+        when(repository.existsByIso3("AR-URY")).thenReturn(false);
         when(countries.existsByIso3("ARG")).thenReturn(true);
         when(repository.save(any())).thenReturn(file);
-
 
         mockMvc.perform(post("/api/states")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -77,9 +74,88 @@ public class StateControllerTests {
                 .content(objectMapper.writeValueAsString(file))
         )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.iso3").value("AR-URU"));
+                .andExpect(jsonPath("$.iso3").value("AR-URY"));
+    }
 
+    @Test
+    @DisplayName("Crear registro de estado, código ISO 3166-2 inválido")
+    public void createWithInvalidIso31662Code() throws Exception {
+        var argentina = new Country();
+        argentina.setIso3("ARG");
+        var file = new SubnationalDivision();
+        file.setLabel("Provincia Cisplatina");
+        file.setCountry(argentina);
+        file.setIso3("AR%·$%");
+        file.setDenomination(SubnationalDivisionDenomination.PROVINCE);
+        when(repository.existsByIso3("AR-URU")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        when(repository.save(any())).thenReturn(file);
 
+        mockMvc.perform(post("/api/states")
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(file))
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.iso3").doesNotExist())
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("iso3"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    @DisplayName("Crear registro de estado, nombre inválido")
+    public void createWithInvalidName() throws Exception {
+        var argentina = new Country();
+        argentina.setIso3("ARG");
+        var file = new SubnationalDivision();
+        file.setCountry(argentina);
+        file.setLabel("A$·%&ASDF");
+        file.setIso3("AR-XXZ");
+        file.setDenomination(SubnationalDivisionDenomination.PROVINCE);
+        when(repository.existsByIso3("AR-XXZ")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        when(repository.save(any())).thenReturn(file);
+
+        mockMvc.perform(post("/api/states")
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(file))
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.iso3").doesNotExist())
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("label"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    @DisplayName("Crear registro de estado, país no existente")
+    public void createWithInvalidCountry() throws Exception {
+        var uruguay = new Country();
+        uruguay.setIso3("UYU");
+        var file = new SubnationalDivision();
+        file.setCountry(uruguay);
+        file.setLabel("Departamento de Montevideo");
+        file.setIso3("UY-XXZ");
+        file.setDenomination(SubnationalDivisionDenomination.PROVINCE);
+        when(repository.existsByIso3("AR-XXZ")).thenReturn(false);
+        when(countries.existsByIso3("UYU")).thenReturn(false);
+        when(repository.save(any())).thenReturn(file);
+
+        mockMvc.perform(post("/api/states")
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(file))
+                )
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.iso3").doesNotExist())
+                .andExpect(jsonPath("$.field").exists())
+                .andExpect(jsonPath("$.field").value("country"))
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors").isArray());
     }
 
 }

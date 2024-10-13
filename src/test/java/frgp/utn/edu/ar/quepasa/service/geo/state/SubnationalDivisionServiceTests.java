@@ -116,11 +116,11 @@ public class SubnationalDivisionServiceTests {
     @Test
     @DisplayName("Creación: País inexistente")
     public void createWithInvalidCountry() {
-        var argentina = new Country();
-        argentina.setIso3("ARG");
+        var uruguay = new Country();
+        uruguay.setIso3("UYU");
         var file = new SubnationalDivision();
         file.setLabel("Provincia Cisplatina");
-        file.setCountry(argentina);
+        file.setCountry(uruguay);
         file.setLabel("A$·%&ASDF");
         file.setIso3("AR-URU");
         file.setDenomination(SubnationalDivisionDenomination.PROVINCE);
