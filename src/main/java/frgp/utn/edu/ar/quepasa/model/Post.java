@@ -1,7 +1,9 @@
 package frgp.utn.edu.ar.quepasa.model;
 
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -11,7 +13,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "posts")
-public class Post implements Ownable {
+public class Post implements Ownable, Votable {
     
     private Integer id;
     private User owner;
@@ -23,6 +25,8 @@ public class Post implements Ownable {
     private Timestamp timestamp;
     private String tags;
     private boolean active = true;
+
+    private VoteCount votes;
 
     public Post() {}
 
@@ -101,5 +105,11 @@ public class Post implements Ownable {
     @Column(nullable = false)
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    @Override
+    @Transient
+    public VoteCount getVotes() {
+        return votes;
+    }
 
 }

@@ -1,6 +1,8 @@
 package frgp.utn.edu.ar.quepasa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
+import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -12,12 +14,14 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "comments")
-public class Comment implements Ownable {
+public class Comment implements Ownable, Votable {
     private UUID id;
     private String content;
     private User author;
     private Timestamp timestamp;
     private boolean active;
+
+    private VoteCount votes;
 
     /**
      * Devuelve el ID del comentario.
@@ -65,5 +69,11 @@ public class Comment implements Ownable {
     @Column(nullable=false)
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    @Override
+    @Transient
+    public VoteCount getVotes() {
+        return votes;
+    }
 
 }

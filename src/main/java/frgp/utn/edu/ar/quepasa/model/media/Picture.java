@@ -7,8 +7,10 @@ import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeConverter;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeDeserializer;
 import frgp.utn.edu.ar.quepasa.config.converter.MediaTypeSerializer;
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
 import org.springframework.http.MediaType;
 
@@ -21,13 +23,15 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "pictures")
-public class Picture implements Ownable {
+public class Picture implements Ownable, Votable {
     private UUID id;
     private String description;
     private boolean active = true;
     private MediaType mediaType = MediaType.TEXT_PLAIN;
     private Timestamp uploadedAt = null;
     private User owner;
+
+    private VoteCount votes;
 
     /**
      * Devuelve el ID de la imagen.
@@ -73,5 +77,11 @@ public class Picture implements Ownable {
     @Column
     public Timestamp getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(Timestamp uploadedAt) { this.uploadedAt = uploadedAt; }
+
+    @Override
+    @Transient
+    public VoteCount getVotes() {
+        return votes;
+    }
 
 }

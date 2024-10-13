@@ -28,21 +28,21 @@ public class Vote {
      */
     @ManyToOne
     @JoinColumn(name = "voter")
-    User getVoter() { return voter; }
-    void setVoter(User voter) { this.voter = voter; }
+    public User getVoter() { return voter; }
+    public void setVoter(User voter) { this.voter = voter; }
 
     /**
      * Devuelve el voto emitido.
      * @return 1 para un voto positivo, -1 para un voto negativo y 0 si el voto fue retirado.
      */
     @Column(nullable = false)
-    int getVote() { return vote; }
-    void setVote(int vote) { this.vote = vote; }
+    public int getVote() { return vote; }
+    public void setVote(int vote) { this.vote = vote; }
 
     /**
      * Devuelve fecha y hora de emisión del voto.
      */
     @Column(nullable = false)
-    Timestamp getTimestamp() { return timestamp; }
-    void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+    public Timestamp getTimestamp() { return timestamp; }
+    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
 }
