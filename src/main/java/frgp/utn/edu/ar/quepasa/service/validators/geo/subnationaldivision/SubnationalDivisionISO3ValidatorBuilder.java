@@ -16,7 +16,7 @@ public class SubnationalDivisionISO3ValidatorBuilder extends ValidatorBuilder<St
     }
 
     public SubnationalDivisionISO3ValidatorBuilder isNotNullOrEmpty() {
-        if(getValue() != null && getValue().isBlank()) {
+        if(getValue() == null || getValue().isBlank()) {
             super.invalidate("El valor ingresado no es válido y no corresponde a un código ISO 3166-2. ");
         }
         return this;

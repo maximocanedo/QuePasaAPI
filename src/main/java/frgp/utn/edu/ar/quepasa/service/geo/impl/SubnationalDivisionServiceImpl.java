@@ -45,6 +45,7 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
         file.setLabel(label);
         file.setCountry(country);
         file.setActive(true);
-        return repository.save(file);
+        var saved = repository.save(file);
+        return saved;
     }
 }
