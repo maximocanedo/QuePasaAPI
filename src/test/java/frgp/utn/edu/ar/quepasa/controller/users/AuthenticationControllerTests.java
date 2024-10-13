@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Controladores de autenticación")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthenticationControllerTests {
 

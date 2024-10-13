@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@DisplayName("Servicio de tipos de publicaciones")
 public class PostTypeServiceTests {
 
     private PostTypeRepository postTypeRepository;

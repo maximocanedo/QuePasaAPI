@@ -23,6 +23,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@DisplayName("Servicio de eventos")
 public class EventServiceTest {
     private EventRepository eventRepository;
     private EventRsvpRepository eventRsvpRepository;

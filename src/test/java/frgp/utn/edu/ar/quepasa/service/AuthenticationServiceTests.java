@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
+@DisplayName("Servicio de autenticación")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticationServiceTests {
 

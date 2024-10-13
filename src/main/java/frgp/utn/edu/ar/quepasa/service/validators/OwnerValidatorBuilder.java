@@ -2,84 +2,110 @@ package frgp.utn.edu.ar.quepasa.service.validators;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
+import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Objects;
 
 public class OwnerValidatorBuilder {
 
-    @NotNull
-    private final AuthenticationService authenticationService;
     private final Ownable object;
     private boolean result;
     private String message;
+    private User current = null;
 
-    public OwnerValidatorBuilder(@NotNull Ownable object, @NotNull AuthenticationService authenticationService) {
+    public OwnerValidatorBuilder(@NotNull Ownable object, @NotNull User current) {
         this.object = object;
-        this.authenticationService = authenticationService;
+        this.current = current;
         this.result = true;
         this.message = "";
     }
+    public static OwnerValidatorBuilder create(Ownable object, User currentUser) {
+        return new OwnerValidatorBuilder(object, currentUser);
+    }
+
+    private User getCurrentUser() {
+        /**Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         var user = (UserDetails) authentication.getPrincipal();
+         return user;**/
+        return current;
+    }
+
+    private void letWith(Role role) {
+        User user = getCurrentUser();
+        if(user.getRole() != null) {
+            result = result && (
+                    user.getRole().name().equalsIgnoreCase(role.name())
+            );
+            return;
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var details = (UserDetails) authentication.getPrincipal();
+        if(details.getAuthorities() != null && !details.getAuthorities().isEmpty()) {
+            result = result && (
+                    details.getAuthorities().contains(new SimpleGrantedAuthority(role.name()))
+                    ||
+                    details.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + role.name()))
+            );
+        }
+    }
+
 
     public OwnerValidatorBuilder isOwner() {
-        var user = authenticationService.getCurrentUserOrDie();
+        var user = getCurrentUser();
         result = result && Objects.equals(object.getOwner().getUsername(), user.getUsername());
         if(!result) message += "No es dueño del registro. ";
         return this;
     }
 
     public OwnerValidatorBuilder isAdmin() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.ADMIN);
+        letWith(Role.ADMIN);
         if(!result) message += "No es administrador. ";
         return this;
     }
 
     public OwnerValidatorBuilder isModerator() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.MOD);
+        letWith(Role.MOD);
         if(!result) message += "No es moderador. ";
         return this;
     }
 
     public OwnerValidatorBuilder isGovernment() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.GOVT);
+        letWith(Role.GOVT);
         if(!result) message += "No es entidad gubernamental. ";
         return this;
     }
 
     public OwnerValidatorBuilder isOrganization() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.ORGANIZATION);
+        letWith(Role.ORGANIZATION);
         if(!result) message += "No es organización. ";
         return this;
     }
 
     public OwnerValidatorBuilder isContributor() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.CONTRIBUTOR);
+        letWith(Role.CONTRIBUTOR);
         if(!result) message += "No es contribuidor. ";
         return this;
     }
 
 
+    public OwnerValidatorBuilder isNeighbour() {
+        letWith(Role.NEIGHBOUR);
+        if(!result) message += "No es vecino autenticado. ";
+        return this;
+    }
+
+
     public OwnerValidatorBuilder isUser() {
-        var user = authenticationService.getCurrentUserOrDie();
-        result = result && (user.getRole() == Role.USER);
+        letWith(Role.USER);
         if(!result) message += "No es usuario. ";
-        return this;
-    }
-
-    public OwnerValidatorBuilder and() {
-        return this;
-    }
-
-    public OwnerValidatorBuilder or() {
-        this.result = false;
         return this;
     }
 

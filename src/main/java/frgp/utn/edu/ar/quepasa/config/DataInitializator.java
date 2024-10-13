@@ -61,6 +61,7 @@ public class DataInitializator implements CommandLineRunner {
         tigre.setSubdivision(bsAsProv);
         tigre.setActive(true);
         Neighbourhood rincon = new Neighbourhood();
+        rincon.setId(124 + System.currentTimeMillis());
         rincon.setName("Rincón de Milberg");
         rincon.setActive(true);
         rincon.setCity(tigre);

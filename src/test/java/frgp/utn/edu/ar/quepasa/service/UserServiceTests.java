@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+@DisplayName("Servicio de usuarios")
 public class UserServiceTests {
 
     @Mock private UserRepository userRepository;

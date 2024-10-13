@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@DisplayName("Servicio de publicaciones")
 public class PostServiceTests {
 
     private PostRepository postRepository;
