@@ -63,6 +63,8 @@ public class SecurityConfig {
 
                     request.requestMatchers(HttpMethod.GET, "/api/countries", "/api/countries/**")
                                     .permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/api/states")
+                                    .hasAuthority(Role.ADMIN.name());
                     // Fin sección usuarios
 
                     // Sección tipos de publicaciones

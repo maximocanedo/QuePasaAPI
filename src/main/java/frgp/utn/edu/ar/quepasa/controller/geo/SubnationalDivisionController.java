@@ -23,7 +23,7 @@ public class SubnationalDivisionController {
 
     @PostMapping
     public ResponseEntity<SubnationalDivision> create(@RequestBody SubnationalDivision subnationalDivision) {
-        return ResponseEntity.ok(subnationalDivisionService.save(subnationalDivision));
+        return ResponseEntity.status(201).body(subnationalDivisionService.save(subnationalDivision));
     }
 
 
