@@ -1,7 +1,8 @@
-package frgp.utn.edu.ar.quepasa.service.geo;
-
+package frgp.utn.edu.ar.quepasa.service.geo.impl;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
