@@ -197,4 +197,31 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
         roleUpdateRequest.setReviewer(authenticationService.getCurrentUserOrDie());
         roleUpdateRequestRepository.save(roleUpdateRequest);
     }
+
+    @Override
+    public RoleUpdateRequest respondToRoleUpdateRequest(UUID requestId, boolean approve, String reviewerRemarks) {
+        User currentUser = authenticationService.getCurrentUserOrDie();
+        if (currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.MOD) {
+            throw new Fail("No tiene permiso para revisar esta solicitud.", HttpStatus.FORBIDDEN);
+        }
+
+        RoleUpdateRequest request = roleUpdateRequestRepository.findById(requestId)
+                .orElseThrow(() -> new Fail("Solicitud no encontrada", HttpStatus.NOT_FOUND));
+
+        if (request.getStatus() != RequestStatus.WAITING) {
+            throw new Fail("Esta solicitud ya ha sido procesada.", HttpStatus.BAD_REQUEST);
+        }
+        if (approve) {
+            request.setStatus(RequestStatus.APPROVED);
+            User requester = request.getRequester();
+            requester.setRole(request.getRequestedRole());
+            userRepository.save(requester);
+        } else {
+            request.setStatus(RequestStatus.REJECTED);
+        }
+        request.setReviewer(currentUser);
+        request.setRemarks(reviewerRemarks);
+        return roleUpdateRequestRepository.save(request);
+    }
+
 }
