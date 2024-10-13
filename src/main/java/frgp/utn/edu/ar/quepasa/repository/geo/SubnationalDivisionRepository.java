@@ -11,4 +11,6 @@ public interface SubnationalDivisionRepository extends JpaRepository<Subnational
 
     Optional<SubnationalDivision> findByIso3(String iso3);
 
+    boolean existsByIso3(String iso3);
+
 }
