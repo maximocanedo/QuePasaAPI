@@ -20,10 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +54,29 @@ public class StateControllerTests {
     @BeforeAll
     public void setup() {
 
+    }
+
+    @Test
+    @DisplayName("Buscar provincias por país")
+    public void search() throws Exception {
+        when(repository.getAllFrom(argentina().getIso3())).thenReturn(List.of(santaFe(), chubut()));
+        when(repository.getAllFrom(uruguay().getIso3())).thenReturn(List.of(soriano()));
+
+        mockMvc.perform(get("/api/countries/ARG/states"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0]").exists())
+                .andExpect(jsonPath("$[0].iso3").exists());
+    }
+
+    @Test
+    @DisplayName("Buscar provincia específica")
+    public void searchOne() throws Exception {
+
+        mockMvc.perform(get("/api/states/AR-U"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.iso3").exists())
+                .andExpect(jsonPath("$.iso3").value("AR-U"));
     }
 
     @Test
@@ -156,6 +181,42 @@ public class StateControllerTests {
                 .andExpect(jsonPath("$.field").value("country"))
                 .andExpect(jsonPath("$.errors").exists())
                 .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    public Country uruguay() {
+        var uruguay = new Country();
+        uruguay.setIso3("UYU");
+        return uruguay;
+    }
+
+    public Country argentina() {
+        var argentina = new Country();
+        argentina.setIso3("ARG");
+        return argentina;
+    }
+
+    public SubnationalDivision soriano() {
+        var p1 = new SubnationalDivision();
+        p1.setCountry(uruguay());
+        p1.setLabel("Soriano");
+        p1.setIso3("UY-SO");
+        return p1;
+    }
+
+    public SubnationalDivision santaFe() {
+        var p1 = new SubnationalDivision();
+        p1.setCountry(argentina());
+        p1.setLabel("Santa Fe");
+        p1.setIso3("AR-S");
+        return p1;
+    }
+
+    public SubnationalDivision chubut() {
+        var p1 = new SubnationalDivision();
+        p1.setCountry(argentina());
+        p1.setLabel("Chubut");
+        p1.setIso3("AR-U");
+        return p1;
     }
 
 }

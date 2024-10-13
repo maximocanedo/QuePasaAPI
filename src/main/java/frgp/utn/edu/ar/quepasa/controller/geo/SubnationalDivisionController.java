@@ -26,6 +26,11 @@ public class SubnationalDivisionController {
         return ResponseEntity.status(201).body(subnationalDivisionService.save(subnationalDivision));
     }
 
+    @GetMapping("/{iso}")
+    public ResponseEntity<SubnationalDivision> findByIso(@PathVariable String iso) {
+        return ResponseEntity.ok(subnationalDivisionService.getById(iso));
+    }
+
 
     @ExceptionHandler(Fail.class)
     public ResponseEntity<ResponseError> handleFail(Fail e) {

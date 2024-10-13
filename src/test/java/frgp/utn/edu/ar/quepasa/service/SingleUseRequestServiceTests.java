@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Servicio de solicitudes de un sólo uso")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SingleUseRequestServiceTests {
 
