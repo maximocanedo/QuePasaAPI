@@ -76,4 +76,10 @@ public class Comment implements Ownable, Votable {
         return votes;
     }
 
+    @Override
+    @Transient
+    public void setVotes(VoteCount votes) {
+        this.votes = votes;
+    }
+
 }

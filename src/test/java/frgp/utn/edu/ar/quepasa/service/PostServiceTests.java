@@ -13,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.PostServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.impl.VoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ public class PostServiceTests {
 
     private PostRepository postRepository;
     private PostSubtypeRepository postSubtypeRepository;
+    private VoteService voteService;
     private UserRepository userRepository;
     private NeighbourhoodRepository neighbourhoodRepository;
     private PostServiceImpl postService;
@@ -45,11 +47,12 @@ public class PostServiceTests {
     public void setup() {
         this.postRepository = Mockito.mock(PostRepository.class);
         this.postSubtypeRepository = Mockito.mock(PostSubtypeRepository.class);
+        this.voteService = Mockito.mock(VoteServiceImpl.class);
         this.userRepository = Mockito.mock(UserRepository.class);
         this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
         OwnerService ownerService = Mockito.mock(OwnerService.class);
 
-        this.postService = new PostServiceImpl(ownerService, postRepository, postSubtypeRepository, userRepository, neighbourhoodRepository);
+        this.postService = new PostServiceImpl(ownerService, voteService, postRepository, postSubtypeRepository, userRepository, neighbourhoodRepository);
     }
 
     @Test

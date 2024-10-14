@@ -67,7 +67,13 @@ public class Event implements Ownable, Votable {
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public void setAudience(Audience audience) { this.audience = audience; }
     public void setActive(boolean active) { this.active = active; }
-    
+
+    @Override
+    @Transient
+    public void setVotes(VoteCount votes) {
+        this.votes = votes;
+    }
+
     @ManyToMany
     @JoinTable(
         name = "event_neighbourhoods",

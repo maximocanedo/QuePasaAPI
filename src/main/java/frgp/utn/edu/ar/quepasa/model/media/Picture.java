@@ -84,4 +84,10 @@ public class Picture implements Ownable, Votable {
         return votes;
     }
 
+    @Override
+    @Transient
+    public void setVotes(VoteCount votes) {
+        this.votes = votes;
+    }
+
 }

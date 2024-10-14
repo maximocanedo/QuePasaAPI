@@ -13,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
+import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.validators.PostSubtypeObjectValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.nio.file.AccessDeniedException;
 public class PostServiceImpl implements PostService {
 
     private final OwnerService ownerService;
+    private final VoteService voteService;
     private final PostRepository postRepository;
     private final PostSubtypeRepository postSubtypeRepository;
     private final UserRepository userRepository;
@@ -35,13 +37,14 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     public PostServiceImpl(
-            OwnerService ownerService,
+            OwnerService ownerService, VoteService voteService,
             PostRepository postRepository,
             PostSubtypeRepository postSubtypeRepository,
             UserRepository userRepository,
             NeighbourhoodRepository neighbourhoodRepository
     ) {
         this.ownerService = ownerService;
+        this.voteService = voteService;
         this.postRepository = postRepository;
         this.postSubtypeRepository = postSubtypeRepository;
         this.userRepository = userRepository;
@@ -49,19 +52,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> listPost(Pageable pageable) { return postRepository.findAll(pageable); }
+    public Page<Post> listPost(Pageable pageable) {
+        return postRepository.findAll(pageable).map(voteService::populate);
+    }
 
     @Override
     public Post findById(Integer id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        return voteService.populate(postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found")));
     }
 
     @Override
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return postRepository.findByOwner(user, pageable);
+        return postRepository.findByOwner(user, pageable).map(voteService::populate);
     }
 
     @Override
@@ -82,19 +87,16 @@ public class PostServiceImpl implements PostService {
         post.setTimestamp(newPost.getTimestamp());
         post.setTags(newPost.getTags());
         postRepository.save(post);
-        return post;
+        return voteService.populate(post);
     }
 
     @Override
     public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
-        /* TODO: Implementar cuando #104 esté resuelto
         ownerService.of(post)
                 .isOwner()
-                .or()
                 .isAdmin()
                 .orElseFail();
-         */
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
             var subtype = new PostSubtypeObjectValidatorBuilder(newPost.getSubtype(), postSubtypeRepository)
@@ -111,21 +113,17 @@ public class PostServiceImpl implements PostService {
         }
         if(newPost.getTags() != null) post.setTags(newPost.getTags());
         postRepository.save(post);
-        return post;
+        return voteService.populate(post);
     }
 
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
-        /* TODO: Implementar cuando #104 esté resuelto
         ownerService.of(post)
                 .isOwner()
-                .or()
                 .isAdmin()
-                .or()
                 .isModerator()
                 .orElseFail();
-         */
         post.setActive(false);
         postRepository.save(post);
     }

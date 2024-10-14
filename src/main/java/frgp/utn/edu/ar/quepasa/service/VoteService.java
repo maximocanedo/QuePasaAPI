@@ -18,4 +18,9 @@ public interface VoteService {
     VoteCount count(Post file);
     VoteCount count(Event event);
 
+    Comment populate(Comment file);
+    Picture populate(Picture file);
+    Post populate(Post file);
+    Event populate(Event event);
+
 }

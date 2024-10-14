@@ -30,6 +30,12 @@ public class Post implements Ownable, Votable {
 
     public Post() {}
 
+    public static Post identify(Integer id) {
+        Post post = new Post();
+        post.setId(id);
+        return post;
+    }
+
     /**
      * Devuelve el ID único de la publicación.
      */
@@ -110,6 +116,12 @@ public class Post implements Ownable, Votable {
     @Transient
     public VoteCount getVotes() {
         return votes;
+    }
+
+    @Override
+    @Transient
+    public void setVotes(VoteCount votes) {
+        this.votes = votes;
     }
 
 }

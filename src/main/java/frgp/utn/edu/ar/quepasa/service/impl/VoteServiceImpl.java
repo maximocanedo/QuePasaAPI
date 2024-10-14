@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 public class VoteServiceImpl implements VoteService {
@@ -135,4 +136,29 @@ public class VoteServiceImpl implements VoteService {
             eventVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername())
         );
     }
+
+    @Override
+    public Comment populate(Comment file) {
+        file.setVotes(count(file));
+        return file;
+    }
+
+    @Override
+    public Picture populate(Picture file) {
+        file.setVotes(count(file));
+        return file;
+    }
+
+    @Override
+    public Post populate(Post file) {
+        file.setVotes(count(file));
+        return file;
+    }
+
+    @Override
+    public Event populate(Event file) {
+        file.setVotes(count(file));
+        return file;
+    }
+
 }
