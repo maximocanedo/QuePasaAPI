@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.fakedata;
 
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
@@ -13,6 +14,8 @@ import org.springframework.http.MediaType;
 
 import java.sql.Timestamp;
 import java.util.UUID;
+
+import static frgp.utn.edu.ar.quepasa.model.enums.Audience.PUBLIC;
 
 public class NapoleonBonaparteInspiredData {
 
@@ -172,6 +175,25 @@ public class NapoleonBonaparteInspiredData {
         art.setDescription("Retrato del Dr. Fulano de Tal.");
         return art;
     }
+
+    public Post post_A() {
+        var post = new Post();
+        post.setActive(true);
+        post.setId(404);
+        post.setNeighbourhood(longwood());
+        post.setTitle("Un destino que no comprenden");
+        post.setDescription(
+                "Me acusarán de mil cosas, pero ¿Quién puede realmente juzgarme? Exiliado en esta isla donde el viento trae recuerdos de mi gloria. Europa tiembla todavía ante mi sombra, mientras los pequeños hombres discuten mi legado en sus salones. ¡Qué fácil es criticar desde la comodidad! No entienden el peso de una corona ni el arte de una campaña. Aquí, en Longwood, los días son largos y los pensamientos infinitos. Pero mi espíritu… ese no se detiene.\n" +
+                "\n" +
+                "Algún día, recordarán mis victorias más que mis derrotas. Mientras tanto, el águila observa desde las alturas. \uD83E\uDD85");
+        post.setTags("#Imperio #GloriaEterna #Exilio #Liderazgo #LeyendaViva #ElÁguila #FranciaGrande #Historia #Estratega #DestinyBelongsToMe");
+        post.setOwner(napoleonBonaparte());
+        post.setAudience(PUBLIC);
+        post.setTimestamp(new Timestamp(-4986050084L));
+        return post;
+    }
+
+
 
 
 }

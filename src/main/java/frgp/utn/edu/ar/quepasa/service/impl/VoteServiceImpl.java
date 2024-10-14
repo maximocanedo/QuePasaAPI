@@ -72,7 +72,7 @@ public class VoteServiceImpl implements VoteService {
                 .orElse(new CommentVote());
         process(vote, value).setComment(file);
         commentVotesRepository.save(vote);
-        return null;
+        return count(file);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class VoteServiceImpl implements VoteService {
                 .orElse(new PictureVote());
         process(vote, value).setPicture(file);
         pictureVoteRepository.save(vote);
-        return null;
+        return count(file);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class VoteServiceImpl implements VoteService {
                 .orElse(new PostVote());
         process(vote, value).setPost(file);
         postVoteRepository.save(vote);
-        return null;
+        return count(file);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class VoteServiceImpl implements VoteService {
                 .orElse(new EventVote());
         process(vote, value).setEvent(file);
         eventVoteRepository.save(vote);
-        return null;
+        return count(file);
     }
 
     @Override

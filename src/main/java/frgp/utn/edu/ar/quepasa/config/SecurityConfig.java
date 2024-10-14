@@ -92,6 +92,10 @@ public class SecurityConfig {
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.POST, "/api/posts", "api/posts/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.GET, "/api/posts/**", "/api/posts/{id}/votes", "/api/posts/{id}/votes/**")
+                            .hasAuthority(Role.NEIGHBOUR.name());
+                    request.requestMatchers(HttpMethod.POST,  "/api/posts/{id}/votes", "/api/posts/{id}/votes/**")
+                            .hasAuthority(Role.NEIGHBOUR.name());
                     // Fin sección publicaciones
 
                     // Seccion eventos
