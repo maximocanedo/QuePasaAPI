@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.request;
 
+import java.util.List;
 import java.util.UUID;
 
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
@@ -9,4 +10,7 @@ public interface RoleUpdateRequestService {
     RoleUpdateRequest createRoleUpdateRequest(Role requestedRole, String remarks);
     void reviewRoleUpdateRequest(UUID requestId, boolean approve, String adminRemarks);
     RoleUpdateRequest respondToRoleUpdateRequest(UUID requestId, boolean approve, String reviewerRemarks);
+    void deleteRoleUpdateRequest(UUID requestId);
+    List<RoleUpdateRequest> getUserRequests();
+    List<RoleUpdateRequest> getAllRequests();
 }

@@ -18,6 +18,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodOb
 import frgp.utn.edu.ar.quepasa.service.validators.pictures.PictureObjectValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidatorBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
@@ -223,5 +224,30 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
         request.setRemarks(reviewerRemarks);
         return roleUpdateRequestRepository.save(request);
     }
-
+    @Override
+    public void deleteRoleUpdateRequest(UUID requestId) {
+        User currentUser = authenticationService.getCurrentUserOrDie();
+        RoleUpdateRequest request = roleUpdateRequestRepository.findById(requestId)
+                .orElseThrow(() -> new Fail("Solicitud no encontrada", HttpStatus.NOT_FOUND));
+        if (!currentUser.getUsername().equals(request.getRequester().getUsername()) 
+                && currentUser.getRole() != Role.ADMIN) {
+            throw new Fail("No tiene permiso para eliminar esta solicitud.", HttpStatus.FORBIDDEN);
+        }
+        request.setActive(false);
+        roleUpdateRequestRepository.save(request);
+    }
+    @Override
+    public List<RoleUpdateRequest> getUserRequests() {
+        User currentUser = authenticationService.getCurrentUserOrDie();
+        return roleUpdateRequestRepository.findByRequesterAndActiveTrue(currentUser);
+    }
+    
+    @Override
+    public List<RoleUpdateRequest> getAllRequests() {
+        User currentUser = authenticationService.getCurrentUserOrDie();    
+        if (currentUser.getRole() != Role.ADMIN) {
+            throw new Fail("No tiene permiso para ver todas las solicitudes.", HttpStatus.FORBIDDEN);
+        }
+        return roleUpdateRequestRepository.findAllByActiveTrue();
+    }
 }
