@@ -1,11 +1,16 @@
 package frgp.utn.edu.ar.quepasa.service;
 
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -223,5 +229,194 @@ public class EventServiceTest {
         );
 
         assertEquals("No Events found.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Crear Evento")
+    void createEvent_ValidEvent_ReturnEvent() throws Fail {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        Event event = new Event();
+        event.setTitle("event");
+        event.setDescription("description");
+        event.setAddress("address");
+        event.setStart(LocalDateTime.now().plusHours(1));
+        event.setEnd(LocalDateTime.now().plusHours(2));
+        event.setCategory(EventCategory.CINEMA);
+        event.setAudience(Audience.PUBLIC);
+        event.setOwner(owner);
+
+        when(eventRepository.save(event)).thenReturn(event);
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        Event createdEvent = eventService.create(eventPostRequest, owner);
+
+        assertNotNull(createdEvent);
+        assertEquals("event", createdEvent.getTitle());
+        assertEquals("description", createdEvent.getDescription());
+        assertEquals(owner.getUsername(), createdEvent.getOwner().getUsername());
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Titulo")
+    void createEvent_NoTitle_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Title of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Descripcion")
+    void createEvent_NoDescription_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Description of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Direccion")
+    void createEvent_NoAddress_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Address of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Fecha de Inicio")
+    void createEvent_NoStartDate_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Date of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Fecha de Fin")
+    void createEvent_NoEndDate_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Date of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Categoria")
+    void createEvent_NoCategory_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Category of the event cannot be null."));
+    }
+
+    @Test
+    @DisplayName("Crear Evento sin Audiencia")
+    void createEvent_NoAudience_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+
+        ValidatorBuilder.ValidationError exception = assertThrows(
+                ValidatorBuilder.ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertTrue(exception.getErrors().contains("Audience of the event cannot be null."));
     }
 }
