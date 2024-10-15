@@ -6,8 +6,6 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
@@ -112,53 +110,20 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle() != null) {
-            if (newEvent.getTitle().isEmpty()) {
-                throw new Fail("Title is empty.");
-            }
-            event.setTitle(newEvent.getTitle());
-        }
+        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidatorBuilder(newEvent.getTitle()).isNotEmpty().isNotTooLong().build());
 
-        if (newEvent.getDescription() != null) {
-            if (newEvent.getDescription().isEmpty()) {
-                throw new Fail("Description is empty.");
-            }
-            event.setDescription(newEvent.getDescription());
-        }
+        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidatorBuilder(newEvent.getDescription()).isNotEmpty().isNotTooLong().build());
 
-        if (newEvent.getAddress() != null) {
-            if (newEvent.getAddress().isEmpty()) {
-                throw new Fail("Address is empty.");
-            }
-            event.setAddress(newEvent.getAddress());
-        }
+        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidatorBuilder(newEvent.getAddress()).isNotEmpty().isNotTooLong().build());
 
-        if (newEvent.getStartDate() != null) {
-            var startDate = new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build();
-            event.setStart(startDate);
-        }
+        if (newEvent.getStartDate() != null) event.setStart(new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build());
 
-        if (newEvent.getEndDate() != null) {
-            var endDate = new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build();
-            event.setEnd(endDate);
-        }
+        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build());
 
-        if (newEvent.getCategory() != null) {
-            try {
-                EventCategory.valueOf(String.valueOf(newEvent.getCategory()));
-            } catch (IllegalArgumentException e) {
-                throw new Fail("Invalid category.");
-            }
-            event.setCategory(newEvent.getCategory());
-        }
-        if (newEvent.getAudience() != null) {
-            try {
-                Audience.valueOf(String.valueOf(newEvent.getAudience()));
-            } catch (IllegalArgumentException e) {
-                throw new Fail("Invalid audience.");
-            }
-            event.setAudience(newEvent.getAudience());
-        }
+        if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidatorBuilder(newEvent.getCategory()).isNotInvalid().build());
+
+        if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
+
         eventRepository.save(event);
         return event;
     }
