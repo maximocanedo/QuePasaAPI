@@ -1,13 +1,16 @@
 package frgp.utn.edu.ar.quepasa.service;
 
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
@@ -32,6 +35,7 @@ import static org.mockito.Mockito.when;
 @DisplayName("Servicio de eventos")
 public class EventServiceTest {
     private EventRepository eventRepository;
+    private UserRepository userRepository;
     private EventRsvpRepository eventRsvpRepository;
     private NeighbourhoodRepository neighbourhoodRepository;
     private EventServiceImpl eventService;
@@ -39,6 +43,7 @@ public class EventServiceTest {
     @BeforeEach
     void setUp() {
         this.eventRepository = Mockito.mock(EventRepository.class);
+        this.userRepository = Mockito.mock(UserRepository.class);
         this.eventRsvpRepository = Mockito.mock(EventRsvpRepository.class);
         this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
         OwnerService ownerService = Mockito.mock(OwnerService.class);
@@ -419,4 +424,66 @@ public class EventServiceTest {
 
         assertTrue(exception.getErrors().contains("Audience of the event cannot be null."));
     }
+
+    /*
+    @Test
+    @DisplayName("Actualizar Evento")
+    void updateEvent_ValidEvent_ReturnEvent() throws Fail {
+        UUID eventId = UUID.randomUUID();
+        User owner = new User();
+        owner.setUsername("owner");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setTitle("event");
+        event.setDescription("description");
+        event.setAddress("address");
+        event.setStart(LocalDateTime.now().plusHours(1));
+        event.setEnd(LocalDateTime.now().plusHours(2));
+        event.setCategory(EventCategory.CINEMA);
+        event.setAudience(Audience.PUBLIC);
+        event.setOwner(owner);
+
+        when(eventRepository.save(event)).thenReturn(event);
+
+        EventPatchEditRequest eventPatchEditRequest = new EventPatchEditRequest();
+        eventPatchEditRequest.setTitle("event");
+        eventPatchEditRequest.setDescription("description");
+        eventPatchEditRequest.setAddress("address");
+        eventPatchEditRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPatchEditRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPatchEditRequest.setCategory(EventCategory.CINEMA);
+        eventPatchEditRequest.setAudience(Audience.PUBLIC);
+
+        Event updatedEvent = eventService.update(eventId, eventPatchEditRequest, owner);
+
+        assertNotNull(updatedEvent);
+        assertEquals("event", updatedEvent.getTitle());
+        assertEquals("description", updatedEvent.getDescription());
+        assertEquals(owner.getUsername(), updatedEvent.getOwner().getUsername());
+    }
+
+    @Test
+    @DisplayName("Eliminar Evento")
+    void deleteEvent_ValidEvent_ReturnEvent() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(owner);
+        event.setActive(true);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        assertDoesNotThrow(() ->
+                eventService.delete(eventId)
+        );
+    }
+    */
 }
