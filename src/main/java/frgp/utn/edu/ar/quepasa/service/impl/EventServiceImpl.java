@@ -82,6 +82,10 @@ public class EventServiceImpl implements EventService {
             throw new Fail("Description is required.");
         }
         newEvent.setDescription(event.getDescription());
+        if (event.getAddress() == null) {
+            throw new Fail("Address is required.");
+        }
+        newEvent.setAddress(event.getAddress());
         if (event.getStartDate() == null) {
             throw new Fail("Start date is required.");
         }
@@ -130,46 +134,53 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle().isEmpty()) {
-            throw new Fail("Title is required.");
+        if (newEvent.getTitle() != null) {
+            if (newEvent.getTitle().isEmpty()) {
+                throw new Fail("Title is empty.");
+            }
+            event.setTitle(newEvent.getTitle());
         }
-        event.setTitle(newEvent.getTitle());
-        if (newEvent.getTitle().isEmpty()) {
-            throw new Fail("Description is required.");
+
+        if (newEvent.getDescription() != null) {
+            if (newEvent.getDescription().isEmpty()) {
+                throw new Fail("Description is empty.");
+            }
+            event.setDescription(newEvent.getDescription());
         }
-        event.setDescription(newEvent.getDescription());
-        if (newEvent.getStartDate() == null) {
-            throw new Fail("Start date is required.");
+
+        if (newEvent.getAddress() != null) {
+            if (newEvent.getAddress().isEmpty()) {
+                throw new Fail("Address is empty.");
+            }
+            event.setAddress(newEvent.getAddress());
         }
-        var startDate = new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build();
-        event.setStart(startDate);
-        if (newEvent.getEndDate() == null) {
-            throw new Fail("End date is required.");
+
+        if (newEvent.getStartDate() != null) {
+            var startDate = new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build();
+            event.setStart(startDate);
         }
-        var endDate = new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(startDate).build();
-        event.setEnd(endDate);
-        if (newEvent.getCategory() == null) {
-            throw new Fail("Category is required.");
+
+        if (newEvent.getEndDate() != null) {
+            var endDate = new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build();
+            event.setEnd(endDate);
         }
-        try {
-            EventCategory.valueOf(String.valueOf(newEvent.getCategory()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid category.");
+
+        if (newEvent.getCategory() != null) {
+            try {
+                EventCategory.valueOf(String.valueOf(newEvent.getCategory()));
+            } catch (IllegalArgumentException e) {
+                throw new Fail("Invalid category.");
+            }
+            event.setCategory(newEvent.getCategory());
         }
-        event.setCategory(newEvent.getCategory());
-        if (newEvent.getAudience() == null) {
-            throw new Fail("Audience is required.");
+        if (newEvent.getAudience() != null) {
+            try {
+                Audience.valueOf(String.valueOf(newEvent.getAudience()));
+            } catch (IllegalArgumentException e) {
+                throw new Fail("Invalid audience.");
+            }
+            event.setAudience(newEvent.getAudience());
         }
-        try {
-            Audience.valueOf(String.valueOf(newEvent.getAudience()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid audience.");
-        }
-        event.setAudience(newEvent.getAudience());
-        if (newEvent.getAddress() == null) {
-            throw new Fail("Address is required.");
-        }
-        event.setAddress(newEvent.getAddress());
         eventRepository.save(event);
         return event;
     }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -97,6 +98,11 @@ public class EventController {
     @ExceptionHandler(Fail.class)
     public ResponseEntity<?> handleFail(Fail e) {
         return new ResponseEntity<>(new ResponseError(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return new ResponseEntity<>(new ResponseError("Invalid request body." + e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
