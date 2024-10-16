@@ -6,15 +6,13 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
-import frgp.utn.edu.ar.quepasa.service.validators.events.EventDateValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.events.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,46 +72,28 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
-        if (event.getTitle().isEmpty()) {
-            throw new Fail("Title is required.");
-        }
-        newEvent.setTitle(event.getTitle());
-        if (event.getDescription().isEmpty()) {
-            throw new Fail("Description is required.");
-        }
-        newEvent.setDescription(event.getDescription());
-        if (event.getStartDate() == null) {
-            throw new Fail("Start date is required.");
-        }
-        var startDate = new EventDateValidatorBuilder(event.getStartDate()).isNotPast().build();
+
+        var title = new EventTitleValidatorBuilder(event.getTitle()).isNotNull().isNotEmpty().isNotTooLong().build();
+        newEvent.setTitle(title);
+
+        var description = new EventDescriptionValidatorBuilder(event.getDescription()).isNotNull().isNotEmpty().isNotTooLong().build();
+        newEvent.setDescription(description);
+
+        var address = new EventAddressValidatorBuilder(event.getAddress()).isNotNull().isNotEmpty().isNotTooLong().build();
+        newEvent.setAddress(address);
+
+        var startDate = new EventDateValidatorBuilder(event.getStartDate()).isNotNull().isNotPast().build();
         newEvent.setStart(startDate);
-        if (event.getEndDate() == null) {
-            throw new Fail("End date is required.");
-        }
-        var endDate = new EventDateValidatorBuilder(event.getEndDate()).isNotPast().isNotBefore(startDate).build();
+
+        var endDate = new EventDateValidatorBuilder(event.getEndDate()).isNotNull().isNotPast().isNotBefore(startDate).build();
         newEvent.setEnd(endDate);
-        if (event.getCategory() == null) {
-            throw new Fail("Category is required.");
-        }
-        try {
-            EventCategory.valueOf(String.valueOf(event.getCategory()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid category.");
-        }
-        newEvent.setCategory(event.getCategory());
-        if (event.getAudience() == null) {
-            throw new Fail("Audience is required.");
-        }
-        try {
-            Audience.valueOf(String.valueOf(event.getAudience()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid audience.");
-        }
-        newEvent.setAudience(event.getAudience());
-        if (event.getAddress() == null) {
-            throw new Fail("Address is required.");
-        }
-        newEvent.setAddress(event.getAddress());
+
+        var category = new EventCategoryValidatorBuilder(event.getCategory()).isNotNull().isNotInvalid().build();
+        newEvent.setCategory(category);
+
+        var audience = new EventAudienceValidatorBuilder(event.getAudience()).isNotNull().isNotInvalid().build();
+        newEvent.setAudience(audience);
+
         newEvent.setActive(true);
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
@@ -130,46 +110,20 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle().isEmpty()) {
-            throw new Fail("Title is required.");
-        }
-        event.setTitle(newEvent.getTitle());
-        if (newEvent.getTitle().isEmpty()) {
-            throw new Fail("Description is required.");
-        }
-        event.setDescription(newEvent.getDescription());
-        if (newEvent.getStartDate() == null) {
-            throw new Fail("Start date is required.");
-        }
-        var startDate = new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build();
-        event.setStart(startDate);
-        if (newEvent.getEndDate() == null) {
-            throw new Fail("End date is required.");
-        }
-        var endDate = new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(startDate).build();
-        event.setEnd(endDate);
-        if (newEvent.getCategory() == null) {
-            throw new Fail("Category is required.");
-        }
-        try {
-            EventCategory.valueOf(String.valueOf(newEvent.getCategory()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid category.");
-        }
-        event.setCategory(newEvent.getCategory());
-        if (newEvent.getAudience() == null) {
-            throw new Fail("Audience is required.");
-        }
-        try {
-            Audience.valueOf(String.valueOf(newEvent.getAudience()));
-        } catch (IllegalArgumentException e) {
-            throw new Fail("Invalid audience.");
-        }
-        event.setAudience(newEvent.getAudience());
-        if (newEvent.getAddress() == null) {
-            throw new Fail("Address is required.");
-        }
-        event.setAddress(newEvent.getAddress());
+        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidatorBuilder(newEvent.getTitle()).isNotEmpty().isNotTooLong().build());
+
+        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidatorBuilder(newEvent.getDescription()).isNotEmpty().isNotTooLong().build());
+
+        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidatorBuilder(newEvent.getAddress()).isNotEmpty().isNotTooLong().build());
+
+        if (newEvent.getStartDate() != null) event.setStart(new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build());
+
+        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build());
+
+        if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidatorBuilder(newEvent.getCategory()).isNotInvalid().build());
+
+        if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
+
         eventRepository.save(event);
         return event;
     }
