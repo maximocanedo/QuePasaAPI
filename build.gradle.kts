@@ -5,7 +5,8 @@ plugins {
 }
 
 group = "frgp.utn.edu.ar"
-version = "0.0.1-SNAPSHOT"
+version = "0.21.0-beta (Alfajor)"
+
 
 java {
     toolchain {
