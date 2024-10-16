@@ -123,6 +123,9 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public VoteCount count(Post file) {
+        if(postVoteRepository.getVotes(file.getId()) == null) {
+            return buildCount(0, postVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername()));
+        }
         return buildCount(
             postVoteRepository.getVotes(file.getId()),
             postVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername())
