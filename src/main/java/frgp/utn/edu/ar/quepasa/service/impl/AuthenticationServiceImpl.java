@@ -122,10 +122,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
-        Neighbourhood n = neighbourhoodRepository
-                .findActiveNeighbourhoodById(request.getNeighbourhoodId())
-                .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
-
+        var user = new User();
+        if(request.getNeighbourhoodId() != null) {
+            Neighbourhood n = neighbourhoodRepository
+                    .findActiveNeighbourhoodById(request.getNeighbourhoodId())
+                    .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
+            user.setNeighbourhood(n);
+        }
         var name = new NameValidatorBuilder(request.getName())
                 .validateCompoundNames()
                 .build();
@@ -145,11 +148,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .hasOneSpecialCharacter()
                 .build();
 
-        var user = new User();
         user.setName(name);
         user.setUsername(username);
         user.setAddress("");
-        user.setNeighbourhood(n);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.USER);
 

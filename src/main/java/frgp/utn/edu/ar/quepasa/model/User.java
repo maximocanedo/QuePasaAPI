@@ -68,7 +68,7 @@ public class User implements UserDetails {
      * Devuelve la dirección del usuario.
      */
     @Sensitive
-    @Column(nullable = false)
+    @Column(nullable = true)
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
@@ -76,7 +76,7 @@ public class User implements UserDetails {
      * Devuelve el barrio asociado al usuario.
      */
     @ManyToOne
-    @JoinColumn(name="neighbourhood", nullable = false)
+    @JoinColumn(name="neighbourhood", nullable = true)
     public Neighbourhood getNeighbourhood() { return neighbourhood; }
     public void setNeighbourhood(Neighbourhood neighbourhood) { this.neighbourhood = neighbourhood; }
 
