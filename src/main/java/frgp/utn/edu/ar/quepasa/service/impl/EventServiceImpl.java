@@ -155,39 +155,46 @@ public class EventServiceImpl implements EventService {
     public Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
-        /*
+
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
                 .isModerator()
                 .orElseFail();
-         */
+
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
-        neighbourhoodRepository.findById(neighbourhoodId).ifPresent(neighbourhoods::add);
+        Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
+                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found."));
+        neighbourhoods.add(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);
-        return eventRepository.save(event);
+        eventRepository.save(event);
+        return event;
     }
 
     @Override
     public Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
-        /*
+
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
                 .isModerator()
                 .orElseFail();
-         */
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
-        neighbourhoodRepository.findById(neighbourhoodId).ifPresent(neighbourhoods::remove);
+        Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
+                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found."));
+        neighbourhoods.remove(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);
-        return eventRepository.save(event);
+
+        eventRepository.save(event);
+
+        return event;
     }
 }
