@@ -71,3 +71,17 @@ DELETE {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/neighbourhood/4
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+### Obtener Votos de un evento
+GET {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/votes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Upvote un evento
+POST {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/votes/up
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Downvote un evento
+POST {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/votes/down
+Authorization: Bearer {{token}}
+Content-Type: application/json

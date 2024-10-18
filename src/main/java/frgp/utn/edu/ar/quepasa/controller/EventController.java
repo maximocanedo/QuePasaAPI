@@ -3,11 +3,13 @@ package frgp.utn.edu.ar.quepasa.controller;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
+import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,11 +30,13 @@ public class EventController {
 
     private final EventService eventService;
     private final AuthenticationService authenticationService;
+    private final VoteService voteService;
 
     @Autowired
-    public EventController(EventService eventService, AuthenticationService authenticationService) {
+    public EventController(EventService eventService, AuthenticationService authenticationService, VoteService voteService) {
         this.eventService = eventService;
         this.authenticationService = authenticationService;
+        this.voteService = voteService;
     }
 
     @GetMapping
@@ -98,6 +102,25 @@ public class EventController {
         Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
     }
+
+    /*
+    Seccion Votos
+     */
+    @GetMapping("/{eventId}/votes")
+    public ResponseEntity<VoteCount> getVotes(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(voteService.count(Event.identify(eventId)));
+    }
+
+    @PostMapping("/{eventId}/votes/up")
+    public ResponseEntity<VoteCount> upVote(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(voteService.vote(Event.identify(eventId), 1));
+    }
+
+    @PostMapping("/{eventId}/votes/down")
+    public ResponseEntity<VoteCount> downVote(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
+    }
+
 
     /// Excepciones
     ///

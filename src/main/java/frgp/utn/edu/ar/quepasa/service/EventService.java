@@ -32,6 +32,4 @@ public interface EventService {
     Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
 
     Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
-    
-
 }

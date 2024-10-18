@@ -28,6 +28,12 @@ public class Event implements Ownable, Votable {
     private Set<Neighbourhood> neighbourhoods;
     private VoteCount votes;
 
+    public static Event identify(UUID id) {
+        Event event = new Event();
+        event.setId(id);
+        return event;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID getId() { return id; }
