@@ -88,6 +88,18 @@ public class EventController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
+    @PostMapping("/{eventId}/neighbourhoods")
+    public ResponseEntity<Event> addNeighbourhoodsToEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
+        Event updatedEvent = eventService.addNeighbourhoodsToEvent(eventId, neighbourhoodIds);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/{eventId}/neighbourhoods")
+    public ResponseEntity<Event> removeNeighbourhoodsFromEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
+        Event updatedEvent = eventService.removeNeighbourhoodsFromEvent(eventId, neighbourhoodIds);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
     /// Excepciones
     ///
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -109,17 +121,4 @@ public class EventController {
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
-
-    @PostMapping("/{eventId}/neighbourhoods")
-    public ResponseEntity<Event> addNeighbourhoodsToEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
-        Event updatedEvent = eventService.addNeighbourhoodsToEvent(eventId, neighbourhoodIds);
-        return ResponseEntity.ok(updatedEvent);
-    }
-
-    @DeleteMapping("/{eventId}/neighbourhoods")
-    public ResponseEntity<Event> removeNeighbourhoodsFromEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
-        Event updatedEvent = eventService.removeNeighbourhoodsFromEvent(eventId, neighbourhoodIds);
-        return ResponseEntity.ok(updatedEvent);
-    }
-
 }

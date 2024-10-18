@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -154,12 +153,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event addNeighbourhoodsToEvent(UUID eventId, Set<Long> neighbourhoodIds) {
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-        if (eventOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Event not found.");
-        }
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+        ownerService.of(event)
+                .isOwner()
+                .isAdmin()
+                .isModerator()
+                .orElseFail();
 
-        Event event = eventOptional.get();
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         for (Long neighbourhoodId : neighbourhoodIds) {
@@ -172,12 +173,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event removeNeighbourhoodsFromEvent(UUID eventId, Set<Long> neighbourhoodIds) {
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-        if (eventOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Event not found.");
-        }
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
 
-        Event event = eventOptional.get();
+        ownerService.of(event)
+                .isOwner()
+                .isAdmin()
+                .isModerator()
+                .orElseFail();
+
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         for (Long neighbourhoodId : neighbourhoodIds) {
@@ -187,6 +191,4 @@ public class EventServiceImpl implements EventService {
         event.setNeighbourhoods(neighbourhoods);
         return eventRepository.save(event);
     }
-
-
 }
