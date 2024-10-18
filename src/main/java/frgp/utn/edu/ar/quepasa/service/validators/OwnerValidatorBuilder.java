@@ -60,7 +60,7 @@ public class OwnerValidatorBuilder {
 
     public OwnerValidatorBuilder isOwner() {
         var user = getCurrentUser();
-        result = result && Objects.equals(object.getOwner().getUsername(), user.getUsername());
+        result = result || Objects.equals(object.getOwner().getUsername(), user.getUsername());
         if(!result) message += "No es dueño del registro. ";
         return this;
     }
