@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
-import java.util.Set;
 
 
 public interface EventService {
@@ -30,9 +29,9 @@ public interface EventService {
 
     void delete(UUID id) throws Fail;
 
-    Event addNeighbourhoodsToEvent(UUID eventId, Set<Long> neighbourhoodIds);
+    Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
 
-    Event removeNeighbourhoodsFromEvent(UUID eventId, Set<Long> neighbourhoodIds);
+    Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
     
 
 }

@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -88,15 +87,15 @@ public class EventController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{eventId}/neighbourhoods")
-    public ResponseEntity<Event> addNeighbourhoodsToEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
-        Event updatedEvent = eventService.addNeighbourhoodsToEvent(eventId, neighbourhoodIds);
+    @PostMapping("/{eventId}/neighbourhood/{neighbourhoodId}")
+    public ResponseEntity<Event> addNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
+        Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
     }
 
-    @DeleteMapping("/{eventId}/neighbourhoods")
-    public ResponseEntity<Event> removeNeighbourhoodsFromEvent(@PathVariable UUID eventId, @RequestBody Set<Long> neighbourhoodIds) {
-        Event updatedEvent = eventService.removeNeighbourhoodsFromEvent(eventId, neighbourhoodIds);
+    @DeleteMapping("/{eventId}/neighbourhood/{neighbourhoodId}")
+    public ResponseEntity<Event> removeNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
+        Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
     }
 
