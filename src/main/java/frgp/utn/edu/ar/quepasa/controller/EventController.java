@@ -91,6 +91,10 @@ public class EventController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
+    /*
+    Seccion Agregar Barrio
+     */
+
     @PostMapping("/{eventId}/neighbourhood/{neighbourhoodId}")
     public ResponseEntity<Event> addNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
         Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
