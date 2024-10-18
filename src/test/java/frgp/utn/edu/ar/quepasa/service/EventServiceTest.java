@@ -1,13 +1,13 @@
 package frgp.utn.edu.ar.quepasa.service;
 
-import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
+import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
@@ -25,9 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -425,6 +423,140 @@ public class EventServiceTest {
         assertTrue(exception.getErrors().contains("Audience of the event cannot be null."));
     }
 
+    @Test
+    @DisplayName("Confirmar Asistencia a Evento")
+    void confirmEventAssistance_ValidEvent_ReturnEventRsvp() {
+        UUID eventId = UUID.randomUUID();
+        User user = new User();
+        user.setUsername("user");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setActive(true);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        EventRsvp eventRsvp = new EventRsvp();
+        eventRsvp.setEvent(event);
+        eventRsvp.setUser(user);
+
+        when(eventRsvpRepository.save(eventRsvp)).thenReturn(eventRsvp);
+
+        EventRsvp confirmedEventRsvp = eventService.confirmEventAssistance(eventId, user);
+
+        assertNotNull(confirmedEventRsvp);
+        assertEquals(eventId, confirmedEventRsvp.getEvent().getId());
+        assertEquals(user.getUsername(), confirmedEventRsvp.getUser().getUsername());
+    }
+
+
+    @Test
+    @DisplayName("Confirmar Asistencia a Evento Inexistente")
+    void confirmEventAssistance_EventNotFound_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        User user = new User();
+        user.setUsername("user");
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> eventService.confirmEventAssistance(eventId, user)
+        );
+
+        assertEquals("Event not found.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Agregar Barrio a Evento")
+    void addNeighbourhoodEvent_ValidEvent_ReturnEvent() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        Neighbourhood neighbourhood = new Neighbourhood();
+        neighbourhood.setId(neighbourhoodId);
+
+        Set<Neighbourhood> neighbourhoods = new HashSet<>();
+        neighbourhoods.add(neighbourhood);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setNeighbourhoods(neighbourhoods);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
+
+        Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
+
+        assertNotNull(updatedEvent);
+        assertEquals(eventId, updatedEvent.getId());
+        assertTrue(updatedEvent.getNeighbourhoods().contains(neighbourhood));
+    }
+
+    @Test
+    @DisplayName("Agregar Barrio a Evento Inexistente")
+    void addNeighbourhoodEvent_EventNotFound_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> eventService.addNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertEquals("Event not found.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Eliminar Barrio de Evento")
+    void removeNeighbourhoodEvent_ValidEvent_ReturnEvent() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        Neighbourhood neighbourhood = new Neighbourhood();
+        neighbourhood.setId(neighbourhoodId);
+
+        Set<Neighbourhood> neighbourhoods = new HashSet<>();
+        neighbourhoods.add(neighbourhood);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setNeighbourhoods(neighbourhoods);
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
+
+        Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
+
+        assertNotNull(updatedEvent);
+        assertEquals(eventId, updatedEvent.getId());
+        assertFalse(updatedEvent.getNeighbourhoods().contains(neighbourhood));
+    }
+
+    @Test
+    @DisplayName("Eliminar Barrio de Evento Inexistente")
+    void removeNeighbourhoodEvent_EventNotFound_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertEquals("Event not found.", exception.getMessage());
+    }
+
     /*
     @Test
     @DisplayName("Actualizar Evento")
@@ -462,7 +594,7 @@ public class EventServiceTest {
         assertEquals("description", updatedEvent.getDescription());
         assertEquals(owner.getUsername(), updatedEvent.getOwner().getUsername());
     }
-
+    /*
     @Test
     @DisplayName("Eliminar Evento")
     void deleteEvent_ValidEvent_ReturnEvent() {

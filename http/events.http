@@ -19,7 +19,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Taller de Cerámica Modificado",
+  "title": "Taller de Cerámica",
   "description": "Se realizará un taller de cerámica en la Plaza San Martín",
   "address": "Av Siempre Viva 963, Tigre, Provincia de Buenos Aires",
   "startDate": "2024-12-15 11:45",
