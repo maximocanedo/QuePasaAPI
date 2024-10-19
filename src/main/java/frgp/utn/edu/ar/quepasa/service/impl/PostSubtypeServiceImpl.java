@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
@@ -10,7 +11,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.PostTypeObjectValidatorBuilder
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service("postSubtypeService")
@@ -31,13 +32,13 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     @Override
     public PostSubtype findById(Integer id) {
         return postSubtypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subtype not found"));
+                .orElseThrow(() -> new Fail("Subtype not found", HttpStatus.NOT_FOUND));
     }
 
     @Override
     public Page<PostSubtype> findByType(Integer type, Pageable pageable) {
         PostType postType = postTypeRepository.findById(type)
-                .orElseThrow(() -> new ResourceNotFoundException("Type not found"));
+                .orElseThrow(() -> new Fail("Type not found", HttpStatus.NOT_FOUND));
         return postSubtypeRepository.findByType(postType, pageable);
     }
 

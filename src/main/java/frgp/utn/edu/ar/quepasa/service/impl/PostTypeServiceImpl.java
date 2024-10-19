@@ -1,11 +1,13 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service("postTypeService")
@@ -24,7 +26,7 @@ public class PostTypeServiceImpl implements PostTypeService {
     @Override
     public PostType findById(Integer id) {
         return postTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Type not found"));
+                .orElseThrow(() -> new Fail("Type not found", HttpStatus.NOT_FOUND));
     }
 
     @Override

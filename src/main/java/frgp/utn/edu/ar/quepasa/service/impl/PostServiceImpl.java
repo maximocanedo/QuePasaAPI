@@ -3,10 +3,9 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.PostCreateRequest;
 import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Post;
-import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
@@ -19,7 +18,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodOb
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -59,13 +58,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post findById(Integer id) {
         return voteService.populate(postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found")));
+                .orElseThrow(() -> new Fail("Post not found", HttpStatus.NOT_FOUND)));
     }
 
     @Override
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new Fail("User not found", HttpStatus.NOT_FOUND));
         return postRepository.findByOwner(user, pageable).map(voteService::populate);
     }
 

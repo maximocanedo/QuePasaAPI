@@ -2,12 +2,10 @@ package frgp.utn.edu.ar.quepasa.service.validators;
 
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.util.Optional;
 
 public class PostSubtypeObjectValidatorBuilder extends ValidatorBuilder<PostSubtype> {
-    public PostSubtypeObjectValidatorBuilder(PostSubtype value) { super(value, "postSubtype"); }
     public PostSubtypeObjectValidatorBuilder(Integer id, PostSubtypeRepository repository) {
         super(repository.findById(id).orElseThrow(), "postSubtype");
     }

@@ -6,7 +6,6 @@ import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import java.util.Optional;
 
 public class PostTypeObjectValidatorBuilder extends ValidatorBuilder<PostType> {
-    public PostTypeObjectValidatorBuilder(PostType value) { super(value, "postType"); }
     public PostTypeObjectValidatorBuilder(Integer id, PostTypeRepository repository) {
         super(repository.findById(id).orElseThrow(), "postType");
     }
