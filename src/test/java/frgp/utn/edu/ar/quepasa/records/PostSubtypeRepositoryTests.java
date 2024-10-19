@@ -25,7 +25,7 @@ public class PostSubtypeRepositoryTests {
 
 
     @Test
-    @DisplayName("Alta, Borrado, Modificación y Lectura de tipos de publicaciones")
+    @DisplayName("Alta, Borrado, Modificación y Lectura de subtipos de publicaciones")
     public void crudTest() {
         Integer tid = 1;
         PostType t = new PostType();
