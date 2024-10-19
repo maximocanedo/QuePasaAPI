@@ -41,7 +41,7 @@ public class OwnerValidatorBuilder {
     private void letWith(Role role) {
         User user = getCurrentUser();
         if(user.getRole() != null) {
-            result = result && (
+            result = result || (
                     user.getRole().name().equalsIgnoreCase(role.name())
             );
             return;
