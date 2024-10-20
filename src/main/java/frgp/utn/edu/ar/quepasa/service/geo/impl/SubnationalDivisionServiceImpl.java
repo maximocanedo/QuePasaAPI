@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.geo.impl;
 
+import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
@@ -50,8 +51,7 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
         file.setLabel(label);
         file.setCountry(country);
         file.setActive(true);
-        var saved = repository.save(file);
-        return saved;
+        return repository.save(file);
     }
 
     @Override
@@ -69,6 +69,38 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
         var search = repository.findByIso3(id);
         if(search.isEmpty()) throw new Fail("State not found. ", HttpStatus.NOT_FOUND);
         return search.get();
+    }
+
+    @Override
+    public SubnationalDivision update(SubnationalDivisionUpdateRequest request, String iso3) {
+        var file = repository.findByIso3(iso3)
+                .orElseThrow(() -> new Fail("State not found. ", HttpStatus.NOT_FOUND));
+        if(request.hasIso3()) {
+            String code = new SubnationalDivisionISO3ValidatorBuilder(request.getIso3())
+                    .isNotNullOrEmpty()
+                    .isValidISO31662()
+                    .isAvailable(repository)
+                    .build();
+            file.setIso3(code);
+        }
+        if(request.hasLabel()) {
+            String label = new SubnationalDivisionLabelValidatorBuilder(request.getLabel())
+                    .isNotNullOrEmpty()
+                    .isValidLabel()
+                    .hasValidLength()
+                    .build();
+            file.setLabel(label);
+        }
+        if(request.hasDenomination()) {
+            file.setDenomination(request.getDenomination());
+        }
+        if(request.hasCountry()) {
+            Country country = new SubnationalDivisionCountryObjectValidatorBuilder(request.getCountry())
+                    .exists(countryRepository)
+                    .build();
+            file.setCountry(country);
+        }
+        return repository.save(file);
     }
 
 

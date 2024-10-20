@@ -1,5 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.geo.state;
 
+import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
@@ -10,6 +12,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +21,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 @DisplayName("Servicio de entidades subnacionales")
 public class SubnationalDivisionServiceTests {
 
@@ -57,6 +62,126 @@ public class SubnationalDivisionServiceTests {
             assertNotNull(saved);
         });
 
+    }
+
+    @Test
+    @DisplayName("#38: Actualización, datos correctos")
+    public void update() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        when(repository.existsByIso3("AR-RE")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        var r = new SubnationalDivisionUpdateRequest();
+        r.setIso3("AR-RE");
+        r.setLabel("Soriana");
+        r.setCountry(argentina());
+        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
+        var upd = soriano();
+        upd.setLabel(r.getLabel());
+        upd.setIso3(r.getIso3());
+        upd.setCountry(r.getCountry());
+        upd.setDenomination(r.getDenomination());
+        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
+        var ast = new AtomicReference<SubnationalDivision>();
+        assertDoesNotThrow(() -> {
+            var saved = service.update(r, soriano().getIso3());
+            ast.set(saved);
+        });
+        var updated = ast.get();
+        assertNotNull(updated);
+        assertEquals(r.getIso3(), updated.getIso3());
+        assertEquals(r.getLabel(), updated.getLabel());
+        assertNotNull(updated.getCountry());
+        assertEquals(r.getCountry().getIso3(), updated.getCountry().getIso3());
+        assertEquals(r.getDenomination(), updated.getDenomination());
+
+    }
+
+    @Test
+    @DisplayName("#38: Actualización, ISO3 incorrecto")
+    public void updateBadIso3() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        when(repository.existsByIso3("AR-RE")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        var r = new SubnationalDivisionUpdateRequest();
+        r.setIso3("AR-$%fasd321RE");
+        r.setLabel("Soriana");
+        r.setCountry(argentina());
+        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
+        var upd = soriano();
+        upd.setLabel(r.getLabel());
+        upd.setIso3(r.getIso3());
+        upd.setCountry(r.getCountry());
+        upd.setDenomination(r.getDenomination());
+        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
+        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+            service.update(r, soriano().getIso3());
+        });
+    }
+
+    @Test
+    @DisplayName("#38: Actualización, Nombre incorrecto")
+    public void updateBadLabel() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        when(repository.existsByIso3("AR-RE")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        var r = new SubnationalDivisionUpdateRequest();
+        r.setIso3("AR-RE");
+        r.setLabel("Soria$ag435 3245235 ___ ... s    $%5");
+        r.setCountry(argentina());
+        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
+        var upd = soriano();
+        upd.setLabel(r.getLabel());
+        upd.setIso3(r.getIso3());
+        upd.setCountry(r.getCountry());
+        upd.setDenomination(r.getDenomination());
+        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
+        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+            service.update(r, soriano().getIso3());
+        });
+    }
+
+    @Test
+    @DisplayName("#38: Actualización, ISO no disponible")
+    public void updateBadIsoAgain() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        when(repository.existsByIso3("AR-RE")).thenReturn(true);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        var r = new SubnationalDivisionUpdateRequest();
+        r.setIso3("AR-RE");
+        r.setLabel("Soriana");
+        r.setCountry(argentina());
+        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
+        var upd = soriano();
+        upd.setLabel(r.getLabel());
+        upd.setIso3(r.getIso3());
+        upd.setCountry(r.getCountry());
+        upd.setDenomination(r.getDenomination());
+        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
+        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+            service.update(r, soriano().getIso3());
+        });
+    }
+
+    @Test
+    @DisplayName("#38: Actualización, SD no disponible")
+    public void updateNotFound() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.empty());
+        when(repository.existsByIso3("AR-RE")).thenReturn(false);
+        when(countries.existsByIso3("ARG")).thenReturn(true);
+        var r = new SubnationalDivisionUpdateRequest();
+        r.setIso3("AR-RE");
+        r.setLabel("Soriana");
+        r.setCountry(argentina());
+        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
+        var upd = soriano();
+        upd.setLabel(r.getLabel());
+        upd.setIso3(r.getIso3());
+        upd.setCountry(r.getCountry());
+        upd.setDenomination(r.getDenomination());
+        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
+        assertThrows(Fail.class, () -> {
+            service.update(r, soriano().getIso3());
+        });
     }
 
     @Test

@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller.geo;
 
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
+import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
@@ -31,6 +32,11 @@ public class SubnationalDivisionController {
         return ResponseEntity.ok(subnationalDivisionService.getById(iso));
     }
 
+    @PatchMapping("/{iso}")
+    public ResponseEntity<SubnationalDivision> update(@PathVariable String iso, @RequestBody SubnationalDivisionUpdateRequest request) {
+        var result = subnationalDivisionService.update(request, iso);
+        return ResponseEntity.status(200).body(result);
+    }
 
     @ExceptionHandler(Fail.class)
     public ResponseEntity<ResponseError> handleFail(Fail e) {
