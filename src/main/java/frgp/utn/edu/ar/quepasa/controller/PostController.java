@@ -92,7 +92,9 @@ public class PostController {
 
     @PostMapping("/{id}/votes/up")
     public ResponseEntity<VoteCount> upVote(@PathVariable Integer id) {
-        return ResponseEntity.ok(voteService.vote(Post.identify(id), 1));
+        var post = Post.identify(id);
+        var voteResult = voteService.vote(post, 1);
+        return ResponseEntity.ok(voteResult);
     }
 
     @PostMapping("/{id}/votes/down")

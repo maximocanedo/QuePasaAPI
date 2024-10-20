@@ -55,7 +55,7 @@ public class AuthenticationServiceTests {
             req.setUsername("antonio.gonzalez.ok");
             req.setPassword(testPassword);
             req.setName("Antonio González");
-            req.setNeighbourhoodId(1);
+            req.setNeighbourhoodId(1L);
             authenticationService.signup(req);
             e = userService.findByUsername("antonio.gonzalez.ok");
             if(e.hasTotpEnabled()) {
@@ -83,7 +83,7 @@ public class AuthenticationServiceTests {
         SignUpRequest req = new SignUpRequest();
         req.setUsername(testUsername);
         req.setPassword(testPassword);
-        req.setNeighbourhoodId(1);
+        req.setNeighbourhoodId(1L);
         req.setName("Usuario de prueba");
         var res = new AtomicReference<JwtAuthenticationResponse>();
         assertDoesNotThrow(() -> {
@@ -100,7 +100,7 @@ public class AuthenticationServiceTests {
         SignUpRequest req = new SignUpRequest();
         req.setUsername("maximo.canedo");
         req.setPassword("Maximo999");
-        req.setNeighbourhoodId(1);
+        req.setNeighbourhoodId(1L);
         req.setName("Usuario de prueba");
         var res = new AtomicReference<JwtAuthenticationResponse>(null);
         assertThrows(ValidatorBuilder.ValidationError.class, () -> {
@@ -115,7 +115,7 @@ public class AuthenticationServiceTests {
         SignUpRequest req = new SignUpRequest();
         req.setUsername(".r..__ok.");
         req.setPassword("Maximo999");
-        req.setNeighbourhoodId(1);
+        req.setNeighbourhoodId(1L);
         req.setName("Usuario de prueba");
         var res = new AtomicReference<JwtAuthenticationResponse>(null);
         assertThrows(ValidatorBuilder.ValidationError.class, () -> {

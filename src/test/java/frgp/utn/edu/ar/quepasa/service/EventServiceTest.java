@@ -4,30 +4,42 @@ import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
+import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Servicio de eventos")
@@ -37,14 +49,15 @@ public class EventServiceTest {
     private EventRsvpRepository eventRsvpRepository;
     private NeighbourhoodRepository neighbourhoodRepository;
     private EventServiceImpl eventService;
+    private OwnerService ownerService;
 
     @BeforeEach
     void setUp() {
-        this.eventRepository = Mockito.mock(EventRepository.class);
-        this.userRepository = Mockito.mock(UserRepository.class);
-        this.eventRsvpRepository = Mockito.mock(EventRsvpRepository.class);
-        this.neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
-        OwnerService ownerService = Mockito.mock(OwnerService.class);
+        this.eventRepository = mock(EventRepository.class);
+        this.userRepository = mock(UserRepository.class);
+        this.eventRsvpRepository = mock(EventRsvpRepository.class);
+        this.neighbourhoodRepository = mock(NeighbourhoodRepository.class);
+        this.ownerService = mock(OwnerService.class);
         this.eventService = new EventServiceImpl(ownerService, eventRepository, neighbourhoodRepository, eventRsvpRepository);
     }
 
@@ -484,7 +497,21 @@ public class EventServiceTest {
         event.setNeighbourhoods(neighbourhoods);
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.ADMIN);
+        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
+            Ownable ownable = invocation.getArgument(0);
+            return OwnerValidatorBuilder.create(ownable, owner);
+        });
+        final var authentication = new TestingAuthenticationToken(
+                owner,
+                "dsds",
+                "ADMIN"
+        );
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
 
         Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
@@ -501,7 +528,12 @@ public class EventServiceTest {
         Long neighbourhoodId = 1L;
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
-
+        User owner = new User();
+        owner.setUsername("owner");
+        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
+            Ownable ownable = invocation.getArgument(0);
+            return OwnerValidatorBuilder.create(ownable, owner);
+        });
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
 
         ResourceNotFoundException exception = assertThrows(
@@ -514,6 +546,7 @@ public class EventServiceTest {
 
     @Test
     @DisplayName("Eliminar Barrio de Evento")
+    @WithMockUser(username = "owner", roles = { "ADMIN" })
     void removeNeighbourhoodEvent_ValidEvent_ReturnEvent() {
         UUID eventId = UUID.randomUUID();
         Long neighbourhoodId = 1L;
@@ -524,13 +557,30 @@ public class EventServiceTest {
         Set<Neighbourhood> neighbourhoods = new HashSet<>();
         neighbourhoods.add(neighbourhood);
 
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.ADMIN);
+
         Event event = new Event();
         event.setId(eventId);
         event.setNeighbourhoods(neighbourhoods);
+        event.setOwner(owner);
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-
+        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
+            Ownable ownable = invocation.getArgument(0);
+            return OwnerValidatorBuilder.create(ownable, owner);
+        });
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
+        final var authentication = new TestingAuthenticationToken(
+                owner,
+                "dsds",
+                "ADMIN"
+        );
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
 
         Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
 

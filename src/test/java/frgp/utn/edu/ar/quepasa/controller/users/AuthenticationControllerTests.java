@@ -41,7 +41,11 @@ public class AuthenticationControllerTests {
     private UserRepository userRepository;
     private AuthenticationService authenticationService;
 
-    @Autowired @Lazy
+    public AuthenticationControllerTests() {
+
+    }
+
+    @Autowired
     public void setMockMvc(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
@@ -71,7 +75,7 @@ public class AuthenticationControllerTests {
             req.setUsername("mockUser0001");
             req.setPassword("P455w0&d+");
             req.setName("Usuario de prueba para inicio de sesión. ");
-            req.setNeighbourhoodId(1);
+            req.setNeighbourhoodId(1L);
             this.token = authenticationService.signup(req).getToken();
         } else {
             User e = i.get();
@@ -107,7 +111,7 @@ public class AuthenticationControllerTests {
         SignUpRequest request = new SignUpRequest();
         request.setUsername("mockUser0123");
         request.setPassword("Correct.#Passw0rd");
-        request.setNeighbourhoodId(1);
+        request.setNeighbourhoodId(1L);
         request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
@@ -128,7 +132,7 @@ public class AuthenticationControllerTests {
         SignUpRequest request = new SignUpRequest();
         request.setUsername("root");
         request.setPassword("Correct.#Passw0rd");
-        request.setNeighbourhoodId(1);
+        request.setNeighbourhoodId(1L);
         request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
@@ -150,7 +154,7 @@ public class AuthenticationControllerTests {
         SignUpRequest request = new SignUpRequest();
         request.setUsername("test.0034");
         request.setPassword("adfafa");
-        request.setNeighbourhoodId(1);
+        request.setNeighbourhoodId(1L);
         request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
@@ -171,7 +175,7 @@ public class AuthenticationControllerTests {
         SignUpRequest request = new SignUpRequest();
         request.setUsername(".beep..boop__.ok_");
         request.setPassword("adfafa");
-        request.setNeighbourhoodId(1);
+        request.setNeighbourhoodId(1L);
         request.setName("Usuario de prueba de controlador");
         String json = objectMapper.writeValueAsString(request);
         mockMvc.perform(
@@ -549,7 +553,7 @@ public class AuthenticationControllerTests {
         var req = new PasswordResetRequest();
         req.setUsername("mockUser0001");
         req.setEmail("nonExistentmail@gmail.com");
-        var performance = mockMvc.perform(
+        mockMvc.perform(
                         post("/api/recover")
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(req))
@@ -567,7 +571,7 @@ public class AuthenticationControllerTests {
     public void testRequirePasswordResetOnlyUsername() throws Exception {
         var req = new PasswordResetRequest();
         req.setUsername("mockUser0001");
-        var performance = mockMvc.perform(
+        mockMvc.perform(
                         post("/api/recover")
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(req))

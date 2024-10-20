@@ -33,7 +33,7 @@ public class UserControllerTests {
     private UserRepository userRepository;
     private AuthenticationService authenticationService;
 
-    @Autowired @Lazy
+    @Autowired
     public void setMockMvc(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
@@ -58,7 +58,7 @@ public class UserControllerTests {
             req.setUsername("mockUser0001");
             req.setPassword("P455w0&d+");
             req.setName("Usuario de prueba para inicio de sesión. ");
-            req.setNeighbourhoodId(1);
+            req.setNeighbourhoodId(1L);
             this.token = authenticationService.signup(req).getToken();
         } else {
             User e = search.get();

@@ -1,7 +1,9 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
+import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.voting.PostVote;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,12 +105,17 @@ public class VoteControllerTests {
     public void vote() throws Exception {
         when(authenticationService.getCurrentUser()).thenReturn(Optional.of(alpha()));
         when(authenticationService.getCurrentUserOrDie()).thenReturn(alpha());
+        var c = new VoteCount();
+        c.setUservote(1);
+        c.setVotes(1);
+        when(voteService.vote(ArgumentMatchers.any(Post.class),ArgumentMatchers.anyInt())).thenReturn(c);
         mockMvc.perform(
             post("/api/posts/" + fake.post_A().getId() + "/votes/up")
                 .with(user("root").password("123456789").roles("ADMIN"))
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.votes").exists())
+                .andExpect(jsonPath("$.votes").exists())
+                .andExpect(jsonPath("$.votes").value(1))
             .andExpect(jsonPath("$.uservote").exists());
 
     }

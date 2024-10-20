@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
@@ -12,15 +13,21 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,11 +46,17 @@ public class UserServiceTests {
     @Mock private NeighbourhoodRepository neighbourhoodRepository;
     @Mock private PictureRepository pictureRepository;
     @InjectMocks private UserServiceImpl userService;
-    @Mock private AuthenticationService authenticationService;
+    @Mock
+    private AuthenticationService authenticationService;
+
+    public UserServiceTests() {
+        MockitoAnnotations.openMocks(this);
+        userService.setAuthenticationService(authenticationService);
+    }
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+
     }
 
     @Test
@@ -52,7 +65,7 @@ public class UserServiceTests {
         String username = "testUser";
         User mockUser = new User();
         mockUser.setUsername(username);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(userRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(Optional.of(mockUser));
         User foundUser = userService.findByUsername(username);
         assertNotNull(foundUser);
         assertEquals(username, foundUser.getUsername());
@@ -67,6 +80,10 @@ public class UserServiceTests {
         mockUser.setName("Chocolate con albahaca");
         mockUser.setAddress("Alvear 5050");
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        User upd = mockUser;
+        upd.setName("Arroz con leche");
+        upd.setAddress("Balcarce 50");
+        when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(upd);
         var request = new UserPatchEditRequest();
         request.setName("Arroz con leche");
         request.setAddress("Balcarce 50");
@@ -82,7 +99,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Modificar usuario autenticado. ")
-    @WithMockUser(username = "testUser")
+    @WithMockUser(username = "root")
     void updateUser_CurrentUser_GoodData() {
         String username = "testUser";
         User mockUser = new User();
@@ -90,7 +107,12 @@ public class UserServiceTests {
         mockUser.setName("Chocolate con albahaca");
         mockUser.setAddress("Alvear 5050");
         when(authenticationService.getCurrentUser()).thenReturn(Optional.of(mockUser));
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        var upd = mockUser;
+        upd.setName("Arroz con leche");
+        upd.setAddress("Balcarce 50");
+        when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(upd);
         var request = new UserPatchEditRequest();
         request.setName("Arroz con leche");
         request.setAddress("Balcarce 50");
@@ -116,7 +138,7 @@ public class UserServiceTests {
         var request = new UserPatchEditRequest();
         request.setName("Arroz con leche");
         request.setAddress("Balcarce 50");
-        assertThrows(UsernameNotFoundException.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update("testUser", request);
         });
     }

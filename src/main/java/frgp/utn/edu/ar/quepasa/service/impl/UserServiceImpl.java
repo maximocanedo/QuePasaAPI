@@ -120,7 +120,8 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
                     .build();
             user.setProfilePicture(picture);
         }
-        return userRepository.save(user);
+        var u = userRepository.save(user);
+        return u;
     }
 
     /**
