@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
@@ -50,10 +51,13 @@ public class PostTypeController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-
-
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+    }
+
+    @ExceptionHandler(Fail.class)
+    public ResponseEntity<String> handleFail(Fail ex) {
+        return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
     }
 }
