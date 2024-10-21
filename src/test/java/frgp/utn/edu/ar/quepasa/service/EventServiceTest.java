@@ -5,7 +5,6 @@ import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
-import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
@@ -18,21 +17,17 @@ import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -490,6 +485,38 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Actualizar Evento Inexistente")
+    void updateEvent_EventNotFound_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.ADMIN);
+
+        setAuthContext(username, "ADMIN");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        EventPatchEditRequest eventPatchEditRequest = new EventPatchEditRequest();
+        eventPatchEditRequest.setTitle("event");
+        eventPatchEditRequest.setDescription("description");
+        eventPatchEditRequest.setAddress("address");
+        eventPatchEditRequest.setCategory(EventCategory.CINEMA);
+        eventPatchEditRequest.setAudience(Audience.PUBLIC);
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> eventService.update(eventId, eventPatchEditRequest, owner)
+        );
+
+        assertEquals("Event not found.", exception.getMessage());
+        clearAuthContext();
+    }
+
+    @Test
     @DisplayName("Eliminar Evento")
     void deleteEvent_ValidEvent_ReturnEvent() {
         UUID eventId = UUID.randomUUID();
@@ -513,6 +540,30 @@ public class EventServiceTest {
                 eventService.delete(eventId)
         );
 
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Eliminar Evento Inexistente")
+    void deleteEvent_EventNotFound_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.ADMIN);
+        setAuthContext(username, "ADMIN");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> eventService.delete(eventId)
+        );
+
+        assertEquals("Event not found.", exception.getMessage());
         clearAuthContext();
     }
 
@@ -576,22 +627,14 @@ public class EventServiceTest {
         event.setId(eventId);
         event.setNeighbourhoods(neighbourhoods);
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
         User owner = new User();
         owner.setUsername("owner");
         owner.setRole(Role.ADMIN);
-        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
-            Ownable ownable = invocation.getArgument(0);
-            return OwnerValidatorBuilder.create(ownable, owner);
-        });
-        final var authentication = new TestingAuthenticationToken(
-                owner,
-                "dsds",
-                "ADMIN"
-        );
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+        setAuthContext(owner.getUsername(), "ADMIN");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
 
         Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
@@ -607,13 +650,13 @@ public class EventServiceTest {
         UUID eventId = UUID.randomUUID();
         Long neighbourhoodId = 1L;
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
         User owner = new User();
         owner.setUsername("owner");
-        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
-            Ownable ownable = invocation.getArgument(0);
-            return OwnerValidatorBuilder.create(ownable, owner);
-        });
+        setAuthContext(owner.getUsername(), "ADMIN");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
 
         ResourceNotFoundException exception = assertThrows(
@@ -629,6 +672,7 @@ public class EventServiceTest {
     @WithMockUser(username = "owner", roles = { "ADMIN" })
     void removeNeighbourhoodEvent_ValidEvent_ReturnEvent() {
         UUID eventId = UUID.randomUUID();
+        String username = "owner";
         Long neighbourhoodId = 1L;
 
         Neighbourhood neighbourhood = new Neighbourhood();
@@ -638,29 +682,19 @@ public class EventServiceTest {
         neighbourhoods.add(neighbourhood);
 
         User owner = new User();
-        owner.setUsername("owner");
+        owner.setUsername(username);
         owner.setRole(Role.ADMIN);
+        setAuthContext(username, "ADMIN");
 
         Event event = new Event();
         event.setId(eventId);
         event.setNeighbourhoods(neighbourhoods);
         event.setOwner(owner);
 
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-        when(ownerService.of(ArgumentMatchers.any(Ownable.class))).thenAnswer(invocation -> {
-            Ownable ownable = invocation.getArgument(0);
-            return OwnerValidatorBuilder.create(ownable, owner);
-        });
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
-        final var authentication = new TestingAuthenticationToken(
-                owner,
-                "dsds",
-                "ADMIN"
-        );
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-
 
         Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
 
@@ -676,7 +710,6 @@ public class EventServiceTest {
         Long neighbourhoodId = 1L;
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
-
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
 
         ResourceNotFoundException exception = assertThrows(
