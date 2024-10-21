@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/post-subtypes")
@@ -58,11 +61,19 @@ public class PostSubtypeController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-
-
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<NoSuchElementException> handleNoSuchElement(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex);
+    }
+
+    @ExceptionHandler(Fail.class)
+    public ResponseEntity<String> handleFail(Fail ex) {
+        return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
     }
 
 }
