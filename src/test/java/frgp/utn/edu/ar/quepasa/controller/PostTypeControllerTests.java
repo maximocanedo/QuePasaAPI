@@ -1,7 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import jakarta.transaction.Transactional;
@@ -40,8 +39,6 @@ public class PostTypeControllerTests {
     @Autowired
     private MockMvc mockMvc;
     private final PostTypeRepository postTypeRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     public PostTypeControllerTests() {
         postTypeRepository = Mockito.mock(PostTypeRepository.class);
@@ -54,7 +51,7 @@ public class PostTypeControllerTests {
 
     @Test
     @DisplayName("Buscar tipo de post por ID.")
-    public void searchPostById() throws Exception {
+    public void searchPostTypeById() throws Exception {
         setAuthContext();
 
         when(postTypeRepository.findById(1)).thenReturn(Optional.of(new PostType()));
@@ -71,7 +68,7 @@ public class PostTypeControllerTests {
 
     @Test
     @DisplayName("Buscar tipo de post por ID, ID inexistente.")
-    public void searchPostById_NotFound() throws Exception {
+    public void searchPostTypeById_NotFound() throws Exception {
         setAuthContext();
 
         mockMvc.perform((get("/api/post-types/{id}", 909))
