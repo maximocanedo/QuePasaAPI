@@ -3,19 +3,33 @@ import frgp.utn.edu.ar.quepasa.controller.request.RoleUpdateRequestController;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+@Transactional
+@SpringBootTest()
+@ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Controladores de solicitudes de rol")
 
 class RoleUpdateRequestControllerTest {
 
@@ -54,7 +68,7 @@ class RoleUpdateRequestControllerTest {
         String reviewerRemarks = "Aprobado";
         RoleUpdateRequest updatedRequest = new RoleUpdateRequest();
 
-        
+
         when(roleUpdateRequestService.respondToRoleUpdateRequest(requestId, approve, reviewerRemarks)).thenReturn(updatedRequest);
 
         ResponseEntity<RoleUpdateRequest> response = roleUpdateRequestController.respondToRoleRequest(requestId, approve, reviewerRemarks);
