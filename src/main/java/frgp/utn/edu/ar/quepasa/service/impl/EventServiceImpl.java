@@ -12,6 +12,7 @@ import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
+import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.validators.events.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import java.util.UUID;
 public class EventServiceImpl implements EventService {
   
     private final OwnerService ownerService;
+    private final VoteService voteService;
     private final EventRepository eventRepository;
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final EventRsvpRepository eventRsvpRepository;
@@ -35,11 +37,13 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             OwnerService ownerService,
+            VoteService voteService,
             EventRepository eventRepository,
             NeighbourhoodRepository neighbourhoodRepository,
             EventRsvpRepository eventRsvpRepository
     ) {
         this.ownerService = ownerService;
+        this.voteService = voteService;
         this.eventRepository = eventRepository;
         this.neighbourhoodRepository = neighbourhoodRepository;
         this.eventRsvpRepository = eventRsvpRepository;
@@ -97,6 +101,7 @@ public class EventServiceImpl implements EventService {
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
         eventRepository.save(newEvent);
+        voteService.populate(newEvent);
         return newEvent;
     }
 
@@ -124,6 +129,7 @@ public class EventServiceImpl implements EventService {
         if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
 
         eventRepository.save(event);
+        voteService.populate(event);
         return event;
     }
 
