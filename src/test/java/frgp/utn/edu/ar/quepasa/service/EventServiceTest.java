@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service;
 
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
@@ -14,25 +15,26 @@ import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
@@ -48,8 +50,10 @@ public class EventServiceTest {
     private UserRepository userRepository;
     private EventRsvpRepository eventRsvpRepository;
     private NeighbourhoodRepository neighbourhoodRepository;
+    private AuthenticationServiceImpl authenticationService;
     private EventServiceImpl eventService;
-    private OwnerService ownerService;
+    private OwnerServiceImpl ownerService;
+    private VoteService voteService;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +61,10 @@ public class EventServiceTest {
         this.userRepository = mock(UserRepository.class);
         this.eventRsvpRepository = mock(EventRsvpRepository.class);
         this.neighbourhoodRepository = mock(NeighbourhoodRepository.class);
-        this.ownerService = mock(OwnerService.class);
-        this.eventService = new EventServiceImpl(ownerService, eventRepository, neighbourhoodRepository, eventRsvpRepository);
+        this.authenticationService = mock(AuthenticationServiceImpl.class);
+        ownerService = new OwnerServiceImpl(authenticationService);
+        this.voteService = mock(VoteService.class);
+        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, neighbourhoodRepository, eventRsvpRepository);
     }
 
 
@@ -187,7 +193,7 @@ public class EventServiceTest {
     }
 
     @Test
-    @DisplayName("Obtner Eventos por Op Inexistente")
+    @DisplayName("Obtener Eventos por Op Inexistente")
     void findEventsByOp_NoEventsFound_ReturnNull() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -437,6 +443,80 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Actualizar Evento")
+    void updateEvent_ValidEvent_ReturnEvent() throws Fail {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.ADMIN);
+
+        setAuthContext(username, "ADMIN");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setTitle("event");
+        event.setDescription("description");
+        event.setAddress("address");
+        event.setCategory(EventCategory.CINEMA);
+        event.setAudience(Audience.PUBLIC);
+        event.setOwner(owner);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        EventPatchEditRequest eventPatchEditRequest = new EventPatchEditRequest();
+        eventPatchEditRequest.setTitle("event");
+        eventPatchEditRequest.setDescription("description");
+        eventPatchEditRequest.setAddress("address");
+        eventPatchEditRequest.setCategory(EventCategory.CINEMA);
+        eventPatchEditRequest.setAudience(Audience.PUBLIC);
+
+
+        assertDoesNotThrow(() -> {
+                    Event updatedEvent = eventService.update(eventId, eventPatchEditRequest, owner);
+                    assertNotNull(updatedEvent);
+                    assertEquals(eventId, updatedEvent.getId());
+                    assertEquals(event.getTitle(), updatedEvent.getTitle());
+                    assertEquals(event.getDescription(), updatedEvent.getDescription());
+                    assertEquals(event.getAddress(), updatedEvent.getAddress());
+                    assertEquals(event.getCategory(), updatedEvent.getCategory());
+                    assertEquals(event.getAudience(), updatedEvent.getAudience());
+                }
+        );
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Eliminar Evento")
+    void deleteEvent_ValidEvent_ReturnEvent() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.ADMIN);
+        setAuthContext(username, "ADMIN");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(owner);
+        event.setActive(true);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        assertDoesNotThrow(() ->
+                eventService.delete(eventId)
+        );
+
+        clearAuthContext();
+    }
+
+    @Test
     @DisplayName("Confirmar Asistencia a Evento")
     void confirmEventAssistance_ValidEvent_ReturnEventRsvp() {
         UUID eventId = UUID.randomUUID();
@@ -607,65 +687,17 @@ public class EventServiceTest {
         assertEquals("Event not found.", exception.getMessage());
     }
 
-    /*
-    @Test
-    @DisplayName("Actualizar Evento")
-    void updateEvent_ValidEvent_ReturnEvent() throws Fail {
-        UUID eventId = UUID.randomUUID();
-        User owner = new User();
-        owner.setUsername("owner");
-
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("event");
-        event.setDescription("description");
-        event.setAddress("address");
-        event.setStart(LocalDateTime.now().plusHours(1));
-        event.setEnd(LocalDateTime.now().plusHours(2));
-        event.setCategory(EventCategory.CINEMA);
-        event.setAudience(Audience.PUBLIC);
-        event.setOwner(owner);
-
-        when(eventRepository.save(event)).thenReturn(event);
-
-        EventPatchEditRequest eventPatchEditRequest = new EventPatchEditRequest();
-        eventPatchEditRequest.setTitle("event");
-        eventPatchEditRequest.setDescription("description");
-        eventPatchEditRequest.setAddress("address");
-        eventPatchEditRequest.setStartDate(LocalDateTime.now().plusHours(1));
-        eventPatchEditRequest.setEndDate(LocalDateTime.now().plusHours(2));
-        eventPatchEditRequest.setCategory(EventCategory.CINEMA);
-        eventPatchEditRequest.setAudience(Audience.PUBLIC);
-
-        Event updatedEvent = eventService.update(eventId, eventPatchEditRequest, owner);
-
-        assertNotNull(updatedEvent);
-        assertEquals("event", updatedEvent.getTitle());
-        assertEquals("description", updatedEvent.getDescription());
-        assertEquals(owner.getUsername(), updatedEvent.getOwner().getUsername());
+    private void setAuthContext(String username, String role) {
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername(username)
+                .password("password")
+                .roles(role)
+                .build();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-    /*
-    @Test
-    @DisplayName("Eliminar Evento")
-    void deleteEvent_ValidEvent_ReturnEvent() {
-        UUID eventId = UUID.randomUUID();
-        String username = "owner";
-        User owner = new User();
-        owner.setUsername(username);
-        owner.setRole(Role.USER);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
-
-        Event event = new Event();
-        event.setId(eventId);
-        event.setOwner(owner);
-        event.setActive(true);
-
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-
-        assertDoesNotThrow(() ->
-                eventService.delete(eventId)
-        );
+    private void clearAuthContext() {
+        SecurityContextHolder.clearContext();
     }
-    */
 }
