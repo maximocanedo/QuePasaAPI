@@ -7,15 +7,11 @@ import frgp.utn.edu.ar.quepasa.model.geo.Country;
 
 public class SubnationalDivisionUpdateRequest {
 
-    private String iso3;
     private String label;
     private SubnationalDivisionDenomination denomination;
     private Country country;
 
     public SubnationalDivisionUpdateRequest() {}
-
-    public String getIso3() { return iso3; }
-    public void setIso3(String iso3) { this.iso3 = iso3; }
 
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; }
@@ -25,11 +21,6 @@ public class SubnationalDivisionUpdateRequest {
 
     public Country getCountry() { return country; }
     public void setCountry(Country country) { this.country = country; }
-
-    @JsonIgnore
-    public boolean hasIso3() {
-        return iso3 != null;
-    }
 
     @JsonIgnore
     public boolean hasLabel() {

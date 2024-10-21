@@ -11,6 +11,8 @@ public class NeighbourhoodObjectValidatorBuilder extends ValidatorBuilder<Neighb
     public NeighbourhoodObjectValidatorBuilder(Neighbourhood value) {
         super(value, "neighbourhood");
     }
+
+    @Deprecated(forRemoval = true)
     public NeighbourhoodObjectValidatorBuilder(Long id, NeighbourhoodRepository repository) {
         super(repository.findById(id).orElseThrow(), "neighbourhood");
     }

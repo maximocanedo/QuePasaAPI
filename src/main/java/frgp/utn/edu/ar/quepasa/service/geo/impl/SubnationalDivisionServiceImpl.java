@@ -75,14 +75,6 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
     public SubnationalDivision update(SubnationalDivisionUpdateRequest request, String iso3) {
         var file = repository.findByIso3(iso3)
                 .orElseThrow(() -> new Fail("State not found. ", HttpStatus.NOT_FOUND));
-        if(request.hasIso3()) {
-            String code = new SubnationalDivisionISO3ValidatorBuilder(request.getIso3())
-                    .isNotNullOrEmpty()
-                    .isValidISO31662()
-                    .isAvailable(repository)
-                    .build();
-            file.setIso3(code);
-        }
         if(request.hasLabel()) {
             String label = new SubnationalDivisionLabelValidatorBuilder(request.getLabel())
                     .isNotNullOrEmpty()

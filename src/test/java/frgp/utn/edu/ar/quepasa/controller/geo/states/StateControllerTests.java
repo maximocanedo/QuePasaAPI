@@ -109,7 +109,6 @@ public class StateControllerTests {
     public void update() throws Exception {
         when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
         var r = new SubnationalDivisionUpdateRequest();
-        r.setIso3("AR-REI");
         r.setLabel("Soriana");
         r.setCountry(argentina());
         r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
@@ -118,7 +117,6 @@ public class StateControllerTests {
         when(countries.existsByIso3("URY")).thenReturn(true);
         var upd = new SubnationalDivision();
         upd.setLabel(r.getLabel());
-        upd.setIso3(r.getIso3());
         upd.setCountry(r.getCountry());
         upd.setDenomination(r.getDenomination());
         when(repository.save(any())).thenReturn(upd);
@@ -130,7 +128,6 @@ public class StateControllerTests {
                         .content(objectMapper.writeValueAsString(r))
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.iso3").value(upd.getIso3()))
                 .andExpect(jsonPath("$.label").value(upd.getLabel()))
                 .andExpect(jsonPath("$.country.iso3").value(upd.getCountry().getIso3()));
 
