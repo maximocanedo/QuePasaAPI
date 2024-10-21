@@ -105,6 +105,28 @@ public class StateControllerTests {
     }
 
     @Test
+    @DisplayName("#40: Eliminar registro de estado")
+    public void deleteState() throws Exception {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        mockMvc.perform(
+                        delete("/api/states/" + soriano().getIso3())
+                                .with(user("root").password("123456789").roles("ADMIN"))
+                )
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @DisplayName("#40: Eliminar registro de estado que no existe")
+    public void deleteStateNotFound() throws Exception {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.empty());
+        mockMvc.perform(
+                        delete("/api/states/KDSLJFSK")
+                                .with(user("root").password("123456789").roles("ADMIN"))
+                )
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     @DisplayName("Editar registro de estado")
     public void update() throws Exception {
         when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));

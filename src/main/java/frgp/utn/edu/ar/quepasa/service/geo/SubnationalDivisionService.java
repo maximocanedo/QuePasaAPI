@@ -19,4 +19,6 @@ public interface SubnationalDivisionService {
 
     SubnationalDivision update(SubnationalDivisionUpdateRequest request, String iso3);
 
+    void delete(String iso3);
+
 }

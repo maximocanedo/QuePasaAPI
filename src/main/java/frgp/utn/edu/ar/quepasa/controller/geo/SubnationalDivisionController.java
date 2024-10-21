@@ -32,6 +32,12 @@ public class SubnationalDivisionController {
         return ResponseEntity.ok(subnationalDivisionService.getById(iso));
     }
 
+    @DeleteMapping("/{iso}")
+    public ResponseEntity<?> deleteByIso(@PathVariable String iso) {
+        subnationalDivisionService.delete(iso);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @PatchMapping("/{iso}")
     public ResponseEntity<SubnationalDivision> update(@PathVariable String iso, @RequestBody SubnationalDivisionUpdateRequest request) {
         var result = subnationalDivisionService.update(request, iso);

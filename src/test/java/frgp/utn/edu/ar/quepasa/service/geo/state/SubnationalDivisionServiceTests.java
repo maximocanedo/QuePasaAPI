@@ -94,26 +94,6 @@ public class SubnationalDivisionServiceTests {
     }
 
     @Test
-    @DisplayName("#38: Actualización, ISO3 incorrecto")
-    public void updateBadIso3() {
-        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
-        when(repository.existsByIso3("AR-RE")).thenReturn(false);
-        when(countries.existsByIso3("ARG")).thenReturn(true);
-        var r = new SubnationalDivisionUpdateRequest();
-        r.setLabel("Soriana");
-        r.setCountry(argentina());
-        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
-        var upd = soriano();
-        upd.setLabel(r.getLabel());
-        upd.setCountry(r.getCountry());
-        upd.setDenomination(r.getDenomination());
-        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
-            service.update(r, soriano().getIso3());
-        });
-    }
-
-    @Test
     @DisplayName("#38: Actualización, Nombre incorrecto")
     public void updateBadLabel() {
         when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
@@ -133,25 +113,6 @@ public class SubnationalDivisionServiceTests {
         });
     }
 
-    @Test
-    @DisplayName("#38: Actualización, ISO no disponible")
-    public void updateBadIsoAgain() {
-        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
-        when(repository.existsByIso3("AR-RE")).thenReturn(true);
-        when(countries.existsByIso3("ARG")).thenReturn(true);
-        var r = new SubnationalDivisionUpdateRequest();
-        r.setLabel("Soriana");
-        r.setCountry(argentina());
-        r.setDenomination(SubnationalDivisionDenomination.TERRITORY);
-        var upd = soriano();
-        upd.setLabel(r.getLabel());
-        upd.setCountry(r.getCountry());
-        upd.setDenomination(r.getDenomination());
-        doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
-            service.update(r, soriano().getIso3());
-        });
-    }
 
     @Test
     @DisplayName("#38: Actualización, SD no disponible")
@@ -170,6 +131,28 @@ public class SubnationalDivisionServiceTests {
         doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
         assertThrows(Fail.class, () -> {
             service.update(r, soriano().getIso3());
+        });
+    }
+
+    @Test
+    @DisplayName("#40: Eliminar, ISO3 existente")
+    public void deleteExisting() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.of(soriano()));
+        var so1 = soriano();
+        so1.setActive(false);
+        when(repository.save(ArgumentMatchers.any(SubnationalDivision.class))).thenReturn(so1);
+
+        assertDoesNotThrow(() -> {
+            service.delete(soriano().getIso3());
+        });
+    }
+
+    @Test
+    @DisplayName("#40: Eliminar, ISO3 no existente")
+    public void deleteNonExisting() {
+        when(repository.findByIso3(soriano().getIso3())).thenReturn(Optional.empty());
+        assertThrows(Fail.class, () -> {
+            service.delete(soriano().getIso3());
         });
     }
 

@@ -67,6 +67,8 @@ public class SecurityConfig {
                                     .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/states/**")
                             .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.DELETE, "/api/states/**")
+                            .hasAuthority(Role.ADMIN.name());
                     // Fin sección usuarios
 
                     // Sección tipos de publicaciones

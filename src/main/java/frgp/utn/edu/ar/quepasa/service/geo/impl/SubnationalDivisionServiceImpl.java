@@ -95,5 +95,12 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
         return repository.save(file);
     }
 
+    @Override
+    public void delete(String iso3) {
+        var file = repository.findByIso3(iso3)
+                .orElseThrow(() -> new Fail("State not found. ", HttpStatus.NOT_FOUND));
+        file.setActive(false);
+        repository.save(file);
+    }
 
 }
