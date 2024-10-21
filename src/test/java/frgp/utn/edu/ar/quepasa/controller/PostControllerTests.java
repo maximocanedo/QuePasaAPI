@@ -354,16 +354,6 @@ public class PostControllerTests {
         clearAuthContext();
     }
 
-    private void setAuthContext() {
-        UserDetails userDetails = org.springframework.security.core.userdetails.User
-                .withUsername("root")
-                .password("123456789")
-                .roles("ADMIN")
-                .build();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
     private PostCreateRequest mockPostCreate(Integer subId, Long neighId) {
         PostCreateRequest request = new PostCreateRequest();
         request.setOriginalPoster("donald");
@@ -399,6 +389,16 @@ public class PostControllerTests {
         request.setTags("descripcion,breve");
 
         return request;
+    }
+
+    private void setAuthContext() {
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername("root")
+                .password("123456789")
+                .roles("ADMIN")
+                .build();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private void clearAuthContext() {
