@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -107,6 +108,11 @@ public class PostController {
     @ExceptionHandler(ValidatorBuilder.ValidationError.class)
     public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<NoSuchElementException> handleNoSuchElement(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex);
     }
 
     @ExceptionHandler(Fail.class)
