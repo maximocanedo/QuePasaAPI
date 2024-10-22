@@ -152,7 +152,6 @@ public class EventServiceImpl implements EventService {
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
-                .isModerator()
                 .orElseFail();
         event.setActive(false);
         eventRepository.save(event);
@@ -166,7 +165,6 @@ public class EventServiceImpl implements EventService {
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
-                .isModerator()
                 .orElseFail();
 
 
@@ -189,7 +187,6 @@ public class EventServiceImpl implements EventService {
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
-                .isModerator()
                 .orElseFail();
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
