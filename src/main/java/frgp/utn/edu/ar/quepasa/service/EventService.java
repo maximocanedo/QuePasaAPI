@@ -25,7 +25,7 @@ public interface EventService {
 
     EventRsvp confirmEventAssistance(UUID eventId, User user);
 
-    Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail;
+    Event update(UUID id, EventPatchEditRequest event, User owner) throws Fail;
 
     void delete(UUID id) throws Fail;
 

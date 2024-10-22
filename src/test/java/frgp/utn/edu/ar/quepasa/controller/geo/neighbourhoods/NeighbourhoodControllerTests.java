@@ -97,7 +97,7 @@ public class NeighbourhoodControllerTests {
         mockMvc.perform(get("/api/neighbourhoods/1?activeOnly=true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Recoleta"));
+                .andExpect(jsonPath("$.name").value("Tigre Centro"));
     }
 
     @Test
