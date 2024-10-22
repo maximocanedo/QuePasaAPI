@@ -46,10 +46,10 @@ public class PostRepositoryTests {
     private PostSubtypeRepository postSubtypeRepository;
 
     @Autowired
-    private SubnationalDivisionRepository subnationalDivisionRepository;
+    private CountryRepository countryRepository;
 
     @Autowired
-    private CountryRepository countryRepository;
+    private SubnationalDivisionRepository subnationalDivisionRepository;
 
     @Autowired
     private CityRepository cityRepository;
@@ -58,7 +58,7 @@ public class PostRepositoryTests {
     private NeighbourhoodRepository neighbourhoodRepository;
 
     @Test
-    @DisplayName("Alta, Borrado, Modificación y Lectura de tipos de publicaciones")
+    @DisplayName("Alta, Borrado, Modificación y Lectura de publicaciones")
     public void crudTest() {
         Integer tid = 1;
         PostType t = new PostType();
