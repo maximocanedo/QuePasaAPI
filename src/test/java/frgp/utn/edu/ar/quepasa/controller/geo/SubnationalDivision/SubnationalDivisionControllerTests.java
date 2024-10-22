@@ -114,7 +114,7 @@ class SubnationalDivisionControllerTest {
 
         ResponseEntity<ResponseError> response = subnationalDivisionController.handleFail(failException);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Error de prueba", response.getBody().getMessage());
     }
 
