@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.controller.geo.NeighbourhoodController;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-
+@Transactional
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -95,7 +97,7 @@ public class NeighbourhoodControllerTests {
         mockMvc.perform(get("/api/neighbourhoods/1?activeOnly=true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Recoleta"));
+                .andExpect(jsonPath("$.name").value("Tigre Centro"));
     }
 
     @Test

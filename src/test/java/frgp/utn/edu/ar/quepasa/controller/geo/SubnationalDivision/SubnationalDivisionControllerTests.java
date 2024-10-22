@@ -7,19 +7,31 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
+@Transactional
+@SpringBootTest()
+@ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Controladores de divisiones subnacionales")
 
 class SubnationalDivisionControllerTest {
 
