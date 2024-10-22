@@ -134,10 +134,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventRsvp confirmEventAssistance(UUID eventId, User user) {
+    public EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail {
         EventRsvp newEventRsvp = new EventRsvp();
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+        if (!event.isActive()) throw new Fail("Event is not active.");
         newEventRsvp.setEvent(event);
         newEventRsvp.setUser(user);
         eventRsvpRepository.save(newEventRsvp);
