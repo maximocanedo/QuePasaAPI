@@ -63,5 +63,21 @@ public enum SubnationalDivisionDenomination {
     /**
      * Nación (Para naciones constitutivas del Reino Unido, Dinamarca, o de los Países Bajos).
      */
-    COUNTRY
+    COUNTRY,
+    /**
+     * Territorio de ultra mar
+     */
+    OVERSEAS_TERRITORY,
+    /**
+     * Colectividad
+     */
+    COLLECTIVITY,
+    VOIVODSHIP,
+    FEDERAL_DISTRICT,
+    FEDERAL_ENTITY,
+    BOROUGH,
+    DEPENDENCY,
+    PREFECTURE,
+    OBLAST,
+    GOVERNORATE
 }
