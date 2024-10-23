@@ -1,37 +1,40 @@
-package main.java.frgp.utn.edu.ar.quepasa.repository;
+package frgp.utn.edu.ar.quepasa.repository;
+
+import frgp.utn.edu.ar.quepasa.model.Trend;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import frgp.utn.edu.ar.quepasa.model.Trend;
 
-
+@Repository
 public class TrendRepository {
 
     private static final String CALL_PROCEDURE = "{CALL contar_tendencias_tags_por_barrio(?, ?)}";
 
     /**
-     * Devuelve las tendencias de un barrio en una fecha especifica.
+     * Obtiene las tendencias (tags) para un barrio en particular. La tendencia se
+     * calcula contando la cantidad de veces que ha sido etiquetada en las publicaciones
+     * realizadas en ese barrio desde la fecha base especificada.
      *
-     * @param neighbourhood el identificador del barrio.
-     * @param datebase la fecha y hora en la que se quieren obtener las tendencias.
-     * @return una lista de tendencias.
+     * @param barrio el n mero de barrio para el que se quieren obtener las tendencias.
+     * @param fechaBase la fecha desde la que se contabilizan las etiquetas.
+     * @return una lista de tendencias, donde cada tendencia est  representada por un
+     *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
-    public List<Trend> getTendencias(int neighbourhood, Timestamp datebase) {
-        List<Trend> trends = new ArrayList<>();
+    public List<Trend> getTendencias(int barrio, Timestamp fechaBase) {
+        List<Trend> tendencias = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://canedo.com.ar:3306/tif", "tusi", "K105T3R.RUL3S");
              CallableStatement statement = connection.prepareCall(CALL_PROCEDURE)) {
-
-            statement.setInt(1, neighbourhood);
-            statement.setTimestamp(2, datebase);
+            statement.setInt(1, barrio);
+            statement.setTimestamp(2, fechaBase);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     String tag = resultSet.getString("tag");
                     int cantidad = resultSet.getInt("cantidad");
-
-                    trends.add(new Trend(tag, cantidad));
+                    tendencias.add(new Trend(tag, cantidad));
                 }
             }
 
@@ -39,15 +42,6 @@ public class TrendRepository {
             e.printStackTrace();
         }
 
-        return trends;
+        return tendencias;
     }
 }
-
-
-
-
-
-
-
-
-
