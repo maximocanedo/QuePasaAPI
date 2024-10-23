@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.repository;
+package main.java.frgp.utn.edu.ar.quepasa.repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,6 +10,13 @@ public class TrendRepository {
 
     private static final String CALL_PROCEDURE = "{CALL contar_tendencias_tags_por_barrio(?, ?)}";
 
+    /**
+     * Devuelve las tendencias de un barrio en una fecha especifica.
+     *
+     * @param neighbourhood el identificador del barrio.
+     * @param datebase la fecha y hora en la que se quieren obtener las tendencias.
+     * @return una lista de tendencias.
+     */
     public List<Trend> getTendencias(int neighbourhood, Timestamp datebase) {
         List<Trend> trends = new ArrayList<>();
 
