@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
+import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -23,20 +24,20 @@ public class FileSystemStorageService implements StorageService {
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
-
         if(properties.getLocation().trim().isEmpty()){
             throw new StorageException("File upload location can not be Empty.");
         }
-
         this.rootLocation = Paths.get(properties.getLocation());
     }
 
     @Override
     public void store(MultipartFile file, String finalFilename) {
         try {
-            if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file.");
-            }
+            var finalFile = new MultipartFileValidator(file)
+                    .isNotNull()
+                    .isNotEmpty()
+                    .hasContentType()
+                    .build();
             Path destinationFile = this.rootLocation.resolve(
                             Paths.get(finalFilename))
                     .normalize().toAbsolutePath();
@@ -45,7 +46,7 @@ public class FileSystemStorageService implements StorageService {
                 throw new StorageException(
                         "Cannot store file outside current directory.");
             }
-            try (InputStream inputStream = file.getInputStream()) {
+            try (InputStream inputStream = finalFile.getInputStream()) {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
             }

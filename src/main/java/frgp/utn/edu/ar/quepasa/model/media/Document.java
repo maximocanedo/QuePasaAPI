@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class Document implements Ownable {
     private String description;
     private String location;
     private Set<RoleUpdateRequest> roleUpdateRequestsLinked = new HashSet<>();
+    private Timestamp uploadedAt = null;
     private boolean active = true;
 
     /**
@@ -52,7 +54,7 @@ public class Document implements Ownable {
      * Devuelve la ruta real del documento en el servidor.
      */
     @JsonIgnore
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
@@ -69,5 +71,11 @@ public class Document implements Ownable {
     @Column(nullable = false)
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    /**
+     * Devuelve la fecha y hora de subida.
+     */
+    public Timestamp getUploadedAt() { return uploadedAt; }
+    public void setUploadedAt(Timestamp uploadedAt) { this.uploadedAt = uploadedAt; }
 
 }

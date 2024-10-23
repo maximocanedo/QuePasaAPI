@@ -72,12 +72,36 @@ public enum SubnationalDivisionDenomination {
      * Colectividad
      */
     COLLECTIVITY,
+    /**
+     *
+     */
     VOIVODSHIP,
+    /**
+     * Distrito Federal
+     */
     FEDERAL_DISTRICT,
+    /**
+     * Entidad federal
+     */
     FEDERAL_ENTITY,
+    /**
+     * Burgo
+     */
     BOROUGH,
+    /**
+     * Dependencia
+     */
     DEPENDENCY,
+    /**
+     * Prefectura
+     */
     PREFECTURE,
+    /**
+     * Óblast
+     */
     OBLAST,
+    /**
+     * Gobernación
+     */
     GOVERNORATE
 }
