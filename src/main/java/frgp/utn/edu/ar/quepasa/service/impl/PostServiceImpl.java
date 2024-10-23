@@ -10,6 +10,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
@@ -33,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private final PostSubtypeRepository postSubtypeRepository;
     private final UserRepository userRepository;
     private final NeighbourhoodRepository neighbourhoodRepository;
+    private CommentService commentService;
 
     @Autowired
     public PostServiceImpl(
@@ -50,22 +52,40 @@ public class PostServiceImpl implements PostService {
         this.neighbourhoodRepository = neighbourhoodRepository;
     }
 
+    @Autowired
+    public void setCommentService(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     @Override
     public Page<Post> listPost(Pageable pageable) {
-        return postRepository.findAll(pageable).map(voteService::populate);
+        return postRepository
+                .findAll(pageable)
+                .map(voteService::populate)
+                .map(commentService::populate);
     }
 
     @Override
     public Post findById(Integer id) {
-        return voteService.populate(postRepository.findById(id)
-                .orElseThrow(() -> new Fail("Post not found", HttpStatus.NOT_FOUND)));
+        return commentService.populate(
+            voteService.populate(
+                postRepository
+                    .findById(id)
+                    .orElseThrow(
+                        () -> new Fail("Post not found", HttpStatus.NOT_FOUND)
+                    )
+            )
+        );
     }
 
     @Override
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
                 .orElseThrow(() -> new Fail("User not found", HttpStatus.NOT_FOUND));
-        return postRepository.findByOwner(user, pageable).map(voteService::populate);
+        return postRepository
+                .findByOwner(user, pageable)
+                .map(voteService::populate)
+                .map(commentService::populate);
     }
 
     @Override
@@ -86,7 +106,7 @@ public class PostServiceImpl implements PostService {
         post.setTimestamp(newPost.getTimestamp());
         post.setTags(newPost.getTags());
         postRepository.save(post);
-        return voteService.populate(post);
+        return commentService.populate(voteService.populate(post));
     }
 
     @Override
@@ -112,7 +132,7 @@ public class PostServiceImpl implements PostService {
         }
         if(newPost.getTags() != null) post.setTags(newPost.getTags());
         postRepository.save(post);
-        return voteService.populate(post);
+        return commentService.populate(voteService.populate(post));
     }
 
     @Override

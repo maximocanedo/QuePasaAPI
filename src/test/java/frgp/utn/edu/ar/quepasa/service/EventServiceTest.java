@@ -15,6 +15,7 @@ import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
@@ -59,7 +60,8 @@ public class EventServiceTest {
         this.authenticationService = mock(AuthenticationServiceImpl.class);
         ownerService = new OwnerServiceImpl(authenticationService);
         this.voteService = mock(VoteService.class);
-        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, neighbourhoodRepository, eventRsvpRepository);
+        var commentService = mock(CommentServiceImpl.class);
+        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository);
     }
 
 

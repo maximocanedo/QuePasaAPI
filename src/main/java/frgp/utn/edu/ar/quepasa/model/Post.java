@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.model;
 
+import frgp.utn.edu.ar.quepasa.data.response.CommentCount;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "posts")
-public class Post implements Ownable, Votable {
+public class Post implements Ownable, Votable, Commentable {
     
     private Integer id;
     private User owner;
@@ -25,7 +26,7 @@ public class Post implements Ownable, Votable {
     private Timestamp timestamp;
     private String tags;
     private boolean active = true;
-
+    private CommentCount commentCount;
     private VoteCount votes;
 
     public Post() {}
@@ -123,5 +124,13 @@ public class Post implements Ownable, Votable {
     public void setVotes(VoteCount votes) {
         this.votes = votes;
     }
+
+    @Override
+    @Transient
+    public CommentCount getCommentCount() { return commentCount; }
+
+    @Override
+    @Transient
+    public void setCommentCount(CommentCount count) { this.commentCount = count; }
 
 }

@@ -12,9 +12,9 @@ import java.util.UUID;
  * Entidad que representa un comentario hecho a una publicación.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "comments")
-public class Comment implements Ownable, Votable {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Comment implements Ownable, Votable {
     private UUID id;
     private String content;
     private User author;
@@ -83,3 +83,4 @@ public class Comment implements Ownable, Votable {
     }
 
 }
+
