@@ -33,6 +33,12 @@ public class Picture implements Ownable, Votable {
 
     private VoteCount votes;
 
+    public static Picture identify(UUID id) {
+        Picture picture = new Picture();
+        picture.setId(id);
+        return picture;
+    }
+
     /**
      * Devuelve el ID de la imagen.
      */

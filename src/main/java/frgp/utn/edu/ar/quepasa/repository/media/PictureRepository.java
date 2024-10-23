@@ -1,5 +1,6 @@
 package frgp.utn.edu.ar.quepasa.repository.media;
 
+import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
     @NotNull
     @Query("SELECT p FROM Picture p WHERE p.owner.username = :username")
     Page<Picture> findAll(@NotNull Pageable pageable, @NotNull String username);
+
+    Page<Picture> findByOwner(@NotNull User user, @NotNull Pageable pageable);
 
 
 }

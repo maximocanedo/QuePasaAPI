@@ -41,6 +41,13 @@ public class MultipartFileValidator extends ValidatorBuilder<MultipartFile> {
         return this;
     }
 
+    public MultipartFileValidator isPicture() {
+        this.hasContentType();
+        if(!getValue().getContentType().startsWith("image/"))
+            super.invalidate("No es un archivo PDF. ");
+        return this;
+    }
+
     public static String formatBytes(long bytes) {
         if (bytes < 1024) {
             return bytes + " B";

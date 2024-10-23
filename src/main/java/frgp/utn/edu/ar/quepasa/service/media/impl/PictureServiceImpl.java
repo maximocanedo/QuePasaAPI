@@ -1,14 +1,22 @@
 package frgp.utn.edu.ar.quepasa.service.media.impl;
 
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import frgp.utn.edu.ar.quepasa.service.OwnerService;
+import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import frgp.utn.edu.ar.quepasa.service.media.StorageService;
+import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +32,18 @@ public class PictureServiceImpl implements PictureService {
     private PictureRepository pictureRepository;
     private StorageService storageService;
     private AuthenticationService authenticationService;
+    private OwnerService ownerService;
+    private VoteService voteService;
+
+    @Autowired
+    public void setOwnerService(OwnerService ownerService) {
+        this.ownerService = ownerService;
+    }
+
+    @Autowired
+    public void setVoteService(VoteService voteService) {
+        this.voteService = voteService;
+    }
 
     @Autowired @Lazy
     public void setPictureRepository(PictureRepository pictureRepository) {
@@ -46,13 +66,15 @@ public class PictureServiceImpl implements PictureService {
         Picture picture = new Picture();
         picture.setDescription(description);
         picture.setOwner(current);
-        if(file.getContentType() != null)
-            picture.setMediaType(MediaType.parseMediaType(
-                    !file.getContentType().startsWith("image/")
-                    ? "image/jpeg" : file.getContentType()
-            ));
+        var finalFile = new MultipartFileValidator(file)
+                .isNotNull()
+                .isNotEmpty()
+                .hasContentType()
+                .isPicture()
+                .meetsMaximumSizeForPicture()
+                .build();
         pictureRepository.save(picture);
-        storageService.store(file, "picture." + picture.getId().toString());
+        storageService.store(finalFile, "picture." + picture.getId().toString());
         picture.setActive(true);
         picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
         pictureRepository.save(picture);
@@ -62,11 +84,10 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public RawPicture getRawPictureById(UUID id) {
-        Picture op = pictureRepository
-                .findById(id)
-                .orElseThrow(NoSuchElementException::new);
-        if(!op.isActive()) throw new NoSuchElementException();
-        return new RawPicture(op, storageService.loadAsResource("picture." + id.toString()));
+        var op = pictureRepository
+                .findById(id);
+        if(op.isEmpty() || !op.get().isActive()) throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
+        return new RawPicture(voteService.populate(op.get()), storageService.loadAsResource("picture." + id.toString()));
     }
 
     @Override
@@ -76,12 +97,33 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public Optional<Picture> getPictureById(UUID id) {
-        return pictureRepository.findById(id);
+        return pictureRepository
+                .findById(id)
+                .map(voteService::populate);
     }
 
     @Override
     public Optional<Picture> getPictureById(String id) {
         return getPictureById(UUID.fromString(id));
+    }
+
+    @Override
+    public Page<Picture> getMyPics(Pageable pageable) {
+        var current = authenticationService.getCurrentUserOrDie();
+        return pictureRepository
+                .findByOwner(current, pageable)
+                .map(voteService::populate);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        var doc = pictureRepository.findById(id);
+        if(doc.isEmpty() || !doc.get().isActive())
+            throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
+        var file = doc.get();
+        ownerService.of(file).isOwner().isAdmin();
+        storageService.delete("picture."+file.getId().toString());
+        pictureRepository.delete(doc.get());
     }
 
 }
