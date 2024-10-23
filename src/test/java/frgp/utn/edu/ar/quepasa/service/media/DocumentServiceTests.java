@@ -1,22 +1,32 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.repository.media.DocumentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.DocumentServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,6 +51,9 @@ public class DocumentServiceTests {
 
     @InjectMocks
     private DocumentServiceImpl documentService;
+
+    @Mock
+    private OwnerService ownerService;
 
     private User mockUser;
     private Document mockDocument;
@@ -82,6 +95,34 @@ public class DocumentServiceTests {
         verify(documentRepository, times(2)).save(any(Document.class));
         verify(storageService).store(file, "document." + uploadedDocument.getId().toString());
 
+    }
+
+    @Test
+    @DisplayName("#57: Obtener documentos del usuario autenticado")
+    void testGetCurrentUserDocs() {
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(documentRepository.findByOwner(any(User.class), any(Pageable.class))).thenAnswer(invocation -> {
+            Document a = new Document();
+            a.setId(docId);
+            a.setDescription("Test description");
+            a.setOwner(mockUser);
+            Document b = new Document();
+            b.setId(UUID.randomUUID());
+            b.setDescription("Test description");
+            b.setOwner(mockUser);
+            return new PageImpl<>(List.of(a, b), invocation.getArgument(1), 2);
+        });
+
+        var page = documentService.getMyDocuments(Pageable.ofSize(5));
+
+        assertNotNull(page);
+        assertFalse(page.isEmpty());
+        assertEquals(5, page.getSize());
+        assertEquals(2, page.getTotalElements());
+        assertTrue(page.stream().findFirst().isPresent());
+        assertEquals("Test description", page.stream().findFirst().get().getDescription());
+        assertEquals(docId, page.stream().findFirst().get().getId());
+        verify(documentRepository).findByOwner(any(User.class), any(Pageable.class));
     }
 
     @Test
@@ -177,4 +218,41 @@ public class DocumentServiceTests {
         assertEquals("Document not found. ", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
+
+    @Test
+    @DisplayName("#60: Eliminar documento no existente")
+    void testDeleteDocumentNotFound() {
+        var documentId = UUID.randomUUID();
+        when(documentRepository.findById(documentId)).thenReturn(Optional.empty());
+
+        Fail exception = assertThrows(Fail.class, () -> documentService.delete(documentId));
+
+        assert exception.getMessage().contains("Document not found");
+        assert exception.getStatus() == HttpStatus.NOT_FOUND;
+
+        verify(documentRepository, times(1)).findById(documentId);
+        verify(documentRepository, never()).delete(any(Document.class));
+        verify(storageService, never()).delete(anyString());
+    }
+
+    @Test
+    @DisplayName("#60: Eliminar documento")
+    void testDeleteDocumentSuccess() {
+        var documentId = UUID.randomUUID();
+        when(documentRepository.findById(documentId)).thenReturn(Optional.of(mockDocument));
+
+        OwnerValidatorBuilder vb = Mockito.mock(OwnerValidatorBuilder.class);
+        when(vb.isOwner()).thenReturn(vb);
+        when(vb.isAdmin()).thenReturn(vb);
+        when(ownerService.of(any(Ownable.class))).thenReturn(vb);
+
+        doNothing().when(storageService).delete("document." + documentId);
+
+        documentService.delete(documentId);
+
+        verify(documentRepository, times(1)).findById(documentId);
+        verify(storageService, times(1)).delete(anyString());
+        verify(documentRepository, times(1)).delete(mockDocument);
+    }
+
 }

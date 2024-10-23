@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller.media;
 
 import frgp.utn.edu.ar.quepasa.data.response.RawDocument;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
@@ -21,21 +22,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
@@ -129,7 +134,30 @@ public class DocumentControllerTests {
     }
 
     @Test
-    @DisplayName("Test visualizar documento como recurso PDF")
+    @DisplayName("#57: Listar mis documentos")
+    void testGetMyDocuments() throws Exception {
+        UUID docId = UUID.randomUUID();
+        when(documentService.getMyDocuments(any(Pageable.class))).thenAnswer(invocation -> {
+            Document a = new Document();
+            a.setId(docId);
+            a.setDescription("Test description");
+            Document b = new Document();
+            b.setId(UUID.randomUUID());
+            b.setDescription("Test description");
+            return new PageImpl<>(List.of(a, b), invocation.getArgument(0), 2);
+        });
+
+        mockMvc.perform(get("/api/documents")
+                        .with(user("root").password("123456789").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").value(docId.toString()))
+                .andExpect(jsonPath("$.empty").value(false))
+                .andExpect(jsonPath("$.totalElements").value(2));
+    }
+
+    @Test
+    @DisplayName("#58: Ver documento PDF")
     void testViewDocument() throws Exception {
         byte[] content = "PDF content".getBytes();
         Document doc = new Document();
@@ -162,6 +190,29 @@ public class DocumentControllerTests {
         mockMvc.perform(get("/api/documents/{id}/view", documentId.toString())
                         .with(user("root").password("123456789").roles("ADMIN")))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("#60: Eliminar documento exitosamente")
+    void testDeleteDocumentSuccess() throws Exception {
+        mockMvc.perform(delete("/api/documents/{id}", documentId)
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("root").roles("ADMIN")))
+                .andExpect(status().isNoContent());
+
+        verify(documentService).delete(documentId);
+    }
+
+    @Test
+    @DisplayName("#60: Eliminar documento no existente")
+    void testDeleteDocumentNotFound() throws Exception {
+        doThrow(new Fail("Document not found.", HttpStatus.NOT_FOUND))
+                .when(documentService).delete(documentId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/documents/{id}", documentId)
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("root").roles("ADMIN")))
+                .andExpect(status().isNotFound());
+
+        verify(documentService).delete(documentId);
     }
 
 }

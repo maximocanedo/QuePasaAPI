@@ -71,6 +71,15 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
                     // Fin sección usuarios
 
+                    // Sección documentos
+                    request.requestMatchers(HttpMethod.GET, "/api/documents", "/api/documents/**")
+                                    .authenticated();
+                    request.requestMatchers(HttpMethod.POST, "/api/documents")
+                                    .authenticated();
+                    request.requestMatchers(HttpMethod.DELETE, "/api/documents/**")
+                            .authenticated();
+                    // Fin sección documentos
+
                     // Sección tipos de publicaciones
                     request.requestMatchers(HttpMethod.POST, "/api/post-types", "/api/post-types/**")
                             .hasAuthority(Role.ADMIN.name());

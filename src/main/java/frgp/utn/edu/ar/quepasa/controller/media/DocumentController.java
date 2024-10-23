@@ -13,6 +13,8 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/documents")
@@ -40,6 +43,18 @@ public class DocumentController {
     ) {
         Document pic = documentService.upload(file, description);
         return ResponseEntity.ok(pic);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Document>> getMyDocuments(Pageable pageable) {
+        var page = documentService.getMyDocuments(pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
+        documentService.delete(id);
+        return ResponseEntity.status(204).build();
     }
 
     @GetMapping("/{id}")

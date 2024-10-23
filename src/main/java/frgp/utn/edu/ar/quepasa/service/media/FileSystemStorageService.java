@@ -1,9 +1,11 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,19 +85,29 @@ public class FileSystemStorageService implements StorageService {
                 return resource;
             }
             else {
-                throw new StorageFileNotFoundException(
-                        "Could not read file: " + filename);
-
+                throw new Fail("File not found: " + filename, HttpStatus.NOT_FOUND);
             }
         }
         catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+            throw new Fail("Could not read file: " + filename, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    }
+
+    @Override
+    public void delete(String filename) {
+        try {
+            Path path = load(filename);
+            Files.delete(path);
+        } catch (MalformedURLException e) {
+            throw new Fail("Could not read file: " + filename, HttpStatus.NOT_FOUND);
+        } catch (IOException e) {
+            throw new Fail("Could not completely remove your file. ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

@@ -4,6 +4,8 @@ import frgp.utn.edu.ar.quepasa.data.response.RawDocument;
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
@@ -20,4 +22,9 @@ public interface DocumentService {
     Optional<Document> getDocumentById(UUID id);
 
     Optional<Document> getDocumentById(String id);
+
+    Page<Document> getMyDocuments(Pageable pageable);
+
+    void delete(UUID id);
+
 }
