@@ -1,11 +1,9 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
-import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.voting.PostVote;
-import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.CommentVoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.EventVoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.PictureVoteRepository;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,12 +37,14 @@ import static org.mockito.Mockito.when;
 public class VoteServiceTests {
 
     private final VoteService voteService;
-    private PostVoteRepository postVoteRepository;
+    private final PostVoteRepository postVoteRepository;
+    private final EventVoteRepository eventVoteRepository;
     private final AuthenticationServiceImpl authenticationService;
     private final NapoleonBonaparteInspiredData fake = new NapoleonBonaparteInspiredData();
 
     public VoteServiceTests() {
         this.postVoteRepository = Mockito.mock(PostVoteRepository.class);
+        this.eventVoteRepository = Mockito.mock(EventVoteRepository.class);
         this.authenticationService = Mockito.mock(AuthenticationServiceImpl.class);
         this.voteService = new VoteServiceImpl(
                 Mockito.mock(CommentVoteRepository.class),
@@ -113,6 +112,55 @@ public class VoteServiceTests {
 
     }
 
+    @Test
+    @DisplayName("Votar una publicación ya votada")
+    public void voteExistingPostVote() {
+        when(postVoteRepository.getUserVote(fake.post_A().getId(), alpha().getUsername())).thenReturn(Optional.of(alphaPostVote()));
+        var count = voteService.vote(fake.post_A(), 1);
+        assertNotNull(count);
+        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(0);
+        count = voteService.count(fake.post_A());
+        assertNotNull(count);
+        assertEquals(0, count.getVotes());
+    }
 
+    @Test
+    @DisplayName("Contar votos de una publicación")
+    public void countPostVotes() {
+        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(2);
+        var count = voteService.count(fake.post_A());
+        assertNotNull(count);
+        assertEquals(2, count.getVotes());
+    }
 
+    @Test
+    @DisplayName("Contar votos de una publicación inexistente")
+    public void countNonExistentPostVotes() {
+        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(null);
+        var count = voteService.count(fake.post_A());
+        assertNotNull(count);
+        assertEquals(0, count.getVotes());
+    }
+
+    @Test
+    @DisplayName("Contar votos de una publicación con votos negativos")
+    public void countNegativePostVotes() {
+        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(-2);
+        var count = voteService.count(fake.post_A());
+        assertNotNull(count);
+        assertEquals(-2, count.getVotes());
+    }
+
+    /*
+    @Test
+    @DisplayName("Votar un evento")
+    public void voteEvent() {
+        var count = voteService.vote(fake.event_A(), 1);
+        assertNotNull(count);
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(1);
+        count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(1, count.getVotes());
+    }
+     */
 }
