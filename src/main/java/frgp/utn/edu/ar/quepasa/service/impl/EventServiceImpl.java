@@ -167,6 +167,8 @@ public class EventServiceImpl implements EventService {
                 .isAdmin()
                 .orElseFail();
 
+        if (!event.isActive()) throw new Fail("Event is not active.");
+
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
@@ -188,6 +190,8 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .isAdmin()
                 .orElseFail();
+
+        if (!event.isActive()) throw new Fail("Event is not active.");
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
