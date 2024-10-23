@@ -1,8 +1,9 @@
 package frgp.utn.edu.ar.quepasa.fakedata;
 
-import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import frgp.utn.edu.ar.quepasa.model.geo.City;
@@ -13,7 +14,8 @@ import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import org.springframework.http.MediaType;
 
 import java.sql.Timestamp;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static frgp.utn.edu.ar.quepasa.model.enums.Audience.PUBLIC;
 
@@ -194,6 +196,25 @@ public class NapoleonBonaparteInspiredData {
     }
 
 
-
-
+    public Event event_A() {
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
+        var event = new Event();
+        event.setActive(true);
+        event.setId(eventId);
+        event.setTitle("Un destino que no comprenden");
+        event.setAddress("Longwood, Saint Helena");
+        event.setDescription(
+                "Me acusarán de mil cosas, pero ¿Quién puede realmente juzgarme? Exiliado en esta isla donde el viento trae recuerdos de mi gloria. Europa tiembla todavía ante mi sombra, mientras los pequeños hombres discuten mi legado en sus salones. ¡Qué fácil es criticar desde la comodidad! No entienden el peso de una corona ni el arte de una campaña. Aquí, en Longwood, los días son largos y los pensamientos infinitos. Pero mi espíritu… ese no se detiene.\n" +
+                "\n" +
+                "Algún día, recordarán mis victorias más que mis derrotas. Mientras tanto, el águila observa desde las alturas. \uD83E\uDD85");
+        event.setOwner(napoleonBonaparte());
+        event.setAudience(PUBLIC);
+        event.setCategory(EventCategory.EDUCATIVE);
+        event.setCreatedAt(new Timestamp(-4986050084L));
+        event.setStart(LocalDateTime.now().plusHours(1));
+        event.setEnd(LocalDateTime.now().plusHours(3));
+        Set<Neighbourhood> neighbourhoods = new HashSet<>(Collections.singletonList(longwood()));
+        event.setNeighbourhoods(neighbourhoods);
+        return event;
+    }
 }

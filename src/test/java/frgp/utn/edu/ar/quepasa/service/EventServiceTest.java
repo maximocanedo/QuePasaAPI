@@ -517,6 +517,47 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Actualizar Evento Permisos Insuficientes")
+    void updateEvent_InsufficientPermissions_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+        String username2 = "user";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.USER);
+
+        User user = new User();
+        user.setUsername(username2);
+        user.setRole(Role.USER);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(user);
+
+        setAuthContext(username, "USER");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        EventPatchEditRequest eventPatchEditRequest = new EventPatchEditRequest();
+        eventPatchEditRequest.setTitle("event");
+        eventPatchEditRequest.setDescription("description");
+        eventPatchEditRequest.setAddress("address");
+        eventPatchEditRequest.setCategory(EventCategory.CINEMA);
+        eventPatchEditRequest.setAudience(Audience.PUBLIC);
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.update(eventId, eventPatchEditRequest, user)
+        );
+
+        assertTrue(exception.getMessage().contains("Error de accesos."));
+        clearAuthContext();
+    }
+
+    @Test
     @DisplayName("Eliminar Evento")
     void deleteEvent_ValidEvent_ReturnEvent() {
         UUID eventId = UUID.randomUUID();
@@ -568,6 +609,40 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Eliminar Evento Permisos Insuficientes")
+    void deleteEvent_InsufficientPermissions_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        String username = "owner";
+        String username2 = "user";
+
+        User owner = new User();
+        owner.setUsername(username);
+        owner.setRole(Role.USER);
+
+        User user = new User();
+        user.setUsername(username2);
+        user.setRole(Role.USER);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(user);
+
+        setAuthContext(username, "USER");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.delete(eventId)
+        );
+
+        assertTrue(exception.getMessage().contains("Error de accesos."));
+        clearAuthContext();
+    }
+
+    @Test
     @DisplayName("Confirmar Asistencia a Evento")
     void confirmEventAssistance_ValidEvent_ReturnEventRsvp() {
         UUID eventId = UUID.randomUUID();
@@ -612,6 +687,29 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Confirmar Asistencia a Evento Inactivo")
+    void confirmEventAssistance_EventInactive_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        User user = new User();
+        user.setUsername("user");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setActive(false);
+
+        setAuthContext(user.getUsername(), "USER");
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.confirmEventAssistance(eventId, user)
+        );
+
+        assertTrue(exception.getMessage().contains("Event is not active."));
+    }
+
+    @Test
     @DisplayName("Agregar Barrio a Evento")
     void addNeighbourhoodEvent_ValidEvent_ReturnEvent() {
         UUID eventId = UUID.randomUUID();
@@ -626,6 +724,7 @@ public class EventServiceTest {
         Event event = new Event();
         event.setId(eventId);
         event.setNeighbourhoods(neighbourhoods);
+        event.setActive(true);
 
         User owner = new User();
         owner.setUsername("owner");
@@ -668,6 +767,67 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Agregar Barrio a Evento Permisos Insuficientes")
+    void addNeighbourhoodEvent_InsufficientPermissions_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.USER);
+
+        User user = new User();
+        user.setUsername("user");
+        user.setRole(Role.USER);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(user);
+
+        setAuthContext(owner.getUsername(), "USER");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.addNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertTrue(exception.getMessage().contains("Error de accesos."));
+    }
+
+    @Test
+    @DisplayName("Agregar Barrio a Evento Inactivo")
+    void addNeighbourhoodEvent_EventInactive_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.ADMIN);
+        setAuthContext(owner.getUsername(), "ADMIN");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setActive(false);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.addNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertTrue(exception.getMessage().contains("Event is not active."));
+    }
+
+    @Test
     @DisplayName("Eliminar Barrio de Evento")
     @WithMockUser(username = "owner", roles = { "ADMIN" })
     void removeNeighbourhoodEvent_ValidEvent_ReturnEvent() {
@@ -690,6 +850,7 @@ public class EventServiceTest {
         event.setId(eventId);
         event.setNeighbourhoods(neighbourhoods);
         event.setOwner(owner);
+        event.setActive(true);
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
@@ -718,6 +879,67 @@ public class EventServiceTest {
         );
 
         assertEquals("Event not found.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Eliminar Barrio de Evento Permisos Insuficientes")
+    void removeNeighbourhoodEvent_InsufficientPermissions_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.USER);
+
+        User user = new User();
+        user.setUsername("user");
+        user.setRole(Role.USER);
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setOwner(user);
+
+        setAuthContext(owner.getUsername(), "USER");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertTrue(exception.getMessage().contains("Error de accesos."));
+    }
+
+    @Test
+    @DisplayName("Eliminar Barrio de Evento Inactivo")
+    void removeNeighbourhoodEvent_EventInactive_ThrowFail() {
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 1L;
+
+        User owner = new User();
+        owner.setUsername("owner");
+        owner.setRole(Role.ADMIN);
+        setAuthContext(owner.getUsername(), "ADMIN");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setActive(false);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
+        when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
+
+        Fail exception = assertThrows(
+                Fail.class,
+                () -> eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId)
+        );
+
+        assertTrue(exception.getMessage().contains("Event is not active."));
     }
 
     private void setAuthContext(String username, String role) {

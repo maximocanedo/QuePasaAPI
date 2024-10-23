@@ -7,7 +7,6 @@ import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.model.voting.*;
-import frgp.utn.edu.ar.quepasa.repository.VoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.CommentVoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.EventVoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.PictureVoteRepository;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Service
 public class VoteServiceImpl implements VoteService {
@@ -134,6 +132,9 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public VoteCount count(Event file) {
+        if(eventVoteRepository.getVotes(file.getId()) == null) {
+            return buildCount(0, eventVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername()));
+        }
         return buildCount(
             eventVoteRepository.getVotes(file.getId()),
             eventVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername())

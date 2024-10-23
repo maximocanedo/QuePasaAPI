@@ -23,7 +23,7 @@ public interface EventService {
 
     Event create(EventPostRequest event, User owner) throws Fail;
 
-    EventRsvp confirmEventAssistance(UUID eventId, User user);
+    EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail;
 
     Event update(UUID id, EventPatchEditRequest event, User owner) throws Fail;
 

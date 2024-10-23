@@ -29,7 +29,7 @@ public interface CityService {
     City create(CityUpdateRequest request);
 
     // Actualizar ciudad
-    City update(CityUpdateRequest request);
+    City update(long id, CityUpdateRequest request);
 
     // Eliminar ciudad
     void delete(long id);
