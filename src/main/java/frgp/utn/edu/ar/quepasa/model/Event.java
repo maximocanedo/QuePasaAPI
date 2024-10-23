@@ -1,4 +1,5 @@
 package frgp.utn.edu.ar.quepasa.model;
+import frgp.utn.edu.ar.quepasa.data.response.CommentCount;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-public class Event implements Ownable, Votable {
+public class Event implements Ownable, Votable, Commentable {
 
     private UUID id;
     private String title;
@@ -27,6 +28,7 @@ public class Event implements Ownable, Votable {
     private boolean active;
     private Set<Neighbourhood> neighbourhoods;
     private VoteCount votes;
+    private CommentCount commentCount;
 
     public static Event identify(UUID id) {
         Event event = new Event();
@@ -58,9 +60,10 @@ public class Event implements Ownable, Votable {
     public Audience getAudience() { return audience; }
     @Column(nullable = false)
     public boolean isActive() { return active; }
-    @Override
-    @Transient
+    @Override @Transient
     public VoteCount getVotes() { return votes; }
+    @Override @Transient
+    public CommentCount getCommentCount() { return commentCount; }
 
     public void setId(UUID id) { this.id = id; }
     public void setTitle(String title) { this.title = title; }
@@ -73,13 +76,12 @@ public class Event implements Ownable, Votable {
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public void setAudience(Audience audience) { this.audience = audience; }
     public void setActive(boolean active) { this.active = active; }
-
-    @Override
-    @Transient
+    @Override @Transient
     public void setVotes(VoteCount votes) {
         this.votes = votes;
     }
-
+    @Override @Transient
+    public void setCommentCount(CommentCount count) { this.commentCount = count; }
     @ManyToMany
     @JoinTable(
         name = "event_neighbourhoods",

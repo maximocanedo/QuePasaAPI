@@ -10,6 +10,7 @@ import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
@@ -31,6 +32,7 @@ public class EventServiceImpl implements EventService {
     private final OwnerService ownerService;
     private final VoteService voteService;
     private final EventRepository eventRepository;
+    private final CommentService commentService;
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final EventRsvpRepository eventRsvpRepository;
 
@@ -38,13 +40,14 @@ public class EventServiceImpl implements EventService {
     public EventServiceImpl(
             OwnerService ownerService,
             VoteService voteService,
-            EventRepository eventRepository,
+            EventRepository eventRepository, CommentService commentService,
             NeighbourhoodRepository neighbourhoodRepository,
             EventRsvpRepository eventRsvpRepository
     ) {
         this.ownerService = ownerService;
         this.voteService = voteService;
         this.eventRepository = eventRepository;
+        this.commentService = commentService;
         this.neighbourhoodRepository = neighbourhoodRepository;
         this.eventRsvpRepository = eventRsvpRepository;
     }
@@ -63,13 +66,17 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) {
         return eventRepository.findByOwner(owner, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("No Events found."));
+                .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
+                .map(commentService::populate)
+                .map(voteService::populate);
     }
 
     @Override
     public Page<Event> findByUsername(String username, Pageable pageable) {
         return eventRepository.findByOwnerUsername(username, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("No Events found."));
+                .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
+                .map(commentService::populate)
+                .map(voteService::populate);
     }
 
     @Override
@@ -129,8 +136,7 @@ public class EventServiceImpl implements EventService {
         if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
 
         eventRepository.save(event);
-        voteService.populate(event);
-        return event;
+        return commentService.populate(voteService.populate(event));
     }
 
     @Override
@@ -178,7 +184,7 @@ public class EventServiceImpl implements EventService {
 
         event.setNeighbourhoods(neighbourhoods);
         eventRepository.save(event);
-        return event;
+        return commentService.populate(voteService.populate(event));
     }
 
     @Override
@@ -191,7 +197,7 @@ public class EventServiceImpl implements EventService {
                 .isAdmin()
                 .orElseFail();
 
-        if (!event.isActive()) throw new Fail("Event is not active.");
+        if (!event.isActive()) throw new Fail("Event not found.");
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
@@ -203,6 +209,6 @@ public class EventServiceImpl implements EventService {
 
         eventRepository.save(event);
 
-        return event;
+        return commentService.populate(voteService.populate(event));
     }
 }
