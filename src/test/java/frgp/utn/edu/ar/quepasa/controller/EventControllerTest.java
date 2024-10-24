@@ -175,7 +175,7 @@ public class EventControllerTest {
         .with(user("root").password("123456789").roles("ADMIN"))
         .contentType("application/json"))
         .andExpect(status().isOk());
-
+ 
 
     
         clearAuthContext();

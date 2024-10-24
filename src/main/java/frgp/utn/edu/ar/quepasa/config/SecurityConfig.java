@@ -71,6 +71,12 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
                     // Fin sección usuarios
 
+                    // Sección trends
+                    request.requestMatchers(HttpMethod.GET, "/api/trends/**")
+                    .hasAuthority(Role.NEIGHBOUR.name());
+                    // Fin sección trends
+
+
                     // Sección documentos
                     request.requestMatchers(HttpMethod.GET, "/api/documents", "/api/documents/**")
                                     .authenticated();
