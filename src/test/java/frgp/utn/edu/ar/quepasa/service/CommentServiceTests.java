@@ -5,7 +5,6 @@ import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.Post;
-import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.commenting.PostComment;
 import frgp.utn.edu.ar.quepasa.repository.CommentRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;

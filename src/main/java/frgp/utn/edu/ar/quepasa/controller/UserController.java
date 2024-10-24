@@ -15,10 +15,7 @@ import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +32,12 @@ public class UserController {
     public UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
+    }
+
+    @RequestMapping(value = "/{username}", method = RequestMethod.HEAD)
+    public ResponseEntity<?> existsByUsername(@PathVariable String username) {
+        var x = userService.existsByUsername(username);
+        return ResponseEntity.status(x ? HttpStatus.OK : HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/{username}")

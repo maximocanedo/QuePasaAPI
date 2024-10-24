@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserService extends UserDetailsService {
 
     Page<User> search(String query, Pageable pageable);
-
+    boolean existsByUsername(String username);
     User findByUsername(String username);
 
     User update(UserPatchEditRequest data, User user);
