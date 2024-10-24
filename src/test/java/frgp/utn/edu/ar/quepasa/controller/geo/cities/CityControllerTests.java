@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller.geo.cities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import frgp.utn.edu.ar.quepasa.data.request.geo.CityUpdateRequest;
+import frgp.utn.edu.ar.quepasa.data.request.geo.CityRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.geo.City;
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
@@ -175,7 +175,7 @@ public class CityControllerTests {
         subdivision.setIso3(iso3Sub);
         subdivision.setCountry(country);
 
-        CityUpdateRequest request = new CityUpdateRequest();
+        CityRequest request = new CityRequest();
         request.setName("Sandover Village");
         request.setSubdivision(iso3Sub);
 
@@ -206,7 +206,7 @@ public class CityControllerTests {
         subdivision.setIso3(iso3Sub);
         subdivision.setCountry(country);
 
-        CityUpdateRequest request = new CityUpdateRequest();
+        CityRequest request = new CityRequest();
         request.setName("Sandover Village");
         request.setSubdivision(iso3Sub);
 
@@ -247,7 +247,7 @@ public class CityControllerTests {
         when(subnationalDivisionRepository.findByIso3(iso3Sub)).thenReturn(Optional.of(subdivision));
         when(cityRepository.findById(id)).thenReturn(Optional.of(city));
 
-        CityUpdateRequest request = new CityUpdateRequest();
+        CityRequest request = new CityRequest();
         request.setName("Rock Village");
         request.setSubdivision(iso3Sub);
 
@@ -269,7 +269,7 @@ public class CityControllerTests {
 
         when(cityRepository.findById(id)).thenReturn(Optional.empty());
 
-        CityUpdateRequest request = new CityUpdateRequest();
+        CityRequest request = new CityRequest();
         request.setName("Rock Village");
 
         mockMvc.perform((patch("/api/cities/{id}", 909L))
@@ -306,7 +306,7 @@ public class CityControllerTests {
         when(subnationalDivisionRepository.findByIso3(iso3Sub)).thenReturn(Optional.of(subdivision));
         when(cityRepository.findById(id)).thenReturn(Optional.of(city));
 
-        CityUpdateRequest request = new CityUpdateRequest();
+        CityRequest request = new CityRequest();
         request.setName("Rock Village");
         request.setSubdivision(iso3Sub);
 

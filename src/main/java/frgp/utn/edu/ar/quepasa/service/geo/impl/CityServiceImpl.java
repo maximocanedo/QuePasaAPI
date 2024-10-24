@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.geo.impl;
 
-import frgp.utn.edu.ar.quepasa.data.request.geo.CityUpdateRequest;
+import frgp.utn.edu.ar.quepasa.data.request.geo.CityRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.geo.City;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
@@ -93,7 +93,7 @@ public class CityServiceImpl implements CityService {
      * <b>Crea una nueva ciudad. </b>
      */
     @Override
-    public City create(CityUpdateRequest request) {
+    public City create(CityRequest request) {
         City city = new City();
         city.setName(request.getName());
         var subdivision = subnationalDivisionRepository.findByIso3(request.getSubdivision())
@@ -108,7 +108,7 @@ public class CityServiceImpl implements CityService {
      * <b>Actualiza una ciudad existente. </b>
      */
     @Override
-    public City update(long id, CityUpdateRequest request) {
+    public City update(long id, CityRequest request) {
         City city = getById(id, true);
         if(request.getName() != null) city.setName(request.getName());
         if(request.getSubdivision() != null) {

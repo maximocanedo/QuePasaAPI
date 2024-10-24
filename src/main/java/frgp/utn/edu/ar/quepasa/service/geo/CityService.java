@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.geo;
 
-import frgp.utn.edu.ar.quepasa.data.request.geo.CityUpdateRequest;
+import frgp.utn.edu.ar.quepasa.data.request.geo.CityRequest;
 import frgp.utn.edu.ar.quepasa.model.geo.City;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +26,10 @@ public interface CityService {
     List<City> getBySubnationalDivision(String iso3);
 
     // Crear ciudad
-    City create(CityUpdateRequest request);
+    City create(CityRequest request);
 
     // Actualizar ciudad
-    City update(long id, CityUpdateRequest request);
+    City update(long id, CityRequest request);
 
     // Eliminar ciudad
     void delete(long id);

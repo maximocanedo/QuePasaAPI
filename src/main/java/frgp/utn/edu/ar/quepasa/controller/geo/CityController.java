@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller.geo;
 
-import frgp.utn.edu.ar.quepasa.data.request.geo.CityUpdateRequest;
+import frgp.utn.edu.ar.quepasa.data.request.geo.CityRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.geo.CityService;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
@@ -29,7 +29,7 @@ public class CityController {
      * <b>Crea una nueva ciudad. </b>
      */
     @PostMapping
-    public ResponseEntity<?> createCity(@RequestBody CityUpdateRequest city) {
+    public ResponseEntity<?> createCity(@RequestBody CityRequest city) {
         return ResponseEntity.ok(cityService.create(city));
     }
 
@@ -82,7 +82,7 @@ public class CityController {
      * <b>Actualiza una ciudad existente. </b>
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateCity(@PathVariable long id, @RequestBody CityUpdateRequest city) {
+    public ResponseEntity<?> updateCity(@PathVariable long id, @RequestBody CityRequest city) {
         return ResponseEntity.ok(cityService.update(id, city));
     }
 
