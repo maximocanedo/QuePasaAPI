@@ -71,6 +71,15 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
                     // Fin sección usuarios
 
+                    // Sección ciudades
+                    request.requestMatchers(HttpMethod.POST, "/api/cities", "/api/cities/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.PATCH, "/api/cities/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    request.requestMatchers(HttpMethod.DELETE, "/api/cities/**")
+                            .hasAuthority(Role.ADMIN.name());
+                    // Fin sección ciudades
+
                     // Sección trends
                     request.requestMatchers(HttpMethod.GET, "/api/trends/**")
                     .hasAuthority(Role.NEIGHBOUR.name());
