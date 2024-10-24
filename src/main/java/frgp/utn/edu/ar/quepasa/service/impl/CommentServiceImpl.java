@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment findById(UUID id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new Fail("Comment not found. ", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -161,11 +161,11 @@ public class CommentServiceImpl implements CommentService {
                 .meetsLimits()
                 .build()
         );
-        return null;
+        return commentRepository.save(comment);
     }
 
     @Override
-    public void delete(UUID id) throws AccessDeniedException {
+    public void delete(UUID id) {
         Comment comment = findById(id);
         ownerService.of(comment)
                 .isOwner()
