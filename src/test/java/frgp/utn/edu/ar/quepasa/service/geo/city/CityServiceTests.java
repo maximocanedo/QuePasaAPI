@@ -47,7 +47,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudad por ID.")
-    void findById_CityFound() {
+    public void findById_CityFound() {
         long id = 1L;
 
         setAuthContext();
@@ -69,7 +69,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudad por ID, ID inexistente.")
-    void findById_CityNotFound() {
+    public void findById_CityNotFound() {
         long id = 1L;
 
         setAuthContext();
@@ -83,7 +83,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudades.")
-    void findCities() {
+    public void findCities() {
         setAuthContext();
 
         City city = new City();
@@ -103,7 +103,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudades por país.")
-    void findByCountry_CountryFound() {
+    public void findByCountry_CountryFound() {
         String iso3 = "ARG";
 
         Country country = new Country();
@@ -129,7 +129,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudades por país, país inexistente.")
-    void findByCountry_CountryNotFound() {
+    public void findByCountry_CountryNotFound() {
         String iso3 = "ARG";
 
         setAuthContext();
@@ -143,7 +143,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudades por división subnacional.")
-    void findBySubdivision_SubdivisionFound() {
+    public void findBySubdivision_SubdivisionFound() {
         String iso3 = "AR-C";
 
         SubnationalDivision subdivision = new SubnationalDivision();
@@ -169,7 +169,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Buscar ciudades por división subnacional, división inexistente.")
-    void findBySubdivision_SubdivisionNotFound() {
+    public void findBySubdivision_SubdivisionNotFound() {
         String iso3 = "AR-C";
 
         setAuthContext();
@@ -183,7 +183,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Crear ciudad.")
-    void createCity() {
+    public void createCity() {
         String iso3Country = "ARG";
         String iso3Sub = "AR-C";
 
@@ -213,7 +213,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Crear ciudad, división subnacional inexistente.")
-    void createCity_SubdivisionNotFound() {
+    public void createCity_SubdivisionNotFound() {
         String iso3Country = "ARG";
         String iso3Sub = "AR-C";
 
@@ -233,7 +233,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Modificar ciudad por ID.")
-    void updateCity() {
+    public void updateCity() {
         long id = 1L;
         String iso3Country = "ARG";
         String iso3Sub = "AR-C";
@@ -271,7 +271,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Modificar ciudad por ID, ID inexistente.")
-    void updateCity_CityNotFound() {
+    public void updateCity_CityNotFound() {
         long id = 1L;
 
         setAuthContext();
@@ -288,7 +288,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Modificar ciudad por ID, división subnacional inexistente.")
-    void updateCity_SubdivisionNotFound() {
+    public void updateCity_SubdivisionNotFound() {
         long id = 1L;
         String iso3Country = "ARG";
         String iso3Sub = "AR-C";
@@ -314,7 +314,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Eliminar ciudad por ID.")
-    void deleteCity() {
+    public void deleteCity() {
         long id = 1L;
 
         setAuthContext();
@@ -331,7 +331,7 @@ public class CityServiceTests {
 
     @Test
     @DisplayName("Eliminar ciudad por ID, ID inexistente.")
-    void deleteCity_CityNotFound() {
+    public void deleteCity_CityNotFound() {
         long id = 1L;
 
         setAuthContext();
