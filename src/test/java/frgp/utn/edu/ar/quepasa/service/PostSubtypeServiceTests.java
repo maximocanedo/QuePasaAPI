@@ -39,7 +39,7 @@ public class PostSubtypeServiceTests {
     private PostSubtypeServiceImpl postSubtypeService;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         this.postSubtypeRepository = Mockito.mock(PostSubtypeRepository.class);
         this.postTypeRepository = Mockito.mock(PostTypeRepository.class);
 
@@ -48,7 +48,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Buscar subtipo de post por ID.")
-    void findById_SubtypeFound_ReturnsSubtype() {
+    public void findById_SubtypeFound_ReturnsSubtype() {
         Integer id = 1;
         PostSubtype mockSubtype = new PostSubtype();
         mockSubtype.setId(id);
@@ -62,7 +62,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Buscar subtipo de post por ID, ID inexistente.")
-    void findById_SubtypeNotFound_ThrowsException() {
+    public void findById_SubtypeNotFound_ThrowsException() {
         Integer id = 1;
 
         when(postSubtypeRepository.findById(id)).thenReturn(Optional.empty());
@@ -76,7 +76,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Buscar subtipos de post.")
-    void findSubtypes_SubtypesFound_ReturnsSubtypes() {
+    public void findSubtypes_SubtypesFound_ReturnsSubtypes() {
         Pageable pageable = PageRequest.of(0, 10);
 
         PostSubtype subtype = new PostSubtype();
@@ -92,7 +92,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Buscar subtipos de post por tipo.")
-    void findByType_TypeFound_ReturnsSubtypes() {
+    public void findByType_TypeFound_ReturnsSubtypes() {
         Integer id = 1;
         Integer idType = 4;
         Pageable pageable = PageRequest.of(0, 10);
@@ -118,7 +118,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Buscar subtipos de post por tipo, tipo no existente.")
-    void findByType_TypeNotFound_ThrowsException() {
+    public void findByType_TypeNotFound_ThrowsException() {
         Integer idType = 4;
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -136,7 +136,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Crear subtipo de post.")
-    void createSubtype_SubtypeNew_ReturnsSubtype() {
+    public void createSubtype_SubtypeNew_ReturnsSubtype() {
         Integer idType = 1;
 
         PostType mockType = new PostType();
@@ -159,7 +159,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Crear subtipo de post. Tipo inexistente.")
-    void createSubtype_SubtypeNotFound_ThrowsException() {
+    public void createSubtype_SubtypeNotFound_ThrowsException() {
         Integer idType = 1;
 
         when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
@@ -177,7 +177,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Modificar subtipo de post por ID.")
-    void updateSubtype_SubtypeFound_GoodData() {
+    public void updateSubtype_SubtypeFound_GoodData() {
         Integer id = 1;
         Integer idType = 4;
 
@@ -205,7 +205,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Modificar subtipo de post por ID, de un subtipo inexistente.")
-    void updateSubtype_SubtypeNotFound_ThrowsException() {
+    public void updateSubtype_SubtypeNotFound_ThrowsException() {
         Integer id = 1;
         Integer idType = 4;
 
@@ -229,7 +229,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Modificar subtipo de post por ID, tipo inexistente.")
-    void updateSubtype_TypeNotFound_ThrowsException() {
+    public void updateSubtype_TypeNotFound_ThrowsException() {
         Integer id = 1;
         Integer idType = 4;
 
@@ -253,7 +253,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Eliminar subtipo por ID.")
-    void deleteSubtype_SubtypeFound_ReturnsNoContent() {
+    public void deleteSubtype_SubtypeFound_ReturnsNoContent() {
         Integer id = 1;
 
         PostSubtype mockSubtype = new PostSubtype();
@@ -268,7 +268,7 @@ public class PostSubtypeServiceTests {
 
     @Test
     @DisplayName("Eliminar subtipo por ID, ID inexistente.")
-    void deleteSubtype_SubtypeNotFound_ThrowsException() {
+    public void deleteSubtype_SubtypeNotFound_ThrowsException() {
         Integer id = 1;
 
         when(postSubtypeRepository.findById(id)).thenReturn(Optional.empty());

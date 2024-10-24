@@ -67,7 +67,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Buscar post por ID.")
-    void findById_PostFound_ReturnsPost() {
+    public void findById_PostFound_ReturnsPost() {
         Integer id = 1;
         String username = "donald";
 
@@ -95,7 +95,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Buscar post por ID, ID inexistente.")
-    void findById_PostNotFound_ThrowsException() {
+    public void findById_PostNotFound_ThrowsException() {
         Integer id = 955;
         String username = "donald";
 
@@ -116,7 +116,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Buscar posts.")
-    void findPosts_PostsFound_ReturnsPosts() {
+    public void findPosts_PostsFound_ReturnsPosts() {
         Pageable pageable = PageRequest.of(0, 10);
         String username = "donald";
 
@@ -145,7 +145,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Buscar posts por OP.")
-    void findByOp_PostsFound_ReturnsPosts() {
+    public void findByOp_PostsFound_ReturnsPosts() {
         Integer opId = 4;
         Pageable pageable = PageRequest.of(0, 10);
         String username = "donald";
@@ -183,7 +183,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Buscar posts por OP, OP inexistente.")
-    void findByOp_PostNotFound_ThrowsException() {
+    public void findByOp_PostNotFound_ThrowsException() {
         String username = "donald";
 
         User mockUser = new User();
@@ -207,7 +207,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Crear post.")
-    void createPost_PostNew_ReturnsPost() {
+    public void createPost_PostNew_ReturnsPost() {
         String username = "donald";
         Integer subId = 4;
         long neighId = 4;
@@ -241,7 +241,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Crear post, subtipo inexistente.")
-    void createPost_SubtypeNotFound_ThrowsException() {
+    public void createPost_SubtypeNotFound_ThrowsException() {
         String username = "donald";
         Integer subId = 4;
         long neighId = 4;
@@ -269,7 +269,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Crear post, barrio inexistente.")
-    void createPost_NeighbourhoodNotFound_ThrowsException() {
+    public void createPost_NeighbourhoodNotFound_ThrowsException() {
         String username = "donald";
         Integer subId = 4;
         long neighId = 4;
@@ -297,7 +297,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Modificar post por ID.")
-    void updatePost_PostFound_GoodData() {
+    public void updatePost_PostFound_GoodData() {
         Integer id = 1;
         String username = "donald";
 
@@ -326,7 +326,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Modificar post por ID, post inexistente.")
-    void updatePost_PostNotFound_ThrowsException() {
+    public void updatePost_PostNotFound_ThrowsException() {
         Integer id = 1;
         String username = "donald";
 
@@ -349,7 +349,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Modificar post por ID, subtipo inexistente.")
-    void updatePost_SubtypeNotFound_ThrowsException() {
+    public void updatePost_SubtypeNotFound_ThrowsException() {
         Integer id = 1;
         String username = "donald";
         Integer subId = 4;
@@ -379,7 +379,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Modificar post por ID, barrio inexistente.")
-    void updatePost_NeighbourhoodNotFound_ThrowsException() {
+    public void updatePost_NeighbourhoodNotFound_ThrowsException() {
         Integer id = 1;
         String username = "donald";
         long neighId = 4;
@@ -409,7 +409,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Modificar post por ID, permisos insuficientes.")
-    void updatePost_AccessDenied_ThrowsException() {
+    public void updatePost_AccessDenied_ThrowsException() {
         Integer id = 1;
         String username = "donald";
         String username2 = "ronald";
@@ -439,7 +439,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Eliminar post por ID.")
-    void deletePost_PostFound_ReturnsNoContent() {
+    public void deletePost_PostFound_ReturnsNoContent() {
         Integer id = 1;
         String username = "donald";
 
@@ -464,7 +464,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Eliminar post por ID, ID inexistente.")
-    void deletePost_PostNotFound_ThrowsException() {
+    public void deletePost_PostNotFound_ThrowsException() {
         Integer id = 1;
         String username = "donald";
 
@@ -485,7 +485,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("Eliminar post por ID, permisos insuficientes.")
-    void deletePost_AccessDenied_ThrowsException() {
+    public void deletePost_AccessDenied_ThrowsException() {
         Integer id = 1;
         String username = "donald";
         String username2 = "ronald";
