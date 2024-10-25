@@ -2,18 +2,17 @@ package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
-import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.impl.VoteServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.media.impl.PictureServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator.MB;
+import static frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator.MB;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -155,7 +153,7 @@ public class PictureServiceTests {
         when(file.isEmpty()).thenReturn(true);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> pictureService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> pictureService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -175,7 +173,7 @@ public class PictureServiceTests {
         when(file.getContentType()).thenReturn(null);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> pictureService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> pictureService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -195,7 +193,7 @@ public class PictureServiceTests {
         when(file.getContentType()).thenReturn("text/html");
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> pictureService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> pictureService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -215,7 +213,7 @@ public class PictureServiceTests {
         when(file.getSize()).thenReturn(100 * MB);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> pictureService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> pictureService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -257,7 +255,7 @@ public class PictureServiceTests {
         var pictureId = UUID.randomUUID();
         when(pictureRepository.findById(pictureId)).thenReturn(Optional.of(mockPic));
 
-        OwnerValidatorBuilder vb = Mockito.mock(OwnerValidatorBuilder.class);
+        OwnerValidator vb = Mockito.mock(OwnerValidator.class);
         when(vb.isOwner()).thenReturn(vb);
         when(vb.isAdmin()).thenReturn(vb);
         when(ownerService.of(any(Ownable.class))).thenReturn(vb);

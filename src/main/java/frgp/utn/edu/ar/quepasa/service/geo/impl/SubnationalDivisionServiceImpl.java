@@ -7,9 +7,9 @@ import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.SubnationalDivisionRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionCountryObjectValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionISO3ValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionLabelValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionCountryValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionISO3Validator;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionLabelValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,17 +34,17 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
 
     @Override
     public SubnationalDivision save(SubnationalDivision file) {
-        String iso3 = new SubnationalDivisionISO3ValidatorBuilder(file.getIso3())
+        String iso3 = new SubnationalDivisionISO3Validator(file.getIso3())
                 .isNotNullOrEmpty()
                 .isValidISO31662()
                 .isAvailable(repository)
                 .build();
-        String label = new SubnationalDivisionLabelValidatorBuilder(file.getLabel())
+        String label = new SubnationalDivisionLabelValidator(file.getLabel())
                 .isNotNullOrEmpty()
                 .isValidLabel()
                 .hasValidLength()
                 .build();
-        Country country = new SubnationalDivisionCountryObjectValidatorBuilder(file.getCountry())
+        Country country = new SubnationalDivisionCountryValidator(file.getCountry())
                 .exists(countryRepository)
                 .build();
         file.setIso3(iso3);
@@ -76,7 +76,7 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
         var file = repository.findByIso3(iso3)
                 .orElseThrow(() -> new Fail("State not found. ", HttpStatus.NOT_FOUND));
         if(request.hasLabel()) {
-            String label = new SubnationalDivisionLabelValidatorBuilder(request.getLabel())
+            String label = new SubnationalDivisionLabelValidator(request.getLabel())
                     .isNotNullOrEmpty()
                     .isValidLabel()
                     .hasValidLength()
@@ -87,7 +87,7 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
             file.setDenomination(request.getDenomination());
         }
         if(request.hasCountry()) {
-            Country country = new SubnationalDivisionCountryObjectValidatorBuilder(request.getCountry())
+            Country country = new SubnationalDivisionCountryValidator(request.getCountry())
                     .exists(countryRepository)
                     .build();
             file.setCountry(country);

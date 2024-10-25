@@ -13,16 +13,16 @@ import frgp.utn.edu.ar.quepasa.repository.commenting.PostCommentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
-import frgp.utn.edu.ar.quepasa.service.validators.EventValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.PostValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.comments.CommentContentValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.AudienceValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.EventValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.PostValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.comments.CommentContentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -87,12 +87,12 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = postRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Post not found", HttpStatus.NOT_FOUND);
-        var post = new PostValidatorBuilder(f.get())
+        var post = new PostValidator(f.get())
                 .canAccess(current)
                 .build();
         var comment = new PostComment();
         comment.setContent(
-            new CommentContentValidatorBuilder(content)
+            new CommentContentValidator(content)
                 .trim()
                 .meetsLimits()
                 .build()
@@ -109,12 +109,11 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = eventRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Event not found", HttpStatus.NOT_FOUND);
-        var post = new EventValidatorBuilder(f.get())
-                .canAccess(current)
-                .build();
+        Event post = new EventValidator(f.get())
+                .canAccess(current).build();
         var comment = new EventComment();
         comment.setContent(
-                new CommentContentValidatorBuilder(content)
+                new CommentContentValidator(content)
                         .trim()
                         .meetsLimits()
                         .build()
@@ -131,7 +130,7 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = postRepository.findById(id);
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Post not found", HttpStatus.NOT_FOUND);
-        new PostValidatorBuilder(f.get())
+        new PostValidator(f.get())
                 .canAccess(current)
                 .build();
         return postCommentRepository.list(id, pageable);
@@ -142,7 +141,7 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = eventRepository.findById(id);
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Event not found", HttpStatus.NOT_FOUND);
-        new EventValidatorBuilder(f.get())
+        new EventValidator(f.get())
                 .canAccess(current)
                 .build();
         return eventCommentRepository.list(id, pageable);
@@ -156,7 +155,7 @@ public class CommentServiceImpl implements CommentService {
         var comment = commentOptional.get();
         ownerService.of(comment).isOwner();
         comment.setContent(
-            new CommentContentValidatorBuilder(content)
+            new CommentContentValidator(content)
                 .trim()
                 .meetsLimits()
                 .build()

@@ -7,10 +7,10 @@ import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
 import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,8 +59,8 @@ public class AuthenticationController {
         return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
     }
 
-    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
-    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+    @ExceptionHandler(ValidationError.class)
+    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 }
