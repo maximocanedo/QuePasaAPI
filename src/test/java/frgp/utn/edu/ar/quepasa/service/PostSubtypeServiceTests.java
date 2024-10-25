@@ -84,7 +84,7 @@ public class PostSubtypeServiceTests {
 
         when(postSubtypeRepository.findAll(pageable)).thenReturn(subtypePage);
 
-        Page<PostSubtype> subtypes = postSubtypeService.listPostSubtypes(pageable);
+        Page<PostSubtype> subtypes = postSubtypeService.findAll(pageable, true);
 
         assertNotNull(subtypes);
         assertFalse(subtypes.isEmpty());
