@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.validators.events;
 
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.service.validators;
+package frgp.utn.edu.ar.quepasa.service.validators.commons.builders;
 
 import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 

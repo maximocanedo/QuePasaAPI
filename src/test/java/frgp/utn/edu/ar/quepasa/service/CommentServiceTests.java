@@ -13,7 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.EventCommentRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.PostCommentRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

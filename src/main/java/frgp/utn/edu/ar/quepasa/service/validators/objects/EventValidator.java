@@ -1,8 +1,9 @@
-package frgp.utn.edu.ar.quepasa.service.validators;
+package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
 
 public class EventValidator extends ValidatorBuilder<EventValidator, Event> {
 

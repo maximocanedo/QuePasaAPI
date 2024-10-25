@@ -1,31 +1,19 @@
 package frgp.utn.edu.ar.quepasa.service.validators.events;
 
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
 
-@Deprecated
-public class EventAddressValidator extends ValidatorBuilder<EventAddressValidator, String> {
+public class EventAddressValidator extends StringValidatorBuilder<EventAddressValidator> {
+
     public EventAddressValidator(String value) {
         super(value, "address");
     }
 
-    public EventAddressValidator isNotNull() {
-        if (getValue() == null) {
-            super.invalidate("Address of the event cannot be null.");
-        }
-        return this;
+    public EventAddressValidator meetsLimits() {
+        return super.meetsLimits(
+                1,
+                100,
+                "La dirección del evento no puede estar vacía. ",
+                "La dirección del evento no puede ser mayor a cien caracteres. ");
     }
 
-    public EventAddressValidator isNotEmpty() {
-        if (getValue().isEmpty()) {
-            super.invalidate("Address of the event cannot be empty.");
-        }
-        return this;
-    }
-
-    public EventAddressValidator isNotTooLong() {
-        if (getValue().length() > 100) {
-            super.invalidate("Address of the event cannot be longer than 100 characters.");
-        }
-        return this;
-    }
 }

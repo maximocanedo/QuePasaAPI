@@ -1,10 +1,10 @@
-package frgp.utn.edu.ar.quepasa.service.validators.pictures;
+package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
 
 public class PictureValidator extends ValidatorBuilder<PictureValidator, Picture> {
     public PictureValidator(Picture value) {

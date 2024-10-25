@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
 
 public class SubnationalDivisionCountryValidator extends ValidatorBuilder<SubnationalDivisionCountryValidator, Country> {
     public SubnationalDivisionCountryValidator(Country value) {

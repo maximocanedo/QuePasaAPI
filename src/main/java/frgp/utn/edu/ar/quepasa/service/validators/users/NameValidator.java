@@ -1,11 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.validators.users;
 
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class NameValidator extends ValidatorBuilder<NameValidator, String> {
+public class NameValidator extends StringValidatorBuilder<NameValidator> {
 
     public NameValidator(String value) {
         super(value, "name");
@@ -13,11 +10,10 @@ public class NameValidator extends ValidatorBuilder<NameValidator, String> {
     }
 
     public NameValidator validateCompoundNames() {
-        Pattern p = Pattern.compile("^[A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,}( [A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,})*$");
-        Matcher m = p.matcher(getValue());
-        if(!m.matches())
-            super.invalidate("Cada nombre debe tener al menos dos caracteres válidos. ");
-        return this;
+        return super.matches(
+            "^[A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,}( [A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,})*$",
+            "Cada nombre debe tener al menos dos caracteres válidos. "
+        );
     }
 
 }

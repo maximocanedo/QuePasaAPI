@@ -9,8 +9,8 @@ import frgp.utn.edu.ar.quepasa.repository.media.DocumentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.DocumentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator.MB;
+import static frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator.MB;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

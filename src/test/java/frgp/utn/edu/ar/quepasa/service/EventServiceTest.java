@@ -18,7 +18,7 @@ import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.impl.OwnerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -14,8 +14,8 @@ import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.pictures.PictureValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.NeighbourhoodValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.PictureValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidator;
 
 import java.util.List;

@@ -1,10 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision;
 
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
 
-import java.util.regex.Pattern;
-
-public class SubnationalDivisionLabelValidator extends ValidatorBuilder<SubnationalDivisionLabelValidator, String> {
+public class SubnationalDivisionLabelValidator extends StringValidatorBuilder<SubnationalDivisionLabelValidator> {
 
     public SubnationalDivisionLabelValidator(String value) {
         super(value, "label");
@@ -19,24 +17,19 @@ public class SubnationalDivisionLabelValidator extends ValidatorBuilder<Subnatio
     }
 
     public SubnationalDivisionLabelValidator hasValidLength() {
-        this.isNotNullOrEmpty();
-        var str = getValue();
-        if(str.length() < 3) {
-            super.invalidate("El nombre de una entidad subnacional debe tener al menos tres caracteres. ");
-        } else if(str.length() > 50) {
-            super.invalidate("El nombre de una entidad subnacional debe tener como máximo cincuenta caracteres. ");
-        }
-        return this;
+        return super.meetsLimits(
+            3,
+            50,
+            "El nombre de una entidad subnacional debe tener al menos tres caracteres. ",
+            "El nombre de una entidad subnacional debe tener como máximo cincuenta caracteres. "
+        );
     }
 
     public SubnationalDivisionLabelValidator isValidLabel() {
-        this.isNotNullOrEmpty();
-        var pattern = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$");
-        var matcher = pattern.matcher(getValue());
-        if(!matcher.matches()) {
-            super.invalidate("Nombre no válido. ");
-        }
-        return this;
+        return super.matches(
+            "^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$",
+            "Nombre no válido. "
+        );
     }
 
 

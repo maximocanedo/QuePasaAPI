@@ -1,5 +1,6 @@
-package frgp.utn.edu.ar.quepasa.service.validators;
+package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
 public class MultipartFileValidator extends ValidatorBuilder<MultipartFileValidator, MultipartFile> {

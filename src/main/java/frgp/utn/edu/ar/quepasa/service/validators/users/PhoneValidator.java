@@ -3,9 +3,9 @@ package frgp.utn.edu.ar.quepasa.service.validators.users;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
 
-public class PhoneValidator extends ValidatorBuilder<PhoneValidator, String> {
+public class PhoneValidator extends StringValidatorBuilder<PhoneValidator> {
 
     private final PhoneNumberUtil instance = PhoneNumberUtil.getInstance();
 

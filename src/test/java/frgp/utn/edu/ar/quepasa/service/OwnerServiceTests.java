@@ -5,7 +5,7 @@ import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.impl.OwnerServiceImpl;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
