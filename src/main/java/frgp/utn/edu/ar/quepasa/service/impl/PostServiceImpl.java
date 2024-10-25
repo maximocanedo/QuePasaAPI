@@ -145,6 +145,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<Post> findByDateStart(Timestamp start, Pageable pageable) {
+        return postRepository
+                .findByDateStart(start, pageable)
+                .map(voteService::populate)
+                .map(commentService::populate);
+    }
+
+    @Override
+    public Page<Post> findByDateEnd(Timestamp end, Pageable pageable) {
+        return postRepository
+                .findByDateEnd(end, pageable)
+                .map(voteService::populate)
+                .map(commentService::populate);
+    }
+
+    @Override
     public Post create(PostCreateRequest newPost, User originalPoster) {
         Post post = new Post();
         post.setOwner(originalPoster);

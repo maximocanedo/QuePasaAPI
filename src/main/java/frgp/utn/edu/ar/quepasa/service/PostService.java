@@ -28,6 +28,10 @@ public interface PostService {
 
     Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable);
 
+    Page<Post> findByDateStart(Timestamp start, Pageable pageable);
+
+    Page<Post> findByDateEnd(Timestamp end, Pageable pageable);
+
     Post create(PostCreateRequest newPost, User originalPoster);
 
     Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException;

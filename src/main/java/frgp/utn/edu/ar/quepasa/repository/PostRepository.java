@@ -32,4 +32,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE p.timestamp BETWEEN :start AND :end")
     Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.timestamp > :start")
+    Page<Post> findByDateStart(Timestamp start, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.timestamp < :end")
+    Page<Post> findByDateEnd(Timestamp end, Pageable pageable);
 }
