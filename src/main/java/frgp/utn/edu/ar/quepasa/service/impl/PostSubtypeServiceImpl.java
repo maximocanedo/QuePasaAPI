@@ -27,7 +27,17 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     }
 
     @Override
-    public Page<PostSubtype> listPostSubtypes(Pageable pageable) { return postSubtypeRepository.findAll(pageable); }
+    public Page<PostSubtype> search(String q, Pageable pageable, boolean active) {
+        return postSubtypeRepository.search(q, pageable, active);
+    }
+
+    @Override
+    public Page<PostSubtype> findAll(Pageable pageable, boolean activeOnly) {
+        if(activeOnly) {
+            return postSubtypeRepository.findAllActive(pageable);
+        }
+        return postSubtypeRepository.findAll(pageable);
+    }
 
     @Override
     public PostSubtype findById(Integer id) {
