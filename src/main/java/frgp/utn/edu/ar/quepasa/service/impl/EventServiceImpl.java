@@ -141,7 +141,7 @@ public class EventServiceImpl implements EventService {
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
         eventRepository.save(newEvent);
-        voteService.populate(newEvent);
+        commentService.populate(voteService.populate(newEvent));
         return newEvent;
     }
 
@@ -177,7 +177,8 @@ public class EventServiceImpl implements EventService {
         if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
 
         eventRepository.save(event);
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 
     /**
@@ -245,7 +246,8 @@ public class EventServiceImpl implements EventService {
 
         event.setNeighbourhoods(neighbourhoods);
         eventRepository.save(event);
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 
     /**
@@ -266,7 +268,7 @@ public class EventServiceImpl implements EventService {
                 .isAdmin()
                 .orElseFail();
 
-        if (!event.isActive()) throw new Fail("Event not found.");
+        if (!event.isActive()) throw new Fail("Event is not active.");
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
@@ -277,7 +279,7 @@ public class EventServiceImpl implements EventService {
         event.setNeighbourhoods(neighbourhoods);
 
         eventRepository.save(event);
-
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 }

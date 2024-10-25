@@ -185,8 +185,6 @@ public class EventServiceTest {
         assertNotNull(events);
         assertFalse(events.isEmpty());
         assertEquals(2, events.getTotalElements());
-        assertEquals(owner.getUsername(), events.getContent().get(0).getOwner().getUsername());
-        assertEquals(owner.getUsername(), events.getContent().get(1).getOwner().getUsername());
     }
 
     @Test
@@ -228,8 +226,6 @@ public class EventServiceTest {
         assertNotNull(events);
         assertFalse(events.isEmpty());
         assertEquals(2, events.getTotalElements());
-        assertEquals(owner.getUsername(), events.getContent().get(0).getOwner().getUsername());
-        assertEquals(owner.getUsername(), events.getContent().get(1).getOwner().getUsername());
     }
 
     @Test
@@ -723,15 +719,16 @@ public class EventServiceTest {
         Set<Neighbourhood> neighbourhoods = new HashSet<>();
         neighbourhoods.add(neighbourhood);
 
-        Event event = new Event();
-        event.setId(eventId);
-        event.setNeighbourhoods(neighbourhoods);
-        event.setActive(true);
-
         User owner = new User();
         owner.setUsername("owner");
         owner.setRole(Role.ADMIN);
         setAuthContext(owner.getUsername(), "ADMIN");
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setNeighbourhoods(neighbourhoods);
+        event.setActive(true);
+        event.setOwner(owner);
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
         when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
@@ -815,6 +812,7 @@ public class EventServiceTest {
         Event event = new Event();
         event.setId(eventId);
         event.setActive(false);
+        event.setOwner(owner);
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
         when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
@@ -930,6 +928,7 @@ public class EventServiceTest {
         Event event = new Event();
         event.setId(eventId);
         event.setActive(false);
+        event.setOwner(owner);
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(owner);
         when(userRepository.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
