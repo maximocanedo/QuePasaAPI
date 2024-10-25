@@ -72,6 +72,8 @@ public class SecurityConfig {
                     // Fin sección usuarios
 
                     // Sección ciudades
+                    request.requestMatchers(HttpMethod.GET, "/api/cities/**")
+                            .permitAll();
                     request.requestMatchers(HttpMethod.POST, "/api/cities", "/api/cities/**")
                             .hasAuthority(Role.ADMIN.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/cities/**")
