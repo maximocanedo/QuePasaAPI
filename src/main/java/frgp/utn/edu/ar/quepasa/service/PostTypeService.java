@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostTypeService {
-    Page<PostType> listPostTypes(Pageable pageable);
+    Page<PostType> search(String q, Pageable pageable, boolean active);
+
+    Page<PostType> findAll(Pageable pageable, boolean activeOnly);
 
     PostType findById(Integer id);
 
