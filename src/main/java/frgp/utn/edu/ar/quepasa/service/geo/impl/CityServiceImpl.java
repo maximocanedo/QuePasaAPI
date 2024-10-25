@@ -64,7 +64,8 @@ public class CityServiceImpl implements CityService {
     @Override
     public City getById(long id, boolean activeOnly) {
         if(activeOnly) {
-            return cityRepository.findByIdActive(id);
+            return cityRepository.findByIdActive(id)
+                    .orElseThrow(() -> new Fail("City not found", HttpStatus.NOT_FOUND));
         }
         return cityRepository.findById(id)
                 .orElseThrow(() -> new Fail("City not found", HttpStatus.NOT_FOUND));
