@@ -11,32 +11,36 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Objects;
+import java.util.function.Consumer;
 
 public class OwnerValidatorBuilder {
 
     private final Ownable object;
+    @Deprecated(forRemoval = true)
     private boolean result;
+    private final BooleanBuilder builder;
     private String message;
     private User current = null;
+
+    public interface OwnerValidatorConsumer extends Consumer<OwnerValidatorBuilder> { }
 
     public OwnerValidatorBuilder(@NotNull Ownable object, @NotNull User current) {
         this.object = object;
         this.current = current;
-        this.result = true;
+        this.result = false;
+        this.builder = new BooleanBuilder(false);
         this.message = "";
     }
+
     public static OwnerValidatorBuilder create(Ownable object, User currentUser) {
         return new OwnerValidatorBuilder(object, currentUser);
     }
 
     private User getCurrentUser() {
-        /**Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         var user = (UserDetails) authentication.getPrincipal();
-         return user;**/
         return current;
     }
 
+    @Deprecated(forRemoval = true)
     private void letWith(Role role) {
         User user = getCurrentUser();
         if(user.getRole() != null) {
@@ -48,72 +52,93 @@ public class OwnerValidatorBuilder {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var details = (UserDetails) authentication.getPrincipal();
         if(details.getAuthorities() != null && !details.getAuthorities().isEmpty()) {
-            result = result && (
-                    details.getAuthorities().contains(new SimpleGrantedAuthority(role.name()))
-                    ||
+            result &= (
+                    details.getAuthorities().contains(new SimpleGrantedAuthority(role.name())) ||
                     details.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + role.name()))
             );
         }
     }
 
+    private boolean hasRole(Role role) {
+        User user = getCurrentUser();
+        if(user.getRole() != null)
+            return user.getRole().name().equalsIgnoreCase(role.name());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var details = (UserDetails) authentication.getPrincipal();
+        if(details.getAuthorities() != null && !details.getAuthorities().isEmpty()) {
+            return (details.getAuthorities().contains(new SimpleGrantedAuthority(role.name())) || details.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + role.name())));
+        }
+        return false;
+    }
+
+    public OwnerValidatorBuilder and(OwnerValidatorConsumer ...expressions) {
+        BooleanBuilder tempBuilder = new BooleanBuilder(true);
+
+        for (OwnerValidatorConsumer consumer : expressions) {
+            consumer.accept(this);
+            if (!builder.build()) {
+                tempBuilder.and(false);
+                break;
+            } else tempBuilder.and(builder.build());
+        }
+        this.builder.and(tempBuilder.build());
+        return this;
+    }
+
+    public OwnerValidatorBuilder evaluate(String message) {
+        if(!builder.build()) this.message += message;
+        return this;
+    }
 
     public OwnerValidatorBuilder isOwner() {
-        var user = getCurrentUser();
-        result = result || Objects.equals(object.getOwner().getUsername(), user.getUsername());
-        if(!result) message += "No es dueño del registro. ";
-        return this;
+        builder.or(object.getOwner().getUsername().equals(getCurrentUser().getUsername()));
+        return evaluate("No es dueño del registro. ");
     }
 
     public OwnerValidatorBuilder isAdmin() {
-        letWith(Role.ADMIN);
-        if(!result) message += "No es administrador. ";
-        return this;
+        var b = hasRole(Role.ADMIN);
+        builder.or(b);
+        return evaluate("No es administrador. ");
     }
 
     public OwnerValidatorBuilder isModerator() {
-        letWith(Role.MOD);
-        if(!result) message += "No es moderador. ";
-        return this;
+        builder.or(hasRole(Role.MOD));
+        return evaluate("No es moderador. ");
     }
 
     public OwnerValidatorBuilder isGovernment() {
-        letWith(Role.GOVT);
-        if(!result) message += "No es entidad gubernamental. ";
-        return this;
+        builder.or(hasRole(Role.GOVT));
+        return evaluate("No es entidad gubernamental. ");
     }
 
     public OwnerValidatorBuilder isOrganization() {
-        letWith(Role.ORGANIZATION);
-        if(!result) message += "No es organización. ";
-        return this;
+        builder.or(hasRole(Role.ORGANIZATION));
+        return evaluate("No es organización. ");
     }
 
     public OwnerValidatorBuilder isContributor() {
-        letWith(Role.CONTRIBUTOR);
-        if(!result) message += "No es contribuidor. ";
-        return this;
+        builder.or(hasRole(Role.CONTRIBUTOR));
+        return evaluate("No es contribuidor. ");
     }
 
 
     public OwnerValidatorBuilder isNeighbour() {
-        letWith(Role.NEIGHBOUR);
-        if(!result) message += "No es vecino autenticado. ";
-        return this;
+        builder.or(hasRole(Role.NEIGHBOUR));
+        return evaluate("No es vecino autenticado. ");
     }
 
 
     public OwnerValidatorBuilder isUser() {
-        letWith(Role.USER);
-        if(!result) message += "No es usuario. ";
-        return this;
+        builder.or(hasRole(Role.USER));
+        return evaluate("No es usuario. ");
     }
 
     public boolean build() {
-        return result;
+        return builder.build();
     }
 
     public void orElseFail() {
-        if (!result) {
+        if (!builder.build()) {
             throw new Fail("Error de accesos. Detalle: " + message, HttpStatus.FORBIDDEN);
         }
     }

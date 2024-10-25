@@ -8,17 +8,20 @@ import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.commenting.PostComment;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.service.*;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -46,15 +49,20 @@ public class PostController {
         return ResponseEntity.ok(postService.create(post, me));
     }
 
-    /**
-     * <b>Endpoint TEMPORAL. </b>
-     * <p>Se reemplazará por un algoritmo más eficaz, detallado en la Issue #98.</p>
-     */
-    @Deprecated
     @GetMapping("/all")
-    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(postService.listPost(pageable));
+        return ResponseEntity.ok(postService.findAll(pageable, activeOnly));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="name,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if(sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(postService.search(q, pageable, active));
     }
 
     @GetMapping("/{id}")
@@ -66,6 +74,37 @@ public class PostController {
     public ResponseEntity<?> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByOp(id, pageable));
+    }
+
+    @GetMapping("/audience/{audience}")
+    public ResponseEntity<?> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByAudience(audience, pageable));
+    }
+
+    @GetMapping("/type/{id}")
+    public ResponseEntity<?> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByType(id, pageable));
+    }
+
+    @GetMapping("/subtype/{id}")
+    public ResponseEntity<?> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findBySubtype(id, pageable));
+    }
+
+    @GetMapping("/date/{start}/{end}")
+    public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        try {
+            Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
+            Timestamp endTimestamp = Timestamp.valueOf(end + " 23:59:59");
+
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(postService.findByDateRange(startTimestamp, endTimestamp, pageable));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid date format");
+        }
     }
 
     @GetMapping("/me")

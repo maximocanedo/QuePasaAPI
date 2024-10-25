@@ -15,11 +15,35 @@ Content-Type: application/json
 }
 
 ### Consultar publicaciones
-GET {{base}}/api/posts/all?page=0&size=10
+GET {{base}}/api/posts/all?page=0&size=10&activeOnly=true
+Authorization: Bearer {{token}}
+
+### Buscar ciudades, orden ascendente según título
+GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,asc
+Authorization: Bearer {{token}}
+
+### Buscar ciudades, orden descendente según título
+GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,desc
 Authorization: Bearer {{token}}
 
 ### Consultar publicación
 GET {{base}}/api/posts/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según autor
+GET {{base}}/api/posts/op/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según audiencia
+GET {{base}}/api/posts/audience/CITY
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según tipo
+GET {{base}}/api/posts/type/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según subtipo
+GET {{base}}/api/posts/subtype/1
 Authorization: Bearer {{token}}
 
 ### Editar datos básicos de la publicación
