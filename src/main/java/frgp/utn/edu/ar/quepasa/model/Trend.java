@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.model;
 
 import java.io.Serializable;
 
-public class Trend implements Serializable {
+public class Trend implements Serializable, TrendProjection {
 
     private String tag;
     private int cantidad;
