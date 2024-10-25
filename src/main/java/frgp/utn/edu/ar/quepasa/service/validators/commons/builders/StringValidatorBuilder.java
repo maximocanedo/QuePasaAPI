@@ -130,7 +130,7 @@ public abstract class StringValidatorBuilder<T extends StringValidatorBuilder<T>
         return (T) this;
     }
     public T hasXLowerCaseLetters(int x) {
-        return this.hasXUpperCaseLetters(x, "Debe tener " + x + " minúsculas. ");
+        return this.hasXLowerCaseLetters(x, "Debe tener " + x + " minúsculas. ");
     }
 
     public T hasAtLeastXUpperCaseLetters(int min, String feedback) {
@@ -158,7 +158,7 @@ public abstract class StringValidatorBuilder<T extends StringValidatorBuilder<T>
     }
 
     public T hasAtMostXLowerCaseLetters(int max, String feedback) {
-        if(countLowerCaseLetters() < max) super.invalidate(feedback);
+        if(countLowerCaseLetters() > max) super.invalidate(feedback);
         return (T) this;
     }
     public T hasAtMostXLowerCaseLetters(int max) {

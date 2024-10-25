@@ -13,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.commenting.PostCommentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.AudienceValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.EventValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.PostValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.comments.CommentContentValidator;
@@ -108,9 +109,8 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = eventRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Event not found", HttpStatus.NOT_FOUND);
-        var post = new EventValidator(f.get())
-                .canAccess(current)
-                .build();
+        Event post = new EventValidator(f.get())
+                .canAccess(current).build();
         var comment = new EventComment();
         comment.setContent(
                 new CommentContentValidator(content)

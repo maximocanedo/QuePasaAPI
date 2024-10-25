@@ -15,6 +15,12 @@ public abstract class ValidatorBuilder<V extends ValidatorBuilder<V, T>, T> {
 
     public OnInvalidateAction onInvalidateAction = OnInvalidateAction.THROW_EXCEPTION;
 
+    @SuppressWarnings("unchecked")
+    public V onInvalidate(OnInvalidateAction action) {
+        this.onInvalidateAction = action;
+        return (V) this;
+    }
+
     private T value;
     private boolean valid = true;
     private String fieldName = "";

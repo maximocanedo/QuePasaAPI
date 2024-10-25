@@ -134,7 +134,7 @@ public class PostServiceTests {
         when(postRepository.findAll(pageable)).thenReturn(postPage);
 
         assertDoesNotThrow(() -> {
-            Page<Post> posts = service.listPost(pageable);
+            Page<Post> posts = service.findAll(pageable, true);
 
             assertNotNull(posts);
             assertFalse(posts.isEmpty());
