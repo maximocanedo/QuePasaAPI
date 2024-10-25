@@ -56,7 +56,7 @@ public class CityServiceTests {
         city.setId(1);
         city.setActive(true);
 
-        when(cityRepository.findById(id)).thenReturn(Optional.of(city));
+        when(cityRepository.findByIdActive(id)).thenReturn(Optional.of(city));
 
         assertDoesNotThrow(() -> {
             City foundCity = cityService.getById(id, true);
@@ -74,7 +74,7 @@ public class CityServiceTests {
 
         setAuthContext();
 
-        when(cityRepository.findById(id)).thenReturn(Optional.empty());
+        when(cityRepository.findByIdActive(id)).thenReturn(Optional.empty());
 
         assertThrows(Fail.class, () -> cityService.getById(id, true));
 
@@ -254,7 +254,7 @@ public class CityServiceTests {
 
         when(countryRepository.findByIso3(iso3Country)).thenReturn(Optional.of(country));
         when(subnationalDivisionRepository.findByIso3(iso3Sub)).thenReturn(Optional.of(subdivision));
-        when(cityRepository.findById(id)).thenReturn(Optional.of(city));
+        when(cityRepository.findByIdActive(id)).thenReturn(Optional.of(city));
 
         CityRequest request = new CityRequest();
         request.setName("Rock Village");
@@ -322,7 +322,7 @@ public class CityServiceTests {
         City city = new City();
         city.setId(id);
 
-        when(cityRepository.findById(id)).thenReturn(Optional.of(city));
+        when(cityRepository.findByIdActive(id)).thenReturn(Optional.of(city));
 
         assertDoesNotThrow(() -> cityService.delete(id));
 
