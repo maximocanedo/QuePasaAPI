@@ -131,10 +131,10 @@ public class PostServiceTests {
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(postRepository.findAll(pageable)).thenReturn(postPage);
+        when(postRepository.findAllActive(pageable)).thenReturn(postPage);
 
         assertDoesNotThrow(() -> {
-            Page<Post> posts = service.listPost(pageable);
+            Page<Post> posts = service.findAll(pageable, true);
 
             assertNotNull(posts);
             assertFalse(posts.isEmpty());
