@@ -178,7 +178,7 @@ public class EventServiceTest {
         event2.setOwner(owner);
 
         Page<Event> mockPage = new PageImpl<>(Arrays.asList(event1, event2));
-        when(eventRepository.findByOwner(owner, pageable)).thenReturn(Optional.of(mockPage));
+        when(eventRepository.findByOwnerAndActive(owner, true, pageable)).thenReturn(Optional.of(mockPage));
 
         Page<Event> events = eventService.findByOp(owner, pageable);
 
@@ -197,7 +197,7 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
-        when(eventRepository.findByOwner(owner, pageable)).thenReturn(Optional.empty());
+        when(eventRepository.findByOwnerAndActive(owner, true, pageable)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
