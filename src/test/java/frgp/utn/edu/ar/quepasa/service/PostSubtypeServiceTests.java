@@ -82,7 +82,7 @@ public class PostSubtypeServiceTests {
         PostSubtype subtype = new PostSubtype();
         Page<PostSubtype> subtypePage = new PageImpl<>(List.of(subtype));
 
-        when(postSubtypeRepository.findAll(pageable)).thenReturn(subtypePage);
+        when(postSubtypeRepository.findAllActive(pageable)).thenReturn(subtypePage);
 
         Page<PostSubtype> subtypes = postSubtypeService.findAll(pageable, true);
 
