@@ -1,0 +1,38 @@
+### Creación ciudad
+POST {{base}}/api/cities
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "name": "Foz do Iguacu",
+    "subdivision": "BR-RS"
+}
+
+### Consultar ciudades
+GET {{base}}/api/cities/all
+Authorization: Bearer {{token}}
+
+### Buscar ciudades, orden ascendente segun nombre
+GET {{base}}/api/cities/search?q=&page=0&size=10&sort=name,asc
+Authorization: Bearer {{token}}
+
+### Buscar ciudades, orden descendente segun nombre
+GET {{base}}/api/cities/search?q=&page=0&size=10&sort=name,desc
+Authorization: Bearer {{token}}
+
+### Consultar ciudad
+GET {{base}}/api/cities/1
+Authorization: Bearer {{token}}
+
+### Editar ciudad
+PATCH {{base}}/api/cities/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "Foz do Iguacu",
+    "subdivision": "BR-PR"
+}
+
+### Deshabilitar ciudad
+DELETE {{base}}/api/cities/1
+Authorization: Bearer {{token}}
