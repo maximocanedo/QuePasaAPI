@@ -1,0 +1,39 @@
+### Creación subtipo de publicación
+POST {{base}}/api/post-subtypes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "type": 1,
+    "description": "Subtipo 15"
+}
+
+### Consultar subtipos de publicaciones
+GET {{base}}/api/post-subtypes/all?page=0&size=10&activeOnly=true
+Authorization: Bearer {{token}}
+
+### Buscar subtipos de publicaciones, orden ascendente según ID
+GET {{base}}/api/post-subtypes/search?q=&page=0&size=10&sort=id,asc
+Authorization: Bearer {{token}}
+
+### Buscar subtipos de publicaciones, orden descendente según ID
+GET {{base}}/api/post-subtypes/search?q=&page=0&size=10&sort=id,desc
+Authorization: Bearer {{token}}
+
+### Consultar subtipo de publicación
+GET {{base}}/api/post-subtypes/1
+Authorization: Bearer {{token}}
+
+### Editar datos básicos del subtipo de publicación
+PATCH {{base}}/api/post-subtypes/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "type": 1,
+    "description": "Subtipo 15"
+}
+
+### Deshabilitar subtipo de publicación
+DELETE {{base}}/api/post-subtypes/1
+Authorization: Bearer {{token}}
