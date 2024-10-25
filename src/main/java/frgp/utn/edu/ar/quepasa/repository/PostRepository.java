@@ -2,6 +2,7 @@ package frgp.utn.edu.ar.quepasa.repository;
 
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,12 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findAllActive(Pageable pageable);
 
     Page<Post> findByOwner(User owner, Pageable pageable);
+
+    Page<Post> findByAudience(Audience audience, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.subtype.type.id = :type AND p.active")
+    Page<Post> findByType(Integer type, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.subtype.id = :subtype AND p.active")
+    Page<Post> findBySubtype(Integer subtype, Pageable pageable);
 }

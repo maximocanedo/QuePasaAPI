@@ -4,6 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostCreateRequest;
 import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,6 +18,12 @@ public interface PostService {
     Post findById(Integer id);
 
     Page<Post> findByOp(Integer originalPoster, Pageable pageable);
+
+    Page<Post> findByAudience(Audience audience, Pageable pageable);
+
+    Page<Post> findByType(Integer type, Pageable pageable);
+
+    Page<Post> findBySubtype(Integer subtype, Pageable pageable);
 
     Post create(PostCreateRequest newPost, User originalPoster);
 
