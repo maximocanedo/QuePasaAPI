@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.function.Consumer;
 
-public class OwnerValidator {
+public final class OwnerValidator {
 
     private final Ownable object;
     @Deprecated(forRemoval = true)

@@ -5,7 +5,7 @@ import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ValidatorBuilder<V extends ValidatorBuilder<V, T>, T> {
+public abstract class ValidatorBuilder<V extends ValidatorBuilder<V, T>, T> {
 
     public enum OnInvalidateAction {
         THROW_EXCEPTION,

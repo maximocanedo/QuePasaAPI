@@ -1,33 +1,23 @@
 package frgp.utn.edu.ar.quepasa.service.validators.events;
 
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.LocalDateTimeValidatorBuilder;
 
 import java.time.LocalDateTime;
 
-@Deprecated
-public class EventDateValidator extends ValidatorBuilder<EventDateValidator, LocalDateTime> {
+public final class EventDateValidator extends LocalDateTimeValidatorBuilder<EventDateValidator> {
     public EventDateValidator(LocalDateTime value) {
         super(value, "start");
     }
 
     public EventDateValidator isNotNull() {
-        if (getValue() == null) {
-            super.invalidate("Date of the event cannot be null.");
-        }
-        return this;
+        return super.isNotNull("La fecha del evento no puede ser nula. ");
     }
 
     public EventDateValidator isNotPast() {
-        if (getValue().isBefore(LocalDateTime.now())) {
-            super.invalidate("Date of the event cannot be in the past.");
-        }
-        return this;
+        return super.hasNotOccurred("La fecha del evento no puede ser anterior al presente. ");
     }
 
-    public EventDateValidator isNotBefore(LocalDateTime date) {
-        if (getValue().isBefore(date)) {
-            super.invalidate("Date of the event cannot be before the current date.");
-        }
-        return this;
+    public EventDateValidator isAfterStartDate(LocalDateTime date) {
+        return super.isNotBefore(date, "La fecha del evento no puede ser anterior a la fecha de inicio. ");
     }
 }

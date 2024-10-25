@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * <b>No validar directamente con esta clase, se debe heredar de esta clase o usar {@link frgp.utn.edu.ar.quepasa.service.validators.commons.StringValidator StringValidator}.</b>
  */
 @SuppressWarnings("unchecked")
-public class StringValidatorBuilder<T extends StringValidatorBuilder<T>> extends ValidatorBuilder<T, String> {
+public abstract class StringValidatorBuilder<T extends StringValidatorBuilder<T>> extends ValidatorBuilder<T, String> {
 
     public StringValidatorBuilder(String value, String fieldName) {
         super(value, fieldName);

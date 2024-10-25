@@ -96,7 +96,7 @@ public class EventServiceImpl implements EventService {
         var startDate = new EventDateValidator(event.getStartDate()).isNotNull().isNotPast().build();
         newEvent.setStart(startDate);
 
-        var endDate = new EventDateValidator(event.getEndDate()).isNotNull().isNotPast().isNotBefore(startDate).build();
+        var endDate = new EventDateValidator(event.getEndDate()).isNotNull().isNotPast().isAfterStartDate(startDate).build();
         newEvent.setEnd(endDate);
 
         var category = new EventCategoryValidator(event.getCategory()).isNotNull().build();
@@ -130,7 +130,7 @@ public class EventServiceImpl implements EventService {
 
         if (newEvent.getStartDate() != null) event.setStart(new EventDateValidator(newEvent.getStartDate()).isNotPast().build());
 
-        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidator(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build());
+        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidator(newEvent.getEndDate()).isNotPast().isAfterStartDate(event.getStart()).build());
 
         if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidator(newEvent.getCategory()).build());
 
