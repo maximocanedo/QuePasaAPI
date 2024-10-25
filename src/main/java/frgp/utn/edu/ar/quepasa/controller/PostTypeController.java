@@ -7,6 +7,7 @@ import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,19 @@ public class PostTypeController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size,  @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(postTypeService.listPostTypes(pageable));
+        return ResponseEntity.ok(postTypeService.findAll(pageable, activeOnly));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="description,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if(sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(postTypeService.search(q, pageable, active));
     }
 
     @GetMapping("/{id}")

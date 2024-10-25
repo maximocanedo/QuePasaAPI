@@ -15,11 +15,47 @@ Content-Type: application/json
 }
 
 ### Consultar publicaciones
-GET {{base}}/api/posts/all?page=0&size=10
+GET {{base}}/api/posts/all?page=0&size=10&activeOnly=true
+Authorization: Bearer {{token}}
+
+### Buscar publicaciones, orden ascendente según título
+GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,asc
+Authorization: Bearer {{token}}
+
+### Buscar publicaciones, orden descendente según título
+GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,desc
 Authorization: Bearer {{token}}
 
 ### Consultar publicación
 GET {{base}}/api/posts/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según autor
+GET {{base}}/api/posts/op/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según audiencia
+GET {{base}}/api/posts/audience/CITY
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según tipo
+GET {{base}}/api/posts/type/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según subtipo
+GET {{base}}/api/posts/subtype/1
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según rango de fecha
+GET {{base}}/api/posts/date/2024-09-28/2024-09-30
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según fecha de inicio
+GET {{base}}/api/posts/date-start/2024-09-30
+Authorization: Bearer {{token}}
+
+### Consultar publicaciones según fecha de fin
+GET {{base}}/api/posts/date-end/2024-09-30
 Authorization: Bearer {{token}}
 
 ### Editar datos básicos de la publicación

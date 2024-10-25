@@ -53,25 +53,51 @@ public class EventServiceImpl implements EventService {
         this.eventRsvpRepository = eventRsvpRepository;
     }
 
+    /**
+    * This method is used to get all the events
+    * @param query search query to filter events
+    * @param pageable pagination information
+    * @param active status of the event
+    **/
     @Override
     public Page<Event> getEvents(String query, Pageable pageable, boolean active) {
         return eventRepository.search(query, pageable, active);
     }
 
+    /**
+     * This method is used to get an event by its id
+     * @param id id of the event
+     * @return event
+     * @throws ResourceNotFoundException if the event is not found
+     */
     @Override
     public Event findById(UUID id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
     }
 
+    /**
+     * This method is used to get all the events by the Original Poster
+     * @param owner owner of the event
+     * @param pageable pagination information
+     * @return events
+     * @throws ResourceNotFoundException if no events are found
+     */
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) {
-        return eventRepository.findByOwner(owner, pageable)
+        return eventRepository.findByOwnerAndActive(owner, true, pageable)
                 .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
                 .map(commentService::populate)
                 .map(voteService::populate);
     }
 
+    /**
+     * This method is used to get all the events by the username of a user
+     * @param username username of the event owner
+     * @param pageable pagination information
+     * @return events
+     * @throws ResourceNotFoundException if no events are found
+     */
     @Override
     public Page<Event> findByUsername(String username, Pageable pageable) {
         return eventRepository.findByOwnerUsername(username, pageable)
@@ -80,6 +106,13 @@ public class EventServiceImpl implements EventService {
                 .map(voteService::populate);
     }
 
+    /**
+     * This method is used to create an event
+     * @param event event to be created
+     * @param owner actual logged user
+     * @return event
+     * @throws Fail if the event creation fails
+     */
     @Override
     public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
@@ -109,10 +142,18 @@ public class EventServiceImpl implements EventService {
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
         eventRepository.save(newEvent);
-        voteService.populate(newEvent);
+        commentService.populate(voteService.populate(newEvent));
         return newEvent;
     }
 
+    /**
+     * This method is used to update an event
+     * @param id id of the event
+     * @param newEvent event information to be updated
+     * @param owner actual logged user
+     * @return event
+     * @throws Fail if the event update fails
+     */
     @Override
     public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail {
         Event event = eventRepository.findById(id)
@@ -137,9 +178,17 @@ public class EventServiceImpl implements EventService {
         if (newEvent.getAudience() != null) event.setAudience(new AudienceValidator(newEvent.getAudience()).build());
 
         eventRepository.save(event);
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 
+    /**
+     * This method is used to confirm the assistance to an event
+     * @param eventId id of the event
+     * @param user actual logged user
+     * @return eventRsvp
+     * @throws Fail if the event assistance confirmation fails
+     */
     @Override
     public EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail {
         EventRsvp newEventRsvp = new EventRsvp();
@@ -152,6 +201,11 @@ public class EventServiceImpl implements EventService {
         return newEventRsvp;
     }
 
+    /**
+     * This method is used to delete an event
+     * @param id id of the event
+     * @throws Fail if the event deletion fails
+     */
     @Override
     public void delete(UUID id) throws Fail {
         Event event = eventRepository.findById(id)
@@ -164,6 +218,14 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
     }
 
+    /**
+     * This method is used to add a neighbourhood to an event
+     * @param eventId id of the event
+     * @param neighbourhoodId id of the neighbourhood
+     * @return event
+     * @throws ResourceNotFoundException if the event or the neighbourhood is not found
+     * @throws Fail if the event is not active
+     */
     @Override
     public Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
         Event event = eventRepository.findById(eventId)
@@ -185,9 +247,18 @@ public class EventServiceImpl implements EventService {
 
         event.setNeighbourhoods(neighbourhoods);
         eventRepository.save(event);
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 
+    /**
+     * This method is used to remove a neighbourhood from an event
+     * @param eventId id of the event
+     * @param neighbourhoodId id of the neighbourhood
+     * @return event
+     * @throws ResourceNotFoundException if the event or the neighbourhood is not found
+     * @throws Fail if the event is not active
+     */
     @Override
     public Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
         Event event = eventRepository.findById(eventId)
@@ -198,7 +269,7 @@ public class EventServiceImpl implements EventService {
                 .isAdmin()
                 .orElseFail();
 
-        if (!event.isActive()) throw new Fail("Event not found.");
+        if (!event.isActive()) throw new Fail("Event is not active.");
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
@@ -209,7 +280,7 @@ public class EventServiceImpl implements EventService {
         event.setNeighbourhoods(neighbourhoods);
 
         eventRepository.save(event);
-
-        return commentService.populate(voteService.populate(event));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 }

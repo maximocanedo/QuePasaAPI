@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.voting.EventVote;
 import frgp.utn.edu.ar.quepasa.model.voting.PostVote;
 import frgp.utn.edu.ar.quepasa.repository.votes.CommentVoteRepository;
 import frgp.utn.edu.ar.quepasa.repository.votes.EventVoteRepository;
@@ -50,7 +51,7 @@ public class VoteServiceTests {
                 Mockito.mock(CommentVoteRepository.class),
                 Mockito.mock(PictureVoteRepository.class),
                 postVoteRepository,
-                Mockito.mock(EventVoteRepository.class),
+                eventVoteRepository,
                 authenticationService
         );
     }
@@ -77,13 +78,28 @@ public class VoteServiceTests {
         return pv;
     }
 
+    public EventVote alphaEventVote() {
+        var ev = new EventVote();
+        ev.setEvent(fake.event_A());
+        ev.setVote(1);
+        ev.setId(11001);
+        ev.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        ev.setVoter(alpha());
+        return ev;
+    }
+
     @BeforeAll
     public void setup() {
         when(authenticationService.getCurrentUser()).thenReturn(Optional.of(alpha()));
         when(authenticationService.getCurrentUserOrDie()).thenReturn(alpha());
+
         when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(0);
         when(postVoteRepository.getUserVote(fake.post_A().getId(), alpha().getUsername())).thenReturn(Optional.empty());
         when(postVoteRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(0);
+        when(eventVoteRepository.getUserVote(fake.event_A().getId(), alpha().getUsername())).thenReturn(Optional.empty());
+        when(eventVoteRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
@@ -134,6 +150,15 @@ public class VoteServiceTests {
     }
 
     @Test
+    @DisplayName("Contar votos de una publicación con votos negativos")
+    public void countNegativePostVotes() {
+        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(-2);
+        var count = voteService.count(fake.post_A());
+        assertNotNull(count);
+        assertEquals(-2, count.getVotes());
+    }
+
+    @Test
     @DisplayName("Contar votos de una publicación inexistente")
     public void countNonExistentPostVotes() {
         when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(null);
@@ -143,17 +168,8 @@ public class VoteServiceTests {
     }
 
     @Test
-    @DisplayName("Contar votos de una publicación con votos negativos")
-    public void countNegativePostVotes() {
-        when(postVoteRepository.getVotes(fake.post_A().getId())).thenReturn(-2);
-        var count = voteService.count(fake.post_A());
-        assertNotNull(count);
-        assertEquals(-2, count.getVotes());
-    }
-
-    /*
-    @Test
     @DisplayName("Votar un evento")
+    @WithMockUser(username = "alpha", roles = { "NEIGHBOUR" })
     public void voteEvent() {
         var count = voteService.vote(fake.event_A(), 1);
         assertNotNull(count);
@@ -162,5 +178,54 @@ public class VoteServiceTests {
         assertNotNull(count);
         assertEquals(1, count.getVotes());
     }
-     */
+
+    @Test
+    @DisplayName("Votar un valor inválido a un evento")
+    public void voteNonExistentEventVote() {
+        var count = voteService.vote(fake.event_A(), 1596);
+        assertNotNull(count);
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(1);
+        count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(1, count.getVotes());
+    }
+
+    @Test
+    @DisplayName("Votar un evento ya votado")
+    public void voteExistingEventVote() {
+        when(eventVoteRepository.getUserVote(fake.event_A().getId(), alpha().getUsername())).thenReturn(Optional.of(alphaEventVote()));
+        var count = voteService.vote(fake.event_A(), 1);
+        assertNotNull(count);
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(0);
+        count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(0, count.getVotes());
+    }
+
+    @Test
+    @DisplayName("Contar votos de un evento")
+    public void countEventVotes() {
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(2);
+        var count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(2, count.getVotes());
+    }
+
+    @Test
+    @DisplayName("Contar votos de un evento con votos negativos")
+    public void countNegativeEventVotes() {
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(-2);
+        var count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(-2, count.getVotes());
+    }
+
+    @Test
+    @DisplayName("Contar votos de un evento inexistente")
+    public void countNonExistentEventVotes() {
+        when(eventVoteRepository.getVotes(fake.event_A().getId())).thenReturn(null);
+        var count = voteService.count(fake.event_A());
+        assertNotNull(count);
+        assertEquals(0, count.getVotes());
+    }
 }

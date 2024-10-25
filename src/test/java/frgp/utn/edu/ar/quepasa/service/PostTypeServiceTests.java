@@ -75,9 +75,9 @@ public class PostTypeServiceTests {
         PostType type = new PostType();
         Page<PostType> typePage = new PageImpl<>(List.of(type));
 
-        when(postTypeRepository.findAll(pageable)).thenReturn(typePage);
+        when(postTypeRepository.findAllActive(pageable)).thenReturn(typePage);
 
-        Page<PostType> types = postTypeRepository.findAll(pageable);
+        Page<PostType> types = postTypeService.findAll(pageable, true);
 
         assertNotNull(types);
         assertFalse(types.isEmpty());

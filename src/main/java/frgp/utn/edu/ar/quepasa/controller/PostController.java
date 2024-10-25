@@ -9,6 +9,7 @@ import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.commenting.PostComment;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -54,7 +56,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="name,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="title,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
         Sort.Direction direction = Sort.Direction.ASC;
         if(sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -73,6 +75,66 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByOp(id, pageable));
     }
+
+    @GetMapping("/audience/{audience}")
+    public ResponseEntity<?> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByAudience(audience, pageable));
+    }
+
+    @GetMapping("/type/{id}")
+    public ResponseEntity<?> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findByType(id, pageable));
+    }
+
+    @GetMapping("/subtype/{id}")
+    public ResponseEntity<?> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postService.findBySubtype(id, pageable));
+    }
+
+    /** Comienza sección de FECHAS **/
+    @GetMapping("/date/{start}/{end}")
+    public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        try {
+            Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
+            Timestamp endTimestamp = Timestamp.valueOf(end + " 23:59:59");
+
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(postService.findByDateRange(startTimestamp, endTimestamp, pageable));
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid date format");
+        }
+    }
+
+    @GetMapping("/date-start/{start}")
+    public ResponseEntity<?> getPostsByDateStart(@PathVariable String start, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        try {
+            Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
+
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(postService.findByDateStart(startTimestamp, pageable));
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid date format");
+        }
+    }
+
+    @GetMapping("/date-end/{end}")
+    public ResponseEntity<?> getPostsByDateEnd(@PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        try {
+            Timestamp endTimestamp = Timestamp.valueOf(end + " 00:00:00");
+
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(postService.findByDateEnd(endTimestamp, pageable));
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid date format");
+        }
+    }
+    // Termina sección de FECHAS **/
 
     @GetMapping("/me")
     public ResponseEntity<?> getPostsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -111,7 +173,8 @@ public class PostController {
     public ResponseEntity<VoteCount> downVote(@PathVariable Integer id) {
         return ResponseEntity.ok(voteService.vote(Post.identify(id), -1));
     }
-    /** Termina sección de VOTOS **/
+    // Termina sección de VOTOS **/
+
     /**
      * Comienza sección de COMENTARIOS
      */
@@ -124,7 +187,9 @@ public class PostController {
     public ResponseEntity<Page<PostComment>> viewComments(@PathVariable Integer id, Pageable pageable) {
         return ResponseEntity.ok(commentService.findAllFromPost(id, pageable));
     }
+    // Termina sección de COMENTARIOS **/
 
+    /** Comienza sección de EXCEPCIONES **/
     @ExceptionHandler(ValidationError.class)
     public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
@@ -139,5 +204,6 @@ public class PostController {
     public ResponseEntity<String> handleFail(Fail ex) {
         return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
     }
+    // Termina sección de EXCEPCIONES **/
 
 }

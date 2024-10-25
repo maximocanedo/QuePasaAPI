@@ -21,7 +21,17 @@ public class PostTypeServiceImpl implements PostTypeService {
     }
 
     @Override
-    public Page<PostType> listPostTypes(Pageable pageable) { return postTypeRepository.findAll(pageable); }
+    public Page<PostType> search(String q, Pageable pageable, boolean active) {
+        return postTypeRepository.search(q, pageable, active);
+    }
+
+    @Override
+    public Page<PostType> findAll(Pageable pageable, boolean activeOnly) {
+        if(activeOnly) {
+            return postTypeRepository.findAllActive(pageable);
+        }
+        return postTypeRepository.findAll(pageable);
+    }
 
     @Override
     public PostType findById(Integer id) {

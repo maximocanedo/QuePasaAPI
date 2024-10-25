@@ -167,6 +167,117 @@ public class PostControllerTests {
     }
 
     @Test
+    @DisplayName("Buscar posts por audiencia.")
+    public void searchPostsByAudience() throws Exception {
+        setAuthContext();
+
+        mockMvc.perform((get("/api/posts/audience/{audience}", Audience.NEIGHBORHOOD))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por tipo.")
+    public void searchPostsByType() throws Exception {
+        setAuthContext();
+
+        mockMvc.perform((get("/api/posts/type/{id}", 1))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por tipo, tipo inexistente.")
+    public void searchPostsByType_NotFound() throws Exception {
+        setAuthContext();
+
+        mockMvc.perform((get("/api/posts/type/{id}", 909))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isNotFound());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por subtipo.")
+    public void searchPostsBySubtype() throws Exception {
+        setAuthContext();
+
+        mockMvc.perform((get("/api/posts/subtype/{id}", 1))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por subtipo, subtipo inexistente.")
+    public void searchPostsBySubtype_NotFound() throws Exception {
+        setAuthContext();
+
+        mockMvc.perform((get("/api/posts/subtype/{id}", 909))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isNotFound());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha.")
+    public void searchPostsByDateRange() throws Exception {
+        setAuthContext();
+
+        String startTimestamp = "2024-09-28";
+        String endTimestamp = "2024-09-30";
+
+        mockMvc.perform((get("/api/posts/date/{start}/{end}", startTimestamp, endTimestamp))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha, fecha de inicio.")
+    public void searchPostsByDateStart() throws Exception {
+        setAuthContext();
+
+        String startTimestamp = "2024-09-28";
+
+        mockMvc.perform((get("/api/posts/date-start/{start}", startTimestamp))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha, fecha de fin.")
+    public void searchPostsByDateEnd() throws Exception {
+        setAuthContext();
+
+        String endTimestamp = "2024-09-30";
+
+        mockMvc.perform((get("/api/posts/date-end/{end}", endTimestamp))
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        clearAuthContext();
+    }
+
+    @Test
     @DisplayName("Crear post.")
     public void createPost() throws Exception {
         setAuthContext();

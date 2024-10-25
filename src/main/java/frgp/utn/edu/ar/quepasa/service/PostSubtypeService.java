@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostSubtypeService {
-    Page<PostSubtype> listPostSubtypes(Pageable pageable);
+    Page<PostSubtype> search(String q, Pageable pageable, boolean active);
+
+    Page<PostSubtype> findAll(Pageable pageable, boolean activeOnly);
 
     PostSubtype findById(Integer id);
 

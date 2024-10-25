@@ -5,12 +5,14 @@ import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
+import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
+import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
@@ -50,6 +52,8 @@ public class PostServiceTests {
 
     @MockBean
     private PostRepository postRepository;
+    @MockBean
+    private PostTypeRepository postTypeRepository;
     @MockBean
     private PostSubtypeRepository postSubtypeRepository;
     @MockBean
@@ -131,7 +135,7 @@ public class PostServiceTests {
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(postRepository.findAll(pageable)).thenReturn(postPage);
+        when(postRepository.findAllActive(pageable)).thenReturn(postPage);
 
         assertDoesNotThrow(() -> {
             Page<Post> posts = service.findAll(pageable, true);
@@ -201,6 +205,272 @@ public class PostServiceTests {
         when(postRepository.findByOwner(op, pageable)).thenReturn(Page.empty());
 
         assertThrows(Fail.class, () -> service.findByOp(op.getId(), pageable));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por audiencia.")
+    public void findByAudience_PostsFound_ReturnsPosts() {
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        Audience audience = Audience.NEIGHBORHOOD;
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post post = new Post();
+        post.setAudience(audience);
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByAudience(audience, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findByAudience(audience, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+
+            foundPosts.forEach(foundPost -> assertEquals(audience, foundPost.getAudience()));
+        });
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por tipo.")
+    public void findByType_PostsFound_ReturnsPosts() {
+        Integer typeId = 1;
+        Integer subId = 1;
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        PostType type = new PostType();
+        type.setId(typeId);
+
+        PostSubtype subtype = new PostSubtype();
+        subtype.setId(subId);
+        subtype.setType(type);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(postTypeRepository.findById(typeId)).thenReturn(Optional.of(type));
+        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.of(subtype));
+
+        Post post = new Post();
+        post.setSubtype(subtype);
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByType(typeId, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findByType(typeId, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+
+            foundPosts.forEach(foundPost -> assertEquals(type, foundPost.getSubtype().getType()));
+        });
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por tipo, tipo inexistente.")
+    public void findByType_PostNotFound_ThrowsException() {
+        Integer typeId = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(postRepository.findByType(typeId, pageable)).thenReturn(Page.empty());
+
+        assertThrows(Fail.class, () -> service.findByType(typeId, pageable));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por subtipo.")
+    public void findBySubtype_PostsFound_ReturnsPosts() {
+        Integer typeId = 1;
+        Integer subId = 1;
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        PostType type = new PostType();
+        type.setId(typeId);
+
+        PostSubtype subtype = new PostSubtype();
+        subtype.setId(subId);
+        subtype.setType(type);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(postTypeRepository.findById(typeId)).thenReturn(Optional.of(type));
+        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.of(subtype));
+
+        Post post = new Post();
+        post.setSubtype(subtype);
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findBySubtype(subId, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findBySubtype(subId, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+
+            foundPosts.forEach(foundPost -> assertEquals(subtype, foundPost.getSubtype()));
+        });
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por subtipo, subtipo inexistente.")
+    public void findBySubtype_PostNotFound_ThrowsException() {
+        Integer subId = 1;
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(postRepository.findBySubtype(subId, pageable)).thenReturn(Page.empty());
+
+        assertThrows(Fail.class, () -> service.findBySubtype(subId, pageable));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha.")
+    public void findByDateRange_PostsFound_ReturnsPosts() {
+        Timestamp startTimestamp = Timestamp.valueOf("2024-09-28 00:00:00");
+        Timestamp endTimestamp = Timestamp.valueOf("2024-09-30 23:59:59");
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post post = new Post();
+        post.setTimestamp(Timestamp.valueOf("2024-09-29 00:00:00"));
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByDateRange(startTimestamp, endTimestamp, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findByDateRange(startTimestamp, endTimestamp, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+        });
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha, fecha de inicio.")
+    public void findByDateStart_PostsFound_ReturnsPosts() {
+        Timestamp startTimestamp = Timestamp.valueOf("2024-09-28 00:00:00");
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post post = new Post();
+        post.setTimestamp(Timestamp.valueOf("2024-09-29 00:00:00"));
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByDateStart(startTimestamp, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findByDateStart(startTimestamp, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+        });
+
+        clearAuthContext();
+    }
+
+    @Test
+    @DisplayName("Buscar posts por rango de fecha, fecha de fin.")
+    public void findByDateEnd_PostsFound_ReturnsPosts() {
+        Timestamp endTimestamp = Timestamp.valueOf("2024-09-30 23:59:59");
+        Pageable pageable = PageRequest.of(0, 10);
+        String username = "donald";
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setRole(Role.NEIGHBOUR);
+
+        setAuthContext(username, "NEIGHBOUR");
+
+        when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+
+        Post post = new Post();
+        post.setTimestamp(Timestamp.valueOf("2024-09-29 00:00:00"));
+        Page<Post> postPage = new PageImpl<>(List.of(post));
+
+        when(postRepository.findByDateEnd(endTimestamp, pageable)).thenReturn(postPage);
+
+        assertDoesNotThrow(() -> {
+            Page<Post> foundPosts = service.findByDateEnd(endTimestamp, pageable);
+
+            assertNotNull(foundPosts);
+            assertFalse(foundPosts.isEmpty());
+        });
 
         clearAuthContext();
     }
