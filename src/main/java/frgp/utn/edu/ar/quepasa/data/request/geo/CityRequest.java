@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.data.request.geo;
 
-public class CityUpdateRequest {
+public class CityRequest {
     private String name;
     private String subdivision;
 

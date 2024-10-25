@@ -19,6 +19,9 @@ public interface CityRepository extends JpaRepository<City, Long> {
     @Query("SELECT c FROM City c WHERE c.active")
     List<City> findAllActive();
 
+    @Query("SELECT c FROM City c WHERE c.id = :id AND c.active")
+    City findByIdActive(long id);
+
     @Query(value = "SELECT c.* FROM cities c INNER JOIN countries country ON country.iso3 = :iso3 WHERE c.active = true", nativeQuery = true)
     List<City> findByCountry(String iso3);
 

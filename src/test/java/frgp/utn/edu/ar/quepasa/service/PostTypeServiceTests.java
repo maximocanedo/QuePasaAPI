@@ -33,7 +33,7 @@ public class PostTypeServiceTests {
     private PostTypeServiceImpl postTypeService;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         this.postTypeRepository = Mockito.mock(PostTypeRepository.class);
 
         this.postTypeService = new PostTypeServiceImpl(postTypeRepository);
@@ -41,7 +41,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Buscar tipo de post por ID.")
-    void findById_TypeFound_ReturnsType() {
+    public void findById_TypeFound_ReturnsType() {
         Integer id = 1;
         PostType mockType = new PostType();
         mockType.setId(id);
@@ -55,7 +55,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Buscar tipo de post por ID, ID inexistente.")
-    void findById_TypeNotFound_ThrowsException() {
+    public void findById_TypeNotFound_ThrowsException() {
         Integer id = 1;
 
         when(postTypeRepository.findById(id)).thenReturn(Optional.empty());
@@ -69,7 +69,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Buscar tipos de post.")
-    void findTypes_TypesFound_ReturnsTypes() {
+    public void findTypes_TypesFound_ReturnsTypes() {
         Pageable pageable = PageRequest.of(0, 10);
 
         PostType type = new PostType();
@@ -85,7 +85,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Crear tipo de post.")
-    void createType_TypeNew_ReturnsType() {
+    public void createType_TypeNew_ReturnsType() {
         String description = "Recreativo";
 
         AtomicReference<PostType> createdPost = new AtomicReference<>();
@@ -99,7 +99,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Modificar tipo de post por ID.")
-    void updateType_TypeFound_GoodData() {
+    public void updateType_TypeFound_GoodData() {
         Integer id = 1;
         String description = "Recreativo";
 
@@ -119,7 +119,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Modificar tipo de post por ID, de un tipo no existente.")
-    void updateType_TypeNotFound_ThrowsException() {
+    public void updateType_TypeNotFound_ThrowsException() {
         Integer id = 1;
         String description = "Recreativo";
 
@@ -134,7 +134,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Eliminar tipo de post por ID.")
-    void deleteType_TypeFound_ReturnsNoContent() {
+    public void deleteType_TypeFound_ReturnsNoContent() {
         Integer id = 1;
 
         PostType mockType = new PostType();
@@ -149,7 +149,7 @@ public class PostTypeServiceTests {
 
     @Test
     @DisplayName("Eliminar tipo de post por ID, ID inexistente.")
-    void deleteType_TypeNotFound_ThrowsException() {
+    public void deleteType_TypeNotFound_ThrowsException() {
         Integer id = 1;
 
         when(postTypeRepository.findById(id)).thenReturn(Optional.empty());
