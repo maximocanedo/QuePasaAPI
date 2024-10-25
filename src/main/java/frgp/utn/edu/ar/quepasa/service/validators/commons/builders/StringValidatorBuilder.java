@@ -92,6 +92,7 @@ public abstract class StringValidatorBuilder<T extends StringValidatorBuilder<T>
     }
 
     public T matches(String regex, String feedback) {
+        this.isNotNull();
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(getValue());
         if(!matcher.matches())

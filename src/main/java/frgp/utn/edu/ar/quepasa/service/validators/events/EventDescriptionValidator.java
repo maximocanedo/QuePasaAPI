@@ -8,22 +8,6 @@ public class EventDescriptionValidator extends StringValidatorBuilder<EventDescr
         super(value, "description");
     }
 
-    @Deprecated(forRemoval = true)
-    public EventDescriptionValidator isNotNull() {
-        if (getValue() == null) {
-            super.invalidate("La descrip");
-        }
-        return this;
-    }
-
-    @Deprecated(forRemoval = true)
-    public EventDescriptionValidator isNotEmpty() {
-        if (getValue().isEmpty()) {
-            super.invalidate("Description of the event cannot be empty.");
-        }
-        return this;
-    }
-
     public EventDescriptionValidator meetsLimits() {
         return super.meetsLimits(
                 1,
@@ -32,4 +16,5 @@ public class EventDescriptionValidator extends StringValidatorBuilder<EventDescr
                 "La descripción no puede pasar de los quinientos caracteres. "
         );
     }
+
 }

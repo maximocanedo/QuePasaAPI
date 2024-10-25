@@ -12,11 +12,6 @@ public class NeighbourhoodValidator extends ValidatorBuilder<NeighbourhoodValida
         super(value, "neighbourhood");
     }
 
-    @Deprecated(forRemoval = true)
-    public NeighbourhoodValidator(Long id, NeighbourhoodRepository repository) {
-        super(repository.findById(id).orElseThrow(), "neighbourhood");
-    }
-
     public NeighbourhoodValidator isActive(NeighbourhoodRepository repository) {
         Optional<Neighbourhood> optional = repository.findById(getValue().getId());
         if(optional.isPresent()) {

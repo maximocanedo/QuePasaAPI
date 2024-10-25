@@ -111,7 +111,10 @@ public class PostServiceImpl implements PostService {
                 .build();
         post.setSubtype(subtype);
         post.setDescription(newPost.getDescription());
-        var neighbourhood = new NeighbourhoodValidator(newPost.getNeighbourhood(), neighbourhoodRepository)
+        var n = neighbourhoodRepository
+                .findActiveNeighbourhoodById(newPost.getNeighbourhood())
+                .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
+        var neighbourhood = new NeighbourhoodValidator(n)
                 .isActive(neighbourhoodRepository)
                 .build();
         post.setNeighbourhood(neighbourhood);
@@ -137,7 +140,10 @@ public class PostServiceImpl implements PostService {
         }
         if(newPost.getDescription() != null) post.setDescription(newPost.getDescription());
         if(newPost.getNeighbourhood() != null) {
-            var neighbourhood = new NeighbourhoodValidator(newPost.getNeighbourhood(), neighbourhoodRepository)
+            var n = neighbourhoodRepository
+                    .findActiveNeighbourhoodById(newPost.getNeighbourhood())
+                    .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
+            var neighbourhood = new NeighbourhoodValidator(n)
                     .isActive(neighbourhoodRepository)
                     .build();
             post.setNeighbourhood(neighbourhood);

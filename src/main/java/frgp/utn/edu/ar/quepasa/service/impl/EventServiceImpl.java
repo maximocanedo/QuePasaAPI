@@ -84,10 +84,10 @@ public class EventServiceImpl implements EventService {
     public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
 
-        var title = new EventTitleValidator(event.getTitle()).isNotNull().isNotEmpty().meetsLimits().build();
+        var title = new EventTitleValidator(event.getTitle()).meetsLimits().build();
         newEvent.setTitle(title);
 
-        var description = new EventDescriptionValidator(event.getDescription()).isNotNull().isNotEmpty().meetsLimits().build();
+        var description = new EventDescriptionValidator(event.getDescription()).meetsLimits().build();
         newEvent.setDescription(description);
 
         var address = new EventAddressValidator(event.getAddress()).meetsLimits().build();
@@ -122,9 +122,9 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).isNotEmpty().meetsLimits().build());
+        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
-        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).isNotEmpty().meetsLimits().build());
+        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).meetsLimits().build());
 
         if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidator(newEvent.getAddress()).meetsLimits().build());
 
