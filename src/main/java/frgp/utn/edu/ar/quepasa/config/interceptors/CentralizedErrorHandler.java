@@ -1,6 +1,5 @@
 package frgp.utn.edu.ar.quepasa.config.interceptors;
 
-import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
@@ -25,12 +24,12 @@ public class CentralizedErrorHandler {
     }
 
     @ExceptionHandler(Fail.class)
-    public ResponseEntity<Fail> handleNotFoundException(Fail ex) {
+    public ResponseEntity<Fail> handleFails(Fail ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex);
     }
 
     @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleNotFoundException(ValidationError ex) {
+    public ResponseEntity<ValidationError> handleValidationError(ValidationError ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
     }
 
@@ -68,6 +67,12 @@ public class CentralizedErrorHandler {
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<Fail> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         Fail fail = new Fail("Imagen o documento no encontrado. ", HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(fail.getStatus()).body(fail);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Fail> handleGeneralException(Exception e) {
+        Fail fail = new Fail("Ocurrió un error inesperado.", HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(fail.getStatus()).body(fail);
     }
 

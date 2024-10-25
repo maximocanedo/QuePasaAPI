@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
-public interface TrendRepository extends CrudRepository<Object, Long> {
+public interface TrendRepository {
 
     @Query(value = "CALL contar_tendencias_tags_por_barrio(:barrio, :fechaBase)", nativeQuery = true)
     List<TrendProjection> getTendencias(@Param("barrio") int barrio, @Param("fechaBase") Timestamp fechaBase);
