@@ -14,7 +14,7 @@ import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.validators.EventValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.PostValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.PostValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.comments.CommentContentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = postRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Post not found", HttpStatus.NOT_FOUND);
-        var post = new PostValidatorBuilder(f.get())
+        var post = new PostValidator(f.get())
                 .canAccess(current)
                 .build();
         var comment = new PostComment();
@@ -130,7 +130,7 @@ public class CommentServiceImpl implements CommentService {
         var current = authenticationService.getCurrentUserOrDie();
         var f = postRepository.findById(id);
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Post not found", HttpStatus.NOT_FOUND);
-        new PostValidatorBuilder(f.get())
+        new PostValidator(f.get())
                 .canAccess(current)
                 .build();
         return postCommentRepository.list(id, pageable);

@@ -4,13 +4,13 @@ import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 
-public class PostValidatorBuilder extends ValidatorBuilder<Post> {
+public class PostValidator extends ValidatorBuilder<PostValidator, Post> {
 
-    public PostValidatorBuilder(Post value) {
+    public PostValidator(Post value) {
         super(value, "post");
     }
 
-    public PostValidatorBuilder canAccess(User user) {
+    public PostValidator canAccess(User user) {
         var authorsNeighbourhood = getValue().getOwner().getNeighbourhood();
         var authorsCity = authorsNeighbourhood.getCity();
         var authorsState = authorsCity.getSubdivision();
