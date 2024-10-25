@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -67,6 +68,12 @@ public class CentralizedErrorHandler {
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<Fail> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         Fail fail = new Fail("Imagen o documento no encontrado. ", HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(fail.getStatus()).body(fail);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Fail> handleBadCredentialsError(AuthenticationCredentialsNotFoundException e) {
+        Fail fail = new Fail("Credenciales incorrectas. ", HttpStatus.UNAUTHORIZED);
         return ResponseEntity.status(fail.getStatus()).body(fail);
     }
 

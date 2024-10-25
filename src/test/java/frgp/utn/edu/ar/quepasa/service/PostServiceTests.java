@@ -560,7 +560,7 @@ public class PostServiceTests {
 
         PostCreateRequest request = mockPostCreate(username, subId, neighId);
 
-        assertThrows(NoSuchElementException.class, () -> service.create(request, mockUser));
+        assertThrows(Fail.class, () -> service.create(request, mockUser));
 
         clearAuthContext();
     }
@@ -672,7 +672,7 @@ public class PostServiceTests {
 
         var request = mockPostEdit(null, neighId);
 
-        assertThrows(NoSuchElementException.class, () -> service.update(id, request, mockUser));
+        assertThrows(Fail.class, () -> service.update(id, request, mockUser));
 
         clearAuthContext();
     }

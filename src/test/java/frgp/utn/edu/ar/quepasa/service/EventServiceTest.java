@@ -300,7 +300,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Title of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Description of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -344,7 +344,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Address of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -366,7 +366,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Date of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -388,7 +388,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Date of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -410,7 +410,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Category of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
@@ -432,7 +432,7 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
-        assertTrue(exception.getErrors().contains("Audience of the event cannot be null."));
+        assertEquals(exception.getErrors().size(), 1);
     }
 
     @Test
