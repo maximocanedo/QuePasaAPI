@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 
 public interface PostService {
     Page<Post> search(String q, Pageable pageable, boolean active);
@@ -24,6 +25,8 @@ public interface PostService {
     Page<Post> findByType(Integer type, Pageable pageable);
 
     Page<Post> findBySubtype(Integer subtype, Pageable pageable);
+
+    Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable);
 
     Post create(PostCreateRequest newPost, User originalPoster);
 

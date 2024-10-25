@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -91,6 +92,19 @@ public class PostController {
     public ResponseEntity<?> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findBySubtype(id, pageable));
+    }
+
+    @GetMapping("/date/{start}/{end}")
+    public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        try {
+            Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
+            Timestamp endTimestamp = Timestamp.valueOf(end + " 23:59:59");
+
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(postService.findByDateRange(startTimestamp, endTimestamp, pageable));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid date format");
+        }
     }
 
     @GetMapping("/me")

@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 
 
 @Service("postService")
@@ -131,6 +132,14 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new Fail("Subtype not found", HttpStatus.NOT_FOUND));
         return postRepository
                 .findBySubtype(postSubtype.getId(), pageable)
+                .map(voteService::populate)
+                .map(commentService::populate);
+    }
+
+    @Override
+    public Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable) {
+        return postRepository
+                .findByDateRange(start, end, pageable)
                 .map(voteService::populate)
                 .map(commentService::populate);
     }

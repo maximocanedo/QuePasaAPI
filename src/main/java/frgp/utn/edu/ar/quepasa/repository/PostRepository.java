@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p WHERE (p.title LIKE %:query% OR p.description LIKE %:query% OR p.tags LIKE %:query%) AND p.active = :active")
@@ -27,4 +29,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE p.subtype.id = :subtype AND p.active")
     Page<Post> findBySubtype(Integer subtype, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.timestamp BETWEEN :start AND :end")
+    Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable);
 }
