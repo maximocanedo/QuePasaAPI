@@ -84,7 +84,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) {
-        return eventRepository.findByOwnerAndActive(owner, pageable)
+        return eventRepository.findByOwnerAndActive(owner, true, pageable)
                 .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
                 .map(commentService::populate)
                 .map(voteService::populate);
