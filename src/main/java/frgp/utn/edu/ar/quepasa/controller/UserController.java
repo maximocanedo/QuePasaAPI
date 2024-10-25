@@ -135,25 +135,4 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
     }
 
-    /// EXCEPCIONES
-
-    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<ResponseError> handleAuthError(AuthenticationCredentialsNotFoundException e) {
-        return new ResponseEntity<>(new ResponseError(e), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ResponseError> handleMessagingError(MessagingException e) {
-        return new ResponseEntity<>(new ResponseError("Hubo un error al intentar enviar un correo electrónico. "), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(Fail.class)
-    public ResponseEntity<ResponseError> handleFail(Fail e) {
-        return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
-    }
-
-    @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-    }
 }

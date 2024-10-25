@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Deprecated
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping("/api/test")
 public class AuthorizationController {
@@ -51,8 +51,4 @@ public class AuthorizationController {
         return ResponseEntity.ok("¡Hola, " + getCurrentUsername() + "!");
     }
 
-    @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-    }
 }

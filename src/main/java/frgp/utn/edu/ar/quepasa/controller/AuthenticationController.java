@@ -54,14 +54,5 @@ public class AuthenticationController {
         return ResponseEntity.ok(singleUseRequestService.passwordResetAttempt(attempt));
     }
 
-    @ExceptionHandler(Fail.class)
-    public ResponseEntity<ResponseError> handleFail(Fail e) {
-        return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
-    }
-
-    @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-    }
 }
 

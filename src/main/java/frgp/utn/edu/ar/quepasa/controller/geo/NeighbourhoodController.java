@@ -65,4 +65,5 @@ public class NeighbourhoodController {
         neighbourhoodService.deleteNeighbourhood(id);
         return ResponseEntity.noContent().build();
     }
+
 }

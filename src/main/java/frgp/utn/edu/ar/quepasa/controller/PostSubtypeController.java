@@ -72,19 +72,4 @@ public class PostSubtypeController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-    @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<NoSuchElementException> handleNoSuchElement(NoSuchElementException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex);
-    }
-
-    @ExceptionHandler(Fail.class)
-    public ResponseEntity<String> handleFail(Fail ex) {
-        return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
-    }
-
 }

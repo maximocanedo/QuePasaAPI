@@ -70,19 +70,5 @@ public class DocumentController {
                 .body(res.getResource());
     }
 
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(Fail.class)
-    public ResponseEntity<ResponseError> handleFail(Fail e) {
-        return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
-    }
-
-    @ExceptionHandler(ValidationError.class)
-    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-    }
 
 }

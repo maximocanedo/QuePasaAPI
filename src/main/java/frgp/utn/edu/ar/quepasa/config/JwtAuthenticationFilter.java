@@ -1,5 +1,7 @@
 package frgp.utn.edu.ar.quepasa.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,15 +23,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserService userService, ObjectMapper objectMapper) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -51,8 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails ud = userService.loadUserByUsername(username);
                 if(jwtService.isTokenPartiallyValid(jwt, ud)) {
                     if(!request.getRequestURI().endsWith("/login/totp")){
-
+                        var fail = new Fail("Usted está parcialmente autenticado. Debe ingresar el código TOTP en la URL /login/totp. ");
                         response.setStatus(HttpStatus.FORBIDDEN.value());
+                        response.setContentType("application/json");
+                        response.getWriter().write(objectMapper.writeValueAsString(fail));
                         return;
                     }
                 }
@@ -63,11 +70,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     context.setAuthentication(authToken);
                     SecurityContextHolder.setContext(context);
+                } else {
+                    var fail = new Fail("El token recibido es inválido. Utilice otro. ");
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.setContentType("application/json");
+                    response.getWriter().write(objectMapper.writeValueAsString(fail));
+                    return;
                 }
             }
         }
         catch(ExpiredJwtException e) {
-            response.setStatus(400);
+            var fail = new Fail("El token recibido caducó. Utilice otro. ");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write(objectMapper.writeValueAsString(fail));
+            return;
         }
         filterChain.doFilter(request, response);
     }
