@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 import java.nio.file.AccessDeniedException;
 
 public interface PostService {
-    Page<Post> listPost(Pageable pageable);
+    Page<Post> search(String q, Pageable pageable, boolean active);
+
+    Page<Post> findAll(Pageable pageable, boolean activeOnly);
 
     Post findById(Integer id);
 

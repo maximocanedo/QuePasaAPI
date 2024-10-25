@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,15 +47,20 @@ public class PostController {
         return ResponseEntity.ok(postService.create(post, me));
     }
 
-    /**
-     * <b>Endpoint TEMPORAL. </b>
-     * <p>Se reemplazará por un algoritmo más eficaz, detallado en la Issue #98.</p>
-     */
-    @Deprecated
     @GetMapping("/all")
-    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(postService.listPost(pageable));
+        return ResponseEntity.ok(postService.findAll(pageable, activeOnly));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="name,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if(sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(postService.search(q, pageable, active));
     }
 
     @GetMapping("/{id}")

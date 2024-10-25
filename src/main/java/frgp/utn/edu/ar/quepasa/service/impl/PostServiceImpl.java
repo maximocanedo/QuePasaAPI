@@ -58,7 +58,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> listPost(Pageable pageable) {
+    public Page<Post> search(String q, Pageable pageable, boolean active) {
+        return postRepository
+                .search(q, pageable, active)
+                .map(voteService::populate)
+                .map(commentService::populate);
+    }
+
+    @Override
+    public Page<Post> findAll(Pageable pageable, boolean activeOnly) {
+        if(activeOnly) {
+            return postRepository
+                    .findAllActive(pageable)
+                    .map(voteService::populate)
+                    .map(commentService::populate);
+        }
         return postRepository
                 .findAll(pageable)
                 .map(voteService::populate)
@@ -71,9 +85,7 @@ public class PostServiceImpl implements PostService {
             voteService.populate(
                 postRepository
                     .findById(id)
-                    .orElseThrow(
-                        () -> new Fail("Post not found", HttpStatus.NOT_FOUND)
-                    )
+                    .orElseThrow(() -> new Fail("Post not found", HttpStatus.NOT_FOUND))
             )
         );
     }
