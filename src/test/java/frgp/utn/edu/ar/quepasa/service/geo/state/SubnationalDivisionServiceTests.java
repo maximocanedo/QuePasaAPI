@@ -2,13 +2,13 @@ package frgp.utn.edu.ar.quepasa.service.geo.state;
 
 import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.SubnationalDivisionRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.impl.SubnationalDivisionServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -108,7 +107,7 @@ public class SubnationalDivisionServiceTests {
         upd.setCountry(r.getCountry());
         upd.setDenomination(r.getDenomination());
         doReturn(upd).when(repository).save(ArgumentMatchers.any(SubnationalDivision.class));
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             service.update(r, soriano().getIso3());
         });
     }
@@ -169,17 +168,17 @@ public class SubnationalDivisionServiceTests {
         when(repository.existsByIso3("AR-URU")).thenReturn(false);
         when(countries.existsByIso3("ARG")).thenReturn(true);
         doReturn(file).when(repository).save(file);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
            var saved = service.save(file);
         });
 
         file.setIso3("ARU");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
         file.setIso3(null);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
     }
@@ -198,17 +197,17 @@ public class SubnationalDivisionServiceTests {
         when(repository.existsByIso3("AR-URU")).thenReturn(false);
         when(countries.existsByIso3("ARG")).thenReturn(true);
         doReturn(file).when(repository).save(file);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
         file.setLabel("a");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
         file.setLabel(null);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
@@ -228,17 +227,17 @@ public class SubnationalDivisionServiceTests {
         when(repository.existsByIso3("AR-URU")).thenReturn(false);
         when(countries.existsByIso3("UYU")).thenReturn(false);
         doReturn(file).when(repository).save(file);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
         file.setLabel("a");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
 
         file.setLabel(null);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             var saved = service.save(file);
         });
     }

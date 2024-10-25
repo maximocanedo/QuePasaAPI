@@ -2,14 +2,11 @@ package frgp.utn.edu.ar.quepasa.controller.media;
 
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawDocument;
-import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
-import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.service.media.DocumentService;
-import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
@@ -83,8 +80,8 @@ public class DocumentController {
         return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
     }
 
-    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
-    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+    @ExceptionHandler(ValidationError.class)
+    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 

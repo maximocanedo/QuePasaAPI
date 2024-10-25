@@ -15,6 +15,7 @@ import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.validators.events.*;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.AudienceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -116,25 +117,25 @@ public class EventServiceImpl implements EventService {
     public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
 
-        var title = new EventTitleValidatorBuilder(event.getTitle()).isNotNull().isNotEmpty().isNotTooLong().build();
+        var title = new EventTitleValidator(event.getTitle()).meetsLimits().build();
         newEvent.setTitle(title);
 
-        var description = new EventDescriptionValidatorBuilder(event.getDescription()).isNotNull().isNotEmpty().isNotTooLong().build();
+        var description = new EventDescriptionValidator(event.getDescription()).meetsLimits().build();
         newEvent.setDescription(description);
 
-        var address = new EventAddressValidatorBuilder(event.getAddress()).isNotNull().isNotEmpty().isNotTooLong().build();
+        var address = new EventAddressValidator(event.getAddress()).meetsLimits().build();
         newEvent.setAddress(address);
 
-        var startDate = new EventDateValidatorBuilder(event.getStartDate()).isNotNull().isNotPast().build();
+        var startDate = new EventDateValidator(event.getStartDate()).isNotNull().isNotPast().build();
         newEvent.setStart(startDate);
 
-        var endDate = new EventDateValidatorBuilder(event.getEndDate()).isNotNull().isNotPast().isNotBefore(startDate).build();
+        var endDate = new EventDateValidator(event.getEndDate()).isNotNull().isNotPast().isAfterStartDate(startDate).build();
         newEvent.setEnd(endDate);
 
-        var category = new EventCategoryValidatorBuilder(event.getCategory()).isNotNull().isNotInvalid().build();
+        var category = new EventCategoryValidator(event.getCategory()).isNotNull().build();
         newEvent.setCategory(category);
 
-        var audience = new EventAudienceValidatorBuilder(event.getAudience()).isNotNull().isNotInvalid().build();
+        var audience = new AudienceValidator(event.getAudience()).isNotNull().build();
         newEvent.setAudience(audience);
 
         newEvent.setActive(true);
@@ -162,19 +163,19 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidatorBuilder(newEvent.getTitle()).isNotEmpty().isNotTooLong().build());
+        if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
-        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidatorBuilder(newEvent.getDescription()).isNotEmpty().isNotTooLong().build());
+        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).meetsLimits().build());
 
-        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidatorBuilder(newEvent.getAddress()).isNotEmpty().isNotTooLong().build());
+        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidator(newEvent.getAddress()).meetsLimits().build());
 
-        if (newEvent.getStartDate() != null) event.setStart(new EventDateValidatorBuilder(newEvent.getStartDate()).isNotPast().build());
+        if (newEvent.getStartDate() != null) event.setStart(new EventDateValidator(newEvent.getStartDate()).isNotPast().build());
 
-        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidatorBuilder(newEvent.getEndDate()).isNotPast().isNotBefore(event.getStart()).build());
+        if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidator(newEvent.getEndDate()).isNotPast().isAfterStartDate(event.getStart()).build());
 
-        if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidatorBuilder(newEvent.getCategory()).isNotInvalid().build());
+        if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidator(newEvent.getCategory()).build());
 
-        if (newEvent.getAudience() != null) event.setAudience(new EventAudienceValidatorBuilder(newEvent.getAudience()).isNotInvalid().build());
+        if (newEvent.getAudience() != null) event.setAudience(new AudienceValidator(newEvent.getAudience()).build());
 
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));

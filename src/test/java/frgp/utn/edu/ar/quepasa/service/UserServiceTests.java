@@ -2,6 +2,7 @@ package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
@@ -9,25 +10,19 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -154,7 +149,7 @@ public class UserServiceTests {
         var request = new UserPatchEditRequest();
         request.setName("Dulce d e l3che%%$");
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -173,7 +168,7 @@ public class UserServiceTests {
         var request = new UserPatchEditRequest();
         request.setName("Na na na na n4 b4tm4#");
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -195,7 +190,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -219,7 +214,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -239,7 +234,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -263,7 +258,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -289,7 +284,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -311,7 +306,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -340,7 +335,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update(request);
         });
     }
@@ -367,7 +362,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -387,7 +382,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -414,7 +409,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             userService.update("testUser", request);
         });
     }

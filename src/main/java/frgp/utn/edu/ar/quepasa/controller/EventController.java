@@ -5,12 +5,12 @@ import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -143,8 +143,8 @@ public class EventController {
         return new ResponseEntity<>(new ResponseError("Invalid request body." + e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
-    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+    @ExceptionHandler(ValidationError.class)
+    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 }

@@ -24,4 +24,5 @@ public class TrendService {
     public List<Trend> getTendencias(int barrio, Timestamp fechaBase) {
         return trendRepositoryImplDeprecated.getTendencias(barrio, fechaBase);
     }
+    
 }

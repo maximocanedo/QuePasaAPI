@@ -4,13 +4,11 @@ import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.model.Post;
-import frgp.utn.edu.ar.quepasa.model.media.Document;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
@@ -18,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -109,8 +106,8 @@ public class PictureController {
         return ResponseEntity.status(e.getStatus()).body(new ResponseError(e.getMessage()));
     }
 
-    @ExceptionHandler(ValidatorBuilder.ValidationError.class)
-    public ResponseEntity<ValidatorBuilder.ValidationError> handleValidationError(ValidatorBuilder.ValidationError e) {
+    @ExceptionHandler(ValidationError.class)
+    public ResponseEntity<ValidationError> handleValidationError(ValidationError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 

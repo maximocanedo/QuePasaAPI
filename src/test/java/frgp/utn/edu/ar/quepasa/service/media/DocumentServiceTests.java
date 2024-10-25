@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
@@ -8,9 +9,8 @@ import frgp.utn.edu.ar.quepasa.repository.media.DocumentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.DocumentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator.MB;
+import static frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator.MB;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -139,7 +136,7 @@ public class DocumentServiceTests {
         when(file.isEmpty()).thenReturn(true);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> documentService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> documentService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -159,7 +156,7 @@ public class DocumentServiceTests {
         when(file.getContentType()).thenReturn(null);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> documentService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> documentService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -179,7 +176,7 @@ public class DocumentServiceTests {
         when(file.getContentType()).thenReturn("text/html");
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> documentService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> documentService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -199,7 +196,7 @@ public class DocumentServiceTests {
         when(file.getSize()).thenReturn(100 * MB);
         when(validator.build()).thenReturn(file);
 
-        var expected = assertThrows(ValidatorBuilder.ValidationError.class, () -> documentService.upload(file, "Test description"));
+        var expected = assertThrows(ValidationError.class, () -> documentService.upload(file, "Test description"));
         assertEquals(expected.getField(), "file");
         assertFalse(expected.getErrors().isEmpty());
 
@@ -241,7 +238,7 @@ public class DocumentServiceTests {
         var documentId = UUID.randomUUID();
         when(documentRepository.findById(documentId)).thenReturn(Optional.of(mockDocument));
 
-        OwnerValidatorBuilder vb = Mockito.mock(OwnerValidatorBuilder.class);
+        OwnerValidator vb = Mockito.mock(OwnerValidator.class);
         when(vb.isOwner()).thenReturn(vb);
         when(vb.isAdmin()).thenReturn(vb);
         when(ownerService.of(any(Ownable.class))).thenReturn(vb);

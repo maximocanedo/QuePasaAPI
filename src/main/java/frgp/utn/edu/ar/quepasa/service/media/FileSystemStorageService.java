@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.service.validators.MultipartFileValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
