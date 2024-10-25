@@ -23,6 +23,14 @@ Authorization: Bearer {{token}}
 GET {{base}}/api/cities/1
 Authorization: Bearer {{token}}
 
+### Consultar ciudades segun pais
+GET {{base}}/api/cities/country/ARG
+Authorization: Bearer {{token}}
+
+### Consultar ciudades segun division subnacional
+GET {{base}}/api/cities/subdivision/AR-C
+Authorization: Bearer {{token}}
+
 ### Editar ciudad
 PATCH {{base}}/api/cities/1
 Authorization: Bearer {{token}}
