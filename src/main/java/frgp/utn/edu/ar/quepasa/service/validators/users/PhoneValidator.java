@@ -5,15 +5,15 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
-public class PhoneValidatorBuilder extends ValidatorBuilder<String> {
+public class PhoneValidator extends ValidatorBuilder<PhoneValidator, String> {
 
     private final PhoneNumberUtil instance = PhoneNumberUtil.getInstance();
 
-    public PhoneValidatorBuilder(String value) {
+    public PhoneValidator(String value) {
         super(value, "phone");
     }
 
-    public PhoneValidatorBuilder isValidPhoneNumber() {
+    public PhoneValidator isValidPhoneNumber() {
         PhoneNumber parsedPhoneNumber;
         try {
             parsedPhoneNumber = instance.parse(getValue(), "AR");
@@ -26,7 +26,7 @@ public class PhoneValidatorBuilder extends ValidatorBuilder<String> {
         return this;
     }
 
-    public PhoneValidatorBuilder format() {
+    public PhoneValidator format() {
         PhoneNumber parsedPhoneNumber = new PhoneNumber();
         try {
             parsedPhoneNumber = instance.parse(getValue(), "AR");

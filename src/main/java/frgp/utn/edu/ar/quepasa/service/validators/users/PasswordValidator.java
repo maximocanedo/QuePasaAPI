@@ -2,16 +2,16 @@ package frgp.utn.edu.ar.quepasa.service.validators.users;
 
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
-public class PasswordValidatorBuilder extends ValidatorBuilder<String> {
+public class PasswordValidator extends ValidatorBuilder<PasswordValidator, String> {
 
-    public PasswordValidatorBuilder(String value) {
+    public PasswordValidator(String value) {
         super(value, "password");
     }
 
     /**
      * Valida que tenga al menos ocho caracteres.
      */
-    public PasswordValidatorBuilder lengthIsEightCharactersOrMore() {
+    public PasswordValidator lengthIsEightCharactersOrMore() {
         if (getValue() == null || getValue().length() <= 8) {
             super.invalidate("Debe tener al menos ocho caracteres.");
         }
@@ -21,7 +21,7 @@ public class PasswordValidatorBuilder extends ValidatorBuilder<String> {
     /**
      * Valida que tenga al menos una letra mayúscula.
      */
-    public PasswordValidatorBuilder hasOneUpperCaseLetter() {
+    public PasswordValidator hasOneUpperCaseLetter() {
         boolean hasOneUpperCaseLetter = false;
         for(char c: getValue().toCharArray()) {
             if(Character.isUpperCase(c)) hasOneUpperCaseLetter = true;
@@ -34,7 +34,7 @@ public class PasswordValidatorBuilder extends ValidatorBuilder<String> {
     /**
      * Valida que tenga al menos una letra minúscula
      */
-    public PasswordValidatorBuilder hasOneLowerCaseLetter() {
+    public PasswordValidator hasOneLowerCaseLetter() {
         boolean hasOneLowerCaseLetter = false;
         for(char c: getValue().toCharArray()) {
             if(Character.isLowerCase(c)) hasOneLowerCaseLetter = true;
@@ -47,7 +47,7 @@ public class PasswordValidatorBuilder extends ValidatorBuilder<String> {
     /**
      * Valida que tenga al menos un dígito.
      */
-    public PasswordValidatorBuilder hasOneDigit() {
+    public PasswordValidator hasOneDigit() {
         boolean hasOneDigit = false;
         for(char c: getValue().toCharArray()) {
             if(Character.isDigit(c)) hasOneDigit = true;
@@ -60,7 +60,7 @@ public class PasswordValidatorBuilder extends ValidatorBuilder<String> {
     /**
      * Valida que tenga al menos un caracter especial.
      */
-    public PasswordValidatorBuilder hasOneSpecialCharacter() {
+    public PasswordValidator hasOneSpecialCharacter() {
         boolean hasOneSpecialCharacter = false;
         for(char c: getValue().toCharArray()) {
             if(!Character.isLetterOrDigit(c)) hasOneSpecialCharacter = true;

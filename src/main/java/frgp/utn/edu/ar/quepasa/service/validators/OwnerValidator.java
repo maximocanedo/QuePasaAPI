@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.function.Consumer;
 
-public class OwnerValidatorBuilder {
+public class OwnerValidator {
 
     private final Ownable object;
     @Deprecated(forRemoval = true)
@@ -22,9 +22,9 @@ public class OwnerValidatorBuilder {
     private String message;
     private User current = null;
 
-    public interface OwnerValidatorConsumer extends Consumer<OwnerValidatorBuilder> { }
+    public interface OwnerValidatorConsumer extends Consumer<OwnerValidator> { }
 
-    public OwnerValidatorBuilder(@NotNull Ownable object, @NotNull User current) {
+    public OwnerValidator(@NotNull Ownable object, @NotNull User current) {
         this.object = object;
         this.current = current;
         this.result = false;
@@ -32,8 +32,8 @@ public class OwnerValidatorBuilder {
         this.message = "";
     }
 
-    public static OwnerValidatorBuilder create(Ownable object, User currentUser) {
-        return new OwnerValidatorBuilder(object, currentUser);
+    public static OwnerValidator create(Ownable object, User currentUser) {
+        return new OwnerValidator(object, currentUser);
     }
 
     private User getCurrentUser() {
@@ -71,7 +71,7 @@ public class OwnerValidatorBuilder {
         return false;
     }
 
-    public OwnerValidatorBuilder and(OwnerValidatorConsumer ...expressions) {
+    public OwnerValidator and(OwnerValidatorConsumer ...expressions) {
         BooleanBuilder tempBuilder = new BooleanBuilder(true);
 
         for (OwnerValidatorConsumer consumer : expressions) {
@@ -85,50 +85,50 @@ public class OwnerValidatorBuilder {
         return this;
     }
 
-    public OwnerValidatorBuilder evaluate(String message) {
+    public OwnerValidator evaluate(String message) {
         if(!builder.build()) this.message += message;
         return this;
     }
 
-    public OwnerValidatorBuilder isOwner() {
+    public OwnerValidator isOwner() {
         builder.or(object.getOwner().getUsername().equals(getCurrentUser().getUsername()));
         return evaluate("No es dueño del registro. ");
     }
 
-    public OwnerValidatorBuilder isAdmin() {
+    public OwnerValidator isAdmin() {
         var b = hasRole(Role.ADMIN);
         builder.or(b);
         return evaluate("No es administrador. ");
     }
 
-    public OwnerValidatorBuilder isModerator() {
+    public OwnerValidator isModerator() {
         builder.or(hasRole(Role.MOD));
         return evaluate("No es moderador. ");
     }
 
-    public OwnerValidatorBuilder isGovernment() {
+    public OwnerValidator isGovernment() {
         builder.or(hasRole(Role.GOVT));
         return evaluate("No es entidad gubernamental. ");
     }
 
-    public OwnerValidatorBuilder isOrganization() {
+    public OwnerValidator isOrganization() {
         builder.or(hasRole(Role.ORGANIZATION));
         return evaluate("No es organización. ");
     }
 
-    public OwnerValidatorBuilder isContributor() {
+    public OwnerValidator isContributor() {
         builder.or(hasRole(Role.CONTRIBUTOR));
         return evaluate("No es contribuidor. ");
     }
 
 
-    public OwnerValidatorBuilder isNeighbour() {
+    public OwnerValidator isNeighbour() {
         builder.or(hasRole(Role.NEIGHBOUR));
         return evaluate("No es vecino autenticado. ");
     }
 
 
-    public OwnerValidatorBuilder isUser() {
+    public OwnerValidator isUser() {
         builder.or(hasRole(Role.USER));
         return evaluate("No es usuario. ");
     }

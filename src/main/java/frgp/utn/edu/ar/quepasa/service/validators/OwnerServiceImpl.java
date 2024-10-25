@@ -18,9 +18,9 @@ public class OwnerServiceImpl implements frgp.utn.edu.ar.quepasa.service.OwnerSe
     }
 
     @Override
-    public OwnerValidatorBuilder of(Ownable object) {
+    public OwnerValidator of(Ownable object) {
         User user = authenticationService.getCurrentUserOrDie();
-        return OwnerValidatorBuilder.create(object, user);
+        return OwnerValidator.create(object, user);
     }
 
 }

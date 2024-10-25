@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.validators;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class MultipartFileValidator extends ValidatorBuilder<MultipartFile> {
+public class MultipartFileValidator extends ValidatorBuilder<MultipartFileValidator, MultipartFile> {
 
     public static final long KB = 1024L;
     public static final long MB = 1024L * KB;

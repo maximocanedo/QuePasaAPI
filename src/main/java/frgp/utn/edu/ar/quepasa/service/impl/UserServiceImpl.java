@@ -14,9 +14,9 @@ import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.pictures.PictureObjectValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.pictures.PictureValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidator;
 
 import java.util.List;
 import java.util.UUID;
@@ -106,20 +106,20 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
     @Override
     public User update(@NotNull UserPatchEditRequest data, @NotNull User user) {
         if(data.getName() != null) {
-            var name = new NameValidatorBuilder(data.getName())
+            var name = new NameValidator(data.getName())
                     .validateCompoundNames()
                     .build();
             user.setName(name);
         }
         if(data.getAddress() != null) user.setAddress(data.getAddress());
         if(data.getNeighbourhood() != null) {
-            var neighbourhood = new NeighbourhoodObjectValidatorBuilder(data.getNeighbourhood())
+            var neighbourhood = new NeighbourhoodValidator(data.getNeighbourhood())
                     .isActive(neighbourhoodRepository)
                     .build();
             user.setNeighbourhood(neighbourhood);
         }
         if(data.getPicture() != null) {
-            var picture = new PictureObjectValidatorBuilder(data.getPicture())
+            var picture = new PictureValidator(data.getPicture())
                     .isActive(pictureRepository)
                     .isOwner(pictureRepository, user, userRepository)
                     .build();

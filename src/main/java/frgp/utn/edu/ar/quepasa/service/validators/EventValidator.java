@@ -1,17 +1,16 @@
 package frgp.utn.edu.ar.quepasa.service.validators;
 
 import frgp.utn.edu.ar.quepasa.model.Event;
-import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 
-public class EventValidatorBuilder extends ValidatorBuilder<Event> {
+public class EventValidator extends ValidatorBuilder<EventValidator, Event> {
 
-    public EventValidatorBuilder(Event value) {
+    public EventValidator(Event value) {
         super(value, "event");
     }
 
-    public EventValidatorBuilder canAccess(User user) {
+    public EventValidator canAccess(User user) {
         var authorsNeighbourhood = getValue().getOwner().getNeighbourhood();
         var authorsCity = authorsNeighbourhood.getCity();
         var authorsState = authorsCity.getSubdivision();

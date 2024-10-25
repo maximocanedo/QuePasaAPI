@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -18,7 +19,6 @@ import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.impl.EventServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -299,8 +299,8 @@ public class EventServiceTest {
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -321,8 +321,8 @@ public class EventServiceTest {
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -343,8 +343,8 @@ public class EventServiceTest {
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -365,8 +365,8 @@ public class EventServiceTest {
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -387,8 +387,8 @@ public class EventServiceTest {
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -409,8 +409,8 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setAudience(Audience.PUBLIC);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 
@@ -431,8 +431,8 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
 
-        ValidatorBuilder.ValidationError exception = assertThrows(
-                ValidatorBuilder.ValidationError.class,
+        ValidationError exception = assertThrows(
+                ValidationError.class,
                 () -> eventService.create(eventPostRequest, owner)
         );
 

@@ -14,8 +14,8 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import frgp.utn.edu.ar.quepasa.service.validators.PostSubtypeObjectValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodObjectValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.PostSubtypeValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.geo.neighbours.NeighbourhoodValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -106,12 +106,12 @@ public class PostServiceImpl implements PostService {
         post.setOwner(originalPoster);
         post.setAudience((newPost.getAudience()));
         post.setTitle(newPost.getTitle());
-        var subtype = new PostSubtypeObjectValidatorBuilder(newPost.getSubtype(), postSubtypeRepository)
+        var subtype = new PostSubtypeValidator(newPost.getSubtype(), postSubtypeRepository)
                 .isActive(postSubtypeRepository)
                 .build();
         post.setSubtype(subtype);
         post.setDescription(newPost.getDescription());
-        var neighbourhood = new NeighbourhoodObjectValidatorBuilder(newPost.getNeighbourhood(), neighbourhoodRepository)
+        var neighbourhood = new NeighbourhoodValidator(newPost.getNeighbourhood(), neighbourhoodRepository)
                 .isActive(neighbourhoodRepository)
                 .build();
         post.setNeighbourhood(neighbourhood);
@@ -130,14 +130,14 @@ public class PostServiceImpl implements PostService {
                 .orElseFail();
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
-            var subtype = new PostSubtypeObjectValidatorBuilder(newPost.getSubtype(), postSubtypeRepository)
+            var subtype = new PostSubtypeValidator(newPost.getSubtype(), postSubtypeRepository)
                     .isActive(postSubtypeRepository)
                     .build();
             post.setSubtype(subtype);
         }
         if(newPost.getDescription() != null) post.setDescription(newPost.getDescription());
         if(newPost.getNeighbourhood() != null) {
-            var neighbourhood = new NeighbourhoodObjectValidatorBuilder(newPost.getNeighbourhood(), neighbourhoodRepository)
+            var neighbourhood = new NeighbourhoodValidator(newPost.getNeighbourhood(), neighbourhoodRepository)
                     .isActive(neighbourhoodRepository)
                     .build();
             post.setNeighbourhood(neighbourhood);

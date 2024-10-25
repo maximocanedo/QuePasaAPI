@@ -5,12 +5,12 @@ import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 
 import java.util.Optional;
 
-public class PostSubtypeObjectValidatorBuilder extends ValidatorBuilder<PostSubtype> {
-    public PostSubtypeObjectValidatorBuilder(Integer id, PostSubtypeRepository repository) {
+public class PostSubtypeValidator extends ValidatorBuilder<PostSubtypeValidator, PostSubtype> {
+    public PostSubtypeValidator(Integer id, PostSubtypeRepository repository) {
         super(repository.findById(id).orElseThrow(), "postSubtype");
     }
 
-    public PostSubtypeObjectValidatorBuilder isActive(PostSubtypeRepository repository) {
+    public PostSubtypeValidator isActive(PostSubtypeRepository repository) {
         Optional<PostSubtype> optional = repository.findById(getValue().getId());
         if(optional.isPresent()) {
             if(!optional.get().isActive())

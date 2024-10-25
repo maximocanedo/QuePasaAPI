@@ -111,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String validatePassword(String password) {
-        return new PasswordValidatorBuilder(password)
+        return new PasswordValidator(password)
                 .lengthIsEightCharactersOrMore()
                 .hasOneUpperCaseLetter()
                 .hasOneLowerCaseLetter()
@@ -129,10 +129,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
             user.setNeighbourhood(n);
         }
-        var name = new NameValidatorBuilder(request.getName())
+        var name = new NameValidator(request.getName())
                 .validateCompoundNames()
                 .build();
-        var username = new UsernameValidatorBuilder(request.getUsername())
+        var username = new UsernameValidator(request.getUsername())
                 .meetsMinimumLength()
                 .meetsMaximumLength()
                 .doesntHaveIllegalCharacters()
@@ -140,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .neitherStartsNorEndsWithDoubleDotsOrUnderscores()
                 .isAvailable(userRepository)
                 .build();
-        var password = new PasswordValidatorBuilder(request.getPassword())
+        var password = new PasswordValidator(request.getPassword())
                 .lengthIsEightCharactersOrMore()
                 .hasOneUpperCaseLetter()
                 .hasOneLowerCaseLetter()
@@ -270,7 +270,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Mail requestMailVerificationCode(@NotNull VerificationRequest request) throws MessagingException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
 
-        var subject = new MailValidatorBuilder(request.getSubject())
+        var subject = new MailValidator(request.getSubject())
                 .isValidAddress()
                 .build();
 
@@ -323,7 +323,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
        int code = 111111;
        String hash = generateVerificationCodeHash(code);
-       String phoneNumber = new PhoneValidatorBuilder(request.getSubject())
+       String phoneNumber = new PhoneValidator(request.getSubject())
                .isValidPhoneNumber()
                .format().build();
        Phone phone = new Phone();
@@ -345,7 +345,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Phone verifyPhone(CodeVerificationRequest request) throws AuthenticationFailedException {
         User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
-        var number = new PhoneValidatorBuilder(request.getSubject()).format().build();
+        var number = new PhoneValidator(request.getSubject()).format().build();
         Phone phone = phoneRepository
                 .findByPhoneAndUser(number, me)
                 .orElseThrow(() -> new Fail("Phone not found. ", HttpStatus.BAD_REQUEST));

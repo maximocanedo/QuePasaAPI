@@ -3,19 +3,21 @@ package frgp.utn.edu.ar.quepasa.service.validators.events;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
-public class EventAudienceValidatorBuilder extends ValidatorBuilder<Audience> {
-    public EventAudienceValidatorBuilder(Audience value) {
+@Deprecated
+public class EventAudienceValidator extends ValidatorBuilder<EventAudienceValidator, Audience> {
+    public EventAudienceValidator(Audience value) {
         super(value, "audience");
     }
 
-    public EventAudienceValidatorBuilder isNotNull() {
+    public EventAudienceValidator isNotNull() {
         if (getValue() == null) {
             super.invalidate("Audience of the event cannot be null.");
         }
         return this;
     }
 
-    public EventAudienceValidatorBuilder isNotInvalid() {
+    @Deprecated(forRemoval = true)
+    public EventAudienceValidator isNotInvalid() {
         try {
             Audience.valueOf(getValue().name());
         } catch (IllegalArgumentException e) {

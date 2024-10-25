@@ -4,13 +4,13 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
 import java.util.regex.Pattern;
 
-public class SubnationalDivisionLabelValidatorBuilder extends ValidatorBuilder<String> {
+public class SubnationalDivisionLabelValidator extends ValidatorBuilder<SubnationalDivisionLabelValidator, String> {
 
-    public SubnationalDivisionLabelValidatorBuilder(String value) {
+    public SubnationalDivisionLabelValidator(String value) {
         super(value, "label");
     }
 
-    public SubnationalDivisionLabelValidatorBuilder isNotNullOrEmpty() {
+    public SubnationalDivisionLabelValidator isNotNullOrEmpty() {
         if(getValue() == null || getValue().isBlank()) {
             super.invalidate("El valor ingresado no es válido. ");
         }
@@ -18,7 +18,7 @@ public class SubnationalDivisionLabelValidatorBuilder extends ValidatorBuilder<S
         return this;
     }
 
-    public SubnationalDivisionLabelValidatorBuilder hasValidLength() {
+    public SubnationalDivisionLabelValidator hasValidLength() {
         this.isNotNullOrEmpty();
         var str = getValue();
         if(str.length() < 3) {
@@ -29,7 +29,7 @@ public class SubnationalDivisionLabelValidatorBuilder extends ValidatorBuilder<S
         return this;
     }
 
-    public SubnationalDivisionLabelValidatorBuilder isValidLabel() {
+    public SubnationalDivisionLabelValidator isValidLabel() {
         this.isNotNullOrEmpty();
         var pattern = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$");
         var matcher = pattern.matcher(getValue());

@@ -6,11 +6,11 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
-public class PictureObjectValidatorBuilder extends ValidatorBuilder<Picture> {
-    public PictureObjectValidatorBuilder(Picture value) {
+public class PictureValidator extends ValidatorBuilder<PictureValidator, Picture> {
+    public PictureValidator(Picture value) {
         super(value, "picture");
     }
-    public PictureObjectValidatorBuilder isActive(PictureRepository repository) {
+    public PictureValidator isActive(PictureRepository repository) {
         var optional = repository.findById(getValue().getId());
         if(optional.isEmpty())
             super.invalidate("Imagen no encontrada. ");
@@ -18,7 +18,7 @@ public class PictureObjectValidatorBuilder extends ValidatorBuilder<Picture> {
             super.invalidate("Imagen no disponible. ");
         return this;
     }
-    public PictureObjectValidatorBuilder isOwner(PictureRepository repository, User user, UserRepository users) {
+    public PictureValidator isOwner(PictureRepository repository, User user, UserRepository users) {
         var optional = repository.findById(getValue().getId());
         var x = users.findByUsername(user.getUsername());
         if(x.isEmpty() || !x.get().isActive()) {

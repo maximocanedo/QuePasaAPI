@@ -1,19 +1,11 @@
 package frgp.utn.edu.ar.quepasa.service.validators;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ValidatorBuilder<T> {
+public class ValidatorBuilder<V extends ValidatorBuilder<V, T>, T> {
 
     public enum OnInvalidateAction {
         THROW_EXCEPTION,
@@ -22,47 +14,6 @@ public class ValidatorBuilder<T> {
     }
 
     public OnInvalidateAction onInvalidateAction = OnInvalidateAction.THROW_EXCEPTION;
-
-    public static class ValidationErrorSerializer extends JsonSerializer<ValidationError> {
-        @Override
-        public void serialize(ValidationError value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeStartObject();
-            gen.writeStringField("field", value.getField());
-            gen.writeArrayFieldStart("errors");
-            for (String error : value.getErrors()) {
-                gen.writeString(error);
-            }
-            gen.writeEndArray();
-            gen.writeEndObject();
-        }
-    }
-
-    public static class ValidationErrorDeserializer extends JsonDeserializer<ValidationError> {
-        @Override
-        public ValidationError deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.getCodec().readTree(p);
-            String field = node.get("field").asText();
-            Set<String> errors = new HashSet<>();
-            node.get("errors").forEach(errorNode -> errors.add(errorNode.asText()));
-            return new ValidationError(field, errors);
-        }
-    }
-
-    @JsonSerialize(using = ValidationErrorSerializer.class)
-    @JsonDeserialize(using = ValidationErrorDeserializer.class)
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class ValidationError extends RuntimeException {
-        private final String field;
-        private final Set<String> errors;
-        public ValidationError(String field, Set<String> errors) {
-            this.field = field;
-            this.errors = errors;
-        }
-        @JsonProperty
-        public String getField() { return field; }
-        @JsonProperty
-        public Set<String> getErrors() { return errors; }
-    }
 
     private T value;
     private boolean valid = true;

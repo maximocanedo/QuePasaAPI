@@ -16,7 +16,7 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.users.PasswordValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.users.PasswordValidator;
 import jakarta.mail.MessagingException;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +134,7 @@ public class SingleUseRequestServiceImpl implements SingleUseRequestService {
         var user = userRepository
                 .findByUsername(document.getUser().getUsername())
                 .orElseThrow(() -> new Fail("Username not found. "));
-        var password = new PasswordValidatorBuilder(request.getNewPassword())
+        var password = new PasswordValidator(request.getNewPassword())
                 .lengthIsEightCharactersOrMore()
                 .hasOneUpperCaseLetter()
                 .hasOneLowerCaseLetter()

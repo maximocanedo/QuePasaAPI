@@ -5,14 +5,14 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NameValidatorBuilder extends ValidatorBuilder<String> {
+public class NameValidator extends ValidatorBuilder<NameValidator, String> {
 
-    public NameValidatorBuilder(String value) {
+    public NameValidator(String value) {
         super(value, "name");
         this.setValue(value.trim());
     }
 
-    public NameValidatorBuilder validateCompoundNames() {
+    public NameValidator validateCompoundNames() {
         Pattern p = Pattern.compile("^[A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,}( [A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,})*$");
         Matcher m = p.matcher(getValue());
         if(!m.matches())

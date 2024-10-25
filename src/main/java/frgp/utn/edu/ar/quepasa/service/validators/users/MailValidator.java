@@ -5,14 +5,14 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MailValidatorBuilder extends ValidatorBuilder<String> {
+public class MailValidator extends ValidatorBuilder<MailValidator, String> {
 
-    public MailValidatorBuilder(String value) {
+    public MailValidator(String value) {
         super(value, "mail");
         setValue(value.trim());
     }
 
-    public MailValidatorBuilder isValidAddress() {
+    public MailValidator isValidAddress() {
         Pattern p = Pattern.compile(".+@.+\\..+");
         Matcher m = p.matcher(getValue());
         if(!m.matches())

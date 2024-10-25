@@ -5,10 +5,10 @@ import frgp.utn.edu.ar.quepasa.data.request.SignUpRequest;
 import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 import frgp.utn.edu.ar.quepasa.utils.JwtTestUtils;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.*;
@@ -103,7 +103,7 @@ public class AuthenticationServiceTests {
         req.setNeighbourhoodId(1L);
         req.setName("Usuario de prueba");
         var res = new AtomicReference<JwtAuthenticationResponse>(null);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             res.set(authenticationService.signup(req));
         }, "Error al intentar registrar. ");
         assertNull(res.get(), "Respuesta de registro es nula. ");
@@ -118,7 +118,7 @@ public class AuthenticationServiceTests {
         req.setNeighbourhoodId(1L);
         req.setName("Usuario de prueba");
         var res = new AtomicReference<JwtAuthenticationResponse>(null);
-        assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        assertThrows(ValidationError.class, () -> {
             res.set(authenticationService.signup(req));
         }, "Error al intentar registrar. ");
         assertNull(res.get(), "Respuesta de registro es nula. ");

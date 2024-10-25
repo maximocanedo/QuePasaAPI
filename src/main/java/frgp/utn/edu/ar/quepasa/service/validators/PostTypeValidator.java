@@ -5,12 +5,12 @@ import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 
 import java.util.Optional;
 
-public class PostTypeObjectValidatorBuilder extends ValidatorBuilder<PostType> {
-    public PostTypeObjectValidatorBuilder(Integer id, PostTypeRepository repository) {
+public class PostTypeValidator extends ValidatorBuilder<PostTypeValidator, PostType> {
+    public PostTypeValidator(Integer id, PostTypeRepository repository) {
         super(repository.findById(id).orElseThrow(), "postType");
     }
 
-    public PostTypeObjectValidatorBuilder isActive(PostTypeRepository repository) {
+    public PostTypeValidator isActive(PostTypeRepository repository) {
         Optional<PostType> optional = repository.findById(getValue().getId());
         if(optional.isPresent()) {
             if(!optional.get().isActive())

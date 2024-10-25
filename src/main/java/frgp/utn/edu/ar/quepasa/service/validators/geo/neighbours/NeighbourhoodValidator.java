@@ -6,18 +6,18 @@ import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
 
 import java.util.Optional;
 
-public class NeighbourhoodObjectValidatorBuilder extends ValidatorBuilder<Neighbourhood> {
+public class NeighbourhoodValidator extends ValidatorBuilder<NeighbourhoodValidator, Neighbourhood> {
 
-    public NeighbourhoodObjectValidatorBuilder(Neighbourhood value) {
+    public NeighbourhoodValidator(Neighbourhood value) {
         super(value, "neighbourhood");
     }
 
     @Deprecated(forRemoval = true)
-    public NeighbourhoodObjectValidatorBuilder(Long id, NeighbourhoodRepository repository) {
+    public NeighbourhoodValidator(Long id, NeighbourhoodRepository repository) {
         super(repository.findById(id).orElseThrow(), "neighbourhood");
     }
 
-    public NeighbourhoodObjectValidatorBuilder isActive(NeighbourhoodRepository repository) {
+    public NeighbourhoodValidator isActive(NeighbourhoodRepository repository) {
         Optional<Neighbourhood> optional = repository.findById(getValue().getId());
         if(optional.isPresent()) {
             if(!optional.get().isActive())

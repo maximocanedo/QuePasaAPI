@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
@@ -12,8 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.EventCommentRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.PostCommentRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.ValidatorBuilder;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -94,7 +94,7 @@ public class CommentServiceTests {
         comment.setId(UUID.randomUUID());
         comment.setActive(true);
 
-        var ob = mock(OwnerValidatorBuilder.class);
+        var ob = mock(OwnerValidator.class);
         when(commentRepository.findById(any(UUID.class))).thenReturn(Optional.of(comment));
         when(ownerService.of(any(Ownable.class))).thenReturn(ob);
         when(commentRepository.save(any(Comment.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -126,12 +126,12 @@ public class CommentServiceTests {
         comment.setId(UUID.randomUUID());
         comment.setActive(true);
         when(commentRepository.findById(any(UUID.class))).thenReturn(Optional.of(comment));
-        var ob = mock(OwnerValidatorBuilder.class);
+        var ob = mock(OwnerValidator.class);
         when(ownerService.of(any(Ownable.class))).thenReturn(ob);
 
         String content = "xyz".repeat(100);
 
-        var exception = assertThrows(ValidatorBuilder.ValidationError.class, () -> {
+        var exception = assertThrows(ValidationError.class, () -> {
             commentService.update(id, content);
         });
 
@@ -176,7 +176,7 @@ public class CommentServiceTests {
         comment.setActive(true);
 
         when(commentRepository.findById(id)).thenReturn(Optional.of(comment));
-        var ob = mock(OwnerValidatorBuilder.class);
+        var ob = mock(OwnerValidator.class);
         when(ownerService.of(any(Ownable.class))).thenReturn(ob);
         when(ob.isOwner()).thenReturn(ob);
         when(ob.isAdmin()).thenReturn(ob);
