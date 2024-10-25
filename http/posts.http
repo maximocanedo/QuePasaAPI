@@ -18,11 +18,11 @@ Content-Type: application/json
 GET {{base}}/api/posts/all?page=0&size=10&activeOnly=true
 Authorization: Bearer {{token}}
 
-### Buscar ciudades, orden ascendente según título
+### Buscar publicaciones, orden ascendente según título
 GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,asc
 Authorization: Bearer {{token}}
 
-### Buscar ciudades, orden descendente según título
+### Buscar publicaciones, orden descendente según título
 GET {{base}}/api/posts/search?q=&page=0&size=10&sort=title,desc
 Authorization: Bearer {{token}}
 
