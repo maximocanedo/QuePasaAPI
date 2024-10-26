@@ -39,6 +39,16 @@ public class EventController {
         this.voteService = voteService;
     }
 
+    /**
+     * Devuelve una lista paginada de eventos según la consulta.
+     *
+     * @param q         Texto de búsqueda.
+     * @param page      Página a obtener.
+     * @param size      Tamaño de la página.
+     * @param active    Si se desean obtener solo los eventos activos.
+     * @param sort      Campo y orden de ordenamiento. Ej: "title,asc".
+     * @return          Página de eventos encontrados.
+     */
     @GetMapping
     public ResponseEntity<Page<Event>> getEvents(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) {
         Sort.Direction direction = Sort.Direction.ASC;
@@ -49,29 +59,66 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
     }
 
+    /**
+     * Crea un nuevo evento.
+     *
+     * @param event Detalles del evento a crear.
+     * @return Entidad de respuesta con el evento creado.
+     * @throws Fail Si ocurre un error durante la creación del evento.
+     */
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.create(event, me));
     }
 
+    /**
+     * Confirma la asistencia a un evento.
+     *
+     * @param eventId ID del evento al que se quiere confirmar asistencia.
+     * @return Entidad de respuesta con el RSVP (confirmación de asistencia) del evento.
+     * @throws ResourceNotFoundException Si el evento no existe.
+     * @throws Fail                      Si ocurre un error durante la confirmación de asistencia.
+     */
     @PostMapping("/{eventId}/rsvp")
     public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.confirmEventAssistance(eventId, me));
     }
 
+    /**
+     * Obtiene un evento por su ID.
+     *
+     * @param id ID del evento a obtener.
+     * @return Entidad de respuesta con los detalles del evento.
+     * @throws ResourceNotFoundException Si el evento no se encuentra.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
+    /**
+     * Obtiene una lista paginada de eventos creados por un usuario específico.
+     *
+     * @param username Nombre de usuario del creador de los eventos.
+     * @param page     Número de página a obtener.
+     * @param size     Tamaño de la página.
+     * @return         Entidad de respuesta con la página de eventos del usuario.
+     */
     @GetMapping("/user/{username}")
     public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventService.findByUsername(username, pageable));
     }
 
+    /**
+     * Obtiene una lista paginada de eventos creados por el usuario autenticado.
+     *
+     * @param page  Número de página a obtener.
+     * @param size  Tamaño de la página.
+     * @return      Entidad de respuesta con la página de eventos del usuario autenticado.
+     */
     @GetMapping("/me")
     public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         User me = authenticationService.getCurrentUserOrDie();
@@ -79,12 +126,28 @@ public class EventController {
         return ResponseEntity.ok(eventService.findByOp(me, pageable));
     }
 
+    /**
+     * Actualiza un evento existente.
+     *
+     * @param id       ID del evento a actualizar.
+     * @param event    Detalles del evento a actualizar.
+     * @return         Entidad de respuesta con los detalles del evento actualizado.
+     * @throws Fail    Si el evento no se encuentra o no se tiene permisos para actualizarlo.
+     * @throws ValidationError Si el evento no cumple con las validaciones.
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.update(id, event, me));
     }
 
+    /**
+     * Elimina un evento existente.
+     *
+     * @param id       ID del evento a eliminar.
+     * @return         Entidad de respuesta con un estado 204 (No Content) si se elimina correctamente.
+     * @throws Fail    Si el evento no se encuentra o no se tiene permisos para eliminarlo.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable UUID id) throws Fail {
         eventService.delete(id);
@@ -95,32 +158,64 @@ public class EventController {
     Seccion Agregar Barrio
      */
 
+    /**
+     * Agrega un barrio a un evento existente.
+     *
+     * @param eventId       ID del evento al que se agregar  el barrio.
+     * @param neighbourhoodId   ID del barrio a agregar.
+     * @return         Entidad de respuesta con los detalles del evento actualizado.
+     * @throws Fail    Si el evento o el barrio no se encuentran o no se tiene permisos para agregar.
+     */
     @PostMapping("/{eventId}/neighbourhood/{neighbourhoodId}")
     public ResponseEntity<Event> addNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
         Event updatedEvent = eventService.addNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
     }
 
+    /**
+     * Elimina un barrio de un evento existente.
+     *
+     * @param eventId       ID del evento del que se eliminar  el barrio.
+     * @param neighbourhoodId   ID del barrio a eliminar.
+     * @return         Entidad de respuesta con los detalles del evento actualizado.
+     * @throws Fail    Si el evento o el barrio no se encuentran o no se tiene permisos para eliminar.
+     */
     @DeleteMapping("/{eventId}/neighbourhood/{neighbourhoodId}")
     public ResponseEntity<Event> removeNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
         Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
     }
 
-    /*
-    Seccion Votos
+    
+    /**
+     * Devuelve la cantidad total de votos de un evento.
+     *
+     * @param eventId       ID del evento del que se quieren obtener los votos.
+     * @return         Entidad de respuesta con la cantidad total de votos del evento.
      */
     @GetMapping("/{eventId}/votes")
     public ResponseEntity<VoteCount> getVotes(@PathVariable UUID eventId) {
         return ResponseEntity.ok(voteService.count(Event.identify(eventId)));
     }
 
+    /**
+     * Vota positivamente un evento existente.
+     *
+     * @param eventId       ID del evento que se va a votar.
+     * @return         Entidad de respuesta con la cantidad actualizada de votos del evento.
+     */
     @PostMapping("/{eventId}/votes/up")
     public ResponseEntity<VoteCount> upVote(@PathVariable UUID eventId) {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), 1));
     }
-
+    /**
+     * Vota negativamente un evento existente.
+     *
+     * @param eventId       ID del evento que se va a votar.
+     * @return         Entidad de respuesta con la cantidad actualizada de votos del evento.
+     */
     @PostMapping("/{eventId}/votes/down")
+    
     public ResponseEntity<VoteCount> downVote(@PathVariable UUID eventId) {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
     }

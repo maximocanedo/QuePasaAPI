@@ -31,6 +31,11 @@ public class Post implements Ownable, Votable, Commentable {
 
     public Post() {}
 
+    /**
+     * Crea una nueva instancia de {@link Post} con el ID especificado y los demás campos en blanco.
+     * @param id El ID de la publicaci n.
+     * @return La nueva instancia de {@link Post}.
+     */
     public static Post identify(Integer id) {
         Post post = new Post();
         post.setId(id);

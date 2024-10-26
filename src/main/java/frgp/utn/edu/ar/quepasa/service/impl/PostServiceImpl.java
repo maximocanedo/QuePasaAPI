@@ -1,8 +1,21 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
 
+import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import frgp.utn.edu.ar.quepasa.data.request.post.PostCreateRequest;
 import frgp.utn.edu.ar.quepasa.data.request.post.PostPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.response.PostDTO;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
@@ -18,16 +31,8 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.PostSubtypeValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.NeighbourhoodValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
-import java.sql.Timestamp;
+import frgp.utn.edu.ar.quepasa.service.validators.objects.PostSubtypeValidator;
 
 
 @Service("postService")
@@ -65,6 +70,17 @@ public class PostServiceImpl implements PostService {
         this.commentService = commentService;
     }
 
+    /**
+     * Busca todos los posts que contengan el texto dado en el t tulo o
+     * descripci n, activos o no activos, de acuerdo al par metro given.
+     * La lista se devuelve paginada seg n el objeto Pageable dado.
+     * Antes de devolver la lista, se pobla con la informaci n de votos y
+     * comentarios correspondiente a cada post.
+     *
+     * @param q El texto que se busca en el t tulo y descripci n de los posts
+     * @param pageable El objeto que contiene la informaci n de paginaci n
+     * @param activeOnly Indica si se quieren obtener solo los posts activos o no
+     */
     @Override
     public Page<Post> search(String q, Pageable pageable, boolean active) {
         return postRepository
@@ -73,6 +89,16 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+    /**
+     * Busca todos los posts, activos o no activos, de acuerdo al par metro given.
+     * La lista se devuelve paginada seg n el objeto Pageable dado.
+     * Antes de devolver la lista, se pobla con la informaci n de votos y comentarios
+     * correspondiente a cada post.
+     *
+     * @param pageable El objeto que contiene la informaci n de paginaci n
+     * @param activeOnly Indica si se quieren obtener solo los posts activos o no
+     * @return La lista de posts paginada con su informaci n de votos y comentarios
+     */
     @Override
     public Page<Post> findAll(Pageable pageable, boolean activeOnly) {
         if(activeOnly) {
@@ -87,6 +113,13 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+/**
+ * Busca un post por su ID y lo devuelve con los comentarios y votos poblados.
+ *
+ * @param id el ID del post que se busca
+ * @return el post encontrado con comentarios y votos poblados
+ * @throws Fail si el post no es encontrado
+ */
     @Override
     public Post findById(Integer id) {
         return commentService.populate(
@@ -98,6 +131,14 @@ public class PostServiceImpl implements PostService {
         );
     }
 
+    /**
+     * Obtiene una página de posts que pertenecen a un OP específico.
+     *
+     * @param originalPoster el ID del usuario que se busca
+     * @param pageable la información de paginación
+     * @return una página de posts que pertenecen al OP dada
+     * @throws Fail si el OP no es encontrada
+     */
     @Override
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
         User user = userRepository.findById(originalPoster)
@@ -108,6 +149,15 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+
+    /**
+     * Obtiene una página de posts que pertenecen a una audiencia específica.
+     *
+     * @param audience la audiencia que se busca
+     * @param pageable la información de paginación
+     * @return una página de posts que pertenecen a la audiencia dada
+     * @throws Fail si la audiencia no es encontrada
+     */
     @Override
     public Page<Post> findByAudience(Audience audience, Pageable pageable) {
         return postRepository
@@ -116,6 +166,16 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Obtiene una página de posts que pertenecen a un tipo específico.
+ *
+ * @param type el ID del tipo de post
+ * @param pageable la información de paginación
+ * @return una página de posts que pertenecen al tipo dado
+ * @throws Fail si el tipo no es encontrado
+ */
+/******  d05db5e3-bd8d-4a55-9a97-938d53a3d44f  *******/
     @Override
     public Page<Post> findByType(Integer type, Pageable pageable) {
         PostType postType = postTypeRepository.findById(type)
@@ -126,6 +186,16 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+
+   
+    /**
+    * Obtiene una página de posts relacionados a un subtipo específico.
+    *
+    * @param subtype el ID del subtipo de post
+    * @param pageable la información de paginación
+    * @return una página de posts que pertenecen al subtipo dado
+    * @throws Fail si el subtipo no es encontrado
+    */
     @Override
     public Page<Post> findBySubtype(Integer subtype, Pageable pageable) {
         PostSubtype postSubtype = postSubtypeRepository.findById(subtype)
@@ -136,6 +206,14 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+
+    /**
+     * Obtiene posts que se encuentran dentro del rango de fechas indicado.
+     *
+     * @param start fecha de inicio del rango (inclusive)
+     * @param end   fecha de fin del rango (inclusive)
+     * @return      una página de posts que se encuentran en el rango de fechas
+     */
     @Override
     public Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable) {
         return postRepository
@@ -144,6 +222,13 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+    /**
+     * Obtiene posts que comienzan después de una fecha específica.
+     *
+     * @param start la fecha de inicio
+     * @param pageable la paginación
+     * @return una página de posts que comienzan después de la fecha especificada
+     */
     @Override
     public Page<Post> findByDateStart(Timestamp start, Pageable pageable) {
         return postRepository
@@ -152,6 +237,14 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+
+    /**
+     * Obtiene posts que terminan en un rango de fechas
+     *
+     * @param end la fecha de fin del rango
+     * @param pageable la paginación
+     * @return una página de posts que terminan en el rango de fechas
+     */
     @Override
     public Page<Post> findByDateEnd(Timestamp end, Pageable pageable) {
         return postRepository
@@ -160,6 +253,16 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
+
+    /**
+     * Crea un nuevo post.
+     *
+     * El usuario actual debe ser el dueño del post.
+     *
+     * @param newPost el nuevo post
+     * @param originalPoster el usuario que hace la petición
+     * @return el post creado
+     */
     @Override
     public Post create(PostCreateRequest newPost, User originalPoster) {
         Post post = new Post();
@@ -184,6 +287,19 @@ public class PostServiceImpl implements PostService {
         return commentService.populate(voteService.populate(post));
     }
 
+
+    /**
+     * Actualiza un post.
+     *
+     * El usuario actual debe ser el dueño administrador
+     * para poder actualizar el post.
+     *
+     * @param id el id del post
+     * @param newPost el nuevo contenido
+     * @param originalPoster el usuario que realiz  la actualizacion
+     * @return el post actualizado
+     * @throws AccessDeniedException si el usuario no es el dueño administrador del post
+     */
     @Override
     public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
@@ -213,6 +329,17 @@ public class PostServiceImpl implements PostService {
         return commentService.populate(voteService.populate(post));
     }
 
+
+    /**
+     * Elimina un post.
+     * Sólo el propietario del post, el administrador o el moderador del barrio
+     * del post pueden eliminarlo.
+     *
+     * @param id el ID del post a eliminar
+     * @param originalPoster el usuario que intenta eliminar el post
+     * @throws AccessDeniedException si el usuario no tiene permiso para eliminar
+     * el post
+     */
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
         Post post = findById(id);
@@ -224,4 +351,48 @@ public class PostServiceImpl implements PostService {
         post.setActive(false);
         postRepository.save(post);
     }
+    /**
+     * Ejecuta el SP "obtenerPosts" y devuelve una lista de DTOs de posts.
+     *
+     * @param userBarrio el barrio del usuario logueado
+     * @param userId     el ID del usuario logueado
+     * @return una lista de DTOs de posts
+     */
+    @Override
+    public List<PostDTO> obtenerPosts(int userBarrio, int userId) {
+        List<Map<String, Object>> rawResults = postRepository.obtenerPosts(userBarrio, userId);
+        return rawResults.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+    /**
+     * Convierte una fila de resultados de la consulta a un DTO de Post.
+     *
+     * @param row la fila de resultados
+     * @return el DTO de Post
+     */
+    private PostDTO mapToDTO(Map<String, Object> row) {
+        PostDTO dto = new PostDTO();
+        dto.setId((Integer) row.get("id"));
+        dto.setActive((Boolean) row.get("active"));
+        dto.setAudience((String) row.get("audience"));
+        dto.setDescription((String) row.get("description"));
+        dto.setTags((String) row.get("tags"));
+        dto.setTimestamp((Timestamp) row.get("timestamp"));
+        dto.setTitle((String) row.get("title"));
+        dto.setNeighbourhood((Integer) row.get("neighbourhood"));
+        dto.setOp((Integer) row.get("op"));
+        dto.setSubtype((Integer) row.get("subtype"));
+        dto.setPostTypeDescription((String) row.get("post_type_description"));
+        dto.setPostSubtypeDescription((String) row.get("post_subtype_description"));
+        dto.setTotalVotes((Integer) row.get("total_votes"));
+        dto.setUserVotes((Integer) row.get("user_votes"));
+        dto.setCommentId((Integer) row.get("comment_id"));
+        dto.setPictureId((Integer) row.get("picture_id"));
+        dto.setPictureDescription((String) row.get("picture_description"));
+        dto.setPictureUploadedAt((Timestamp) row.get("picture_uploaded_at"));
+        dto.setPictureMediaType((String) row.get("picture_media_type"));
+        dto.setScore((Integer) row.get("score"));
+
+        return dto;
+    }
+
 }
