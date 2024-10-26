@@ -297,7 +297,9 @@ public class PostControllerTests {
         long neighId = 1L;
         Neighbourhood neighbourhood = new Neighbourhood();
         neighbourhood.setId(neighId);
+        neighbourhood.setActive(true);
 
+        when(neighbourhoodRepository.findActiveNeighbourhoodById(neighId)).thenReturn(Optional.of(neighbourhood));
         when(neighbourhoodRepository.findById(neighId)).thenReturn(Optional.of(neighbourhood));
 
         PostCreateRequest request = mockPostCreate(subId, neighId);
