@@ -493,10 +493,12 @@ public class PostServiceTests {
 
         Neighbourhood neighbourhood = new Neighbourhood();
         neighbourhood.setId(neighId);
+        neighbourhood.setActive(true);
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
         when(postSubtypeRepository.findById(subId)).thenReturn(Optional.of(subtype));
+        when(neighbourhoodRepository.findActiveNeighbourhoodById(neighId)).thenReturn(Optional.of(neighbourhood));
         when(neighbourhoodRepository.findById(neighId)).thenReturn(Optional.of(neighbourhood));
 
         PostCreateRequest request = mockPostCreate(username, subId, neighId);
