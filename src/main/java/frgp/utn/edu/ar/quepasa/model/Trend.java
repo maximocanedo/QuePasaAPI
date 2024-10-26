@@ -1,8 +1,28 @@
 package frgp.utn.edu.ar.quepasa.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
+import org.springframework.data.annotation.Id;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.StoredProcedureParameter;
+@NamedStoredProcedureQuery(
+    name = "contar_tendencias_tags_por_barrio",
+    procedureName = "contar_tendencias_tags_por_barrio",
+    parameters = {
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "barrio", type = Integer.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "fechaBase", type = Timestamp.class)
+    },
+    resultClasses = Trend.class
+)
+@Entity
 public class Trend implements Serializable, TrendProjection {
+
+    @Id
+    private Long id;
 
     private String tag;
     private int cantidad;
@@ -12,6 +32,7 @@ public class Trend implements Serializable, TrendProjection {
     public Trend(String tag, int cantidad) {
         this.tag = tag;
         this.cantidad = cantidad;
+        
     }
 
     /**

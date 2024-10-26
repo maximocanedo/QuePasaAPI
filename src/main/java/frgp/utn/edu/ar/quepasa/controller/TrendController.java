@@ -4,6 +4,8 @@ import frgp.utn.edu.ar.quepasa.model.Trend;
 import frgp.utn.edu.ar.quepasa.service.TrendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -14,30 +16,46 @@ import java.util.List;
 @RequestMapping("/api/trends")
 public class TrendController {
 
+    private final TrendService trendService;
+
     @Autowired
-    private TrendService trendService;
+    public TrendController(TrendService trendService) {
+        this.trendService = trendService;
+    }
 
     /**
      * Devuelve las tendencias (tags) para un barrio en particular. La tendencia se
      * calcula contando la cantidad de veces que ha sido etiquetada en las publicaciones
      * realizadas en ese barrio desde la fecha base especificada.
      *
-     * @param barrio el n mero de barrio para el que se quieren obtener las tendencias.
+     * @param barrio el número de barrio para el que se quieren obtener las tendencias.
      * @param fechaBase la fecha desde la que se contabilizan las etiquetas, en formato ISO.
-     * @return una lista de tendencias, donde cada tendencia est  representada por un
+     * @return una lista de tendencias, donde cada tendencia está representada por un
      *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
     @GetMapping("/{barrio}")
-    public List<Trend> getTendencias(
+    public ResponseEntity<List<Trend>> getTendencias(
             @PathVariable("barrio") int barrio,
             @RequestParam("fechaBase") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaBase
     ) {
-        Timestamp fechaBaseTimestamp = Timestamp.valueOf(fechaBase);
+        try {
+            Timestamp fechaBaseTimestamp = Timestamp.valueOf(fechaBase);
+            List<Trend> tendencias = trendService.getTendencias(barrio, fechaBaseTimestamp);
 
-        return trendService.getTendencias(barrio, fechaBaseTimestamp);
+            if (tendencias.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(tendencias);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(List.of(new Trend("Error en fechaBase: formato incorrecto", 0)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
-
 
 
 

@@ -1,7 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.model.Trend;
-import frgp.utn.edu.ar.quepasa.repository.TrendRepositoryImplDeprecated;
+import frgp.utn.edu.ar.quepasa.repository.TrendRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +11,24 @@ import java.util.List;
 
 @Service
 public class TrendService {
+    private final TrendRepository trendRepository;
 
     @Autowired
-    private TrendRepositoryImplDeprecated trendRepositoryImplDeprecated;
+    public TrendService(TrendRepository trendRepository) {
+        this.trendRepository = trendRepository;
+    }
 
     /**
-     * Devuelve las tendencias de un barrio en una fecha especifica.
-     *
-     * @param barrio el identificador del barrio.
-     * @param fechaBase la fecha y hora en la que se quieren obtener las tendencias.
-     * @return una lista de tendencias.
+     * Obtiene las tendencias para un barrio en particular desde una fecha base especificada.
+     * 
+     * @param barrio el numero de barrio para el que se quieren obtener las tendencias.
+     * @param fechaBase la fecha desde la que se contabilizan las etiquetas, en formato Timestamp.
+     * @return una lista de tendencias, donde cada tendencia est  representada por un
+     *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
     public List<Trend> getTendencias(int barrio, Timestamp fechaBase) {
-        return trendRepositoryImplDeprecated.getTendencias(barrio, fechaBase);
+        return trendRepository.getTendencias(barrio, fechaBase);
     }
+
     
 }
