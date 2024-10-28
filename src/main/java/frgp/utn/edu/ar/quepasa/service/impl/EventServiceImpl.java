@@ -29,7 +29,7 @@ import java.util.UUID;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
-  
+
     private final OwnerService ownerService;
     private final VoteService voteService;
     private final EventRepository eventRepository;
@@ -54,11 +54,11 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-    * This method is used to get all the events
-    * @param query search query to filter events
-    * @param pageable pagination information
-    * @param active status of the event
-    **/
+     * This method is used to get all the events
+     * @param query search query to filter events
+     * @param pageable pagination information
+     * @param active status of the event
+     **/
     @Override
     public Page<Event> getEvents(String query, Pageable pageable, boolean active) {
         return eventRepository.search(query, pageable, active);
@@ -71,9 +71,9 @@ public class EventServiceImpl implements EventService {
      * @throws ResourceNotFoundException if the event is not found
      */
     @Override
-    public Event findById(UUID id) {
+    public Event findById(UUID id) throws Fail {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found."));
     }
 
     /**
@@ -84,9 +84,9 @@ public class EventServiceImpl implements EventService {
      * @throws ResourceNotFoundException if no events are found
      */
     @Override
-    public Page<Event> findByOp(User owner, Pageable pageable) {
+    public Page<Event> findByOp(User owner, Pageable pageable) throws Fail {
         return eventRepository.findByOwnerAndActive(owner, true, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
+                .orElseThrow(() -> new Fail("No Events found."))
                 .map(commentService::populate)
                 .map(voteService::populate);
     }
@@ -99,9 +99,9 @@ public class EventServiceImpl implements EventService {
      * @throws ResourceNotFoundException if no events are found
      */
     @Override
-    public Page<Event> findByUsername(String username, Pageable pageable) {
+    public Page<Event> findByUsername(String username, Pageable pageable) throws Fail {
         return eventRepository.findByOwnerUsername(username, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("No Events found."))
+                .orElseThrow(() -> new Fail("No Events found."))
                 .map(commentService::populate)
                 .map(voteService::populate);
     }
@@ -193,7 +193,7 @@ public class EventServiceImpl implements EventService {
     public EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail {
         EventRsvp newEventRsvp = new EventRsvp();
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found."));
         if (!event.isActive()) throw new Fail("Event is not active.");
         newEventRsvp.setEvent(event);
         newEventRsvp.setUser(user);
@@ -209,7 +209,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void delete(UUID id) throws Fail {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found."));
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
@@ -227,9 +227,9 @@ public class EventServiceImpl implements EventService {
      * @throws Fail if the event is not active
      */
     @Override
-    public Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
+    public Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found."));
 
         ownerService.of(event)
                 .isOwner()
@@ -242,7 +242,7 @@ public class EventServiceImpl implements EventService {
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
-                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found."));
+                .orElseThrow(() -> new Fail("Neighbourhood not found."));
         neighbourhoods.add(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);
@@ -260,9 +260,9 @@ public class EventServiceImpl implements EventService {
      * @throws Fail if the event is not active
      */
     @Override
-    public Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) {
+    public Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found."));
 
         ownerService.of(event)
                 .isOwner()
@@ -274,7 +274,7 @@ public class EventServiceImpl implements EventService {
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
-                .orElseThrow(() -> new ResourceNotFoundException("Neighbourhood not found."));
+                .orElseThrow(() -> new Fail("Neighbourhood not found."));
         neighbourhoods.remove(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);

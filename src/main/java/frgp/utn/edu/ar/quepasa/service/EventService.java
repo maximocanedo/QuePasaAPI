@@ -15,11 +15,11 @@ import java.util.UUID;
 public interface EventService {
     Page<Event> getEvents(String query, Pageable pageable, boolean active);
 
-    Event findById(UUID id);
+    Event findById(UUID id) throws Fail;
 
-    Page<Event> findByOp(User owner, Pageable pageable);
+    Page<Event> findByOp(User owner, Pageable pageable) throws Fail;
 
-    Page<Event> findByUsername(String username, Pageable pageable);
+    Page<Event> findByUsername(String username, Pageable pageable) throws Fail;
 
     Event create(EventPostRequest event, User owner) throws Fail;
 
@@ -29,7 +29,7 @@ public interface EventService {
 
     void delete(UUID id) throws Fail;
 
-    Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
+    Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail;
 
-    Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId);
+    Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail;
 }
