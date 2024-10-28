@@ -41,5 +41,5 @@ public interface PostService {
 
     void delete(Integer id, User originalPoster) throws AccessDeniedException;
 
-    List<PostDTO> obtenerPosts(int userBarrio, int userId);
+    List<PostDTO> findPosts(int userId, int userNeighbourhood);
 }

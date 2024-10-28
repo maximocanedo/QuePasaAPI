@@ -44,6 +44,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findByDateEnd(Timestamp end, Pageable pageable);
 
     @Procedure(name = "obtenerPosts")
-    List<Map<String, Object>> obtenerPosts(@Param("user_barrio") int userBarrio, @Param("user_id") int userId);
+    List<Map<String, Object>> findPosts(@Param("user_barrio") int userBarrio, @Param("user_id") int userId);
 
 }

@@ -71,15 +71,16 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Busca todos los posts que contengan el texto dado en el t tulo o
-     * descripci n, activos o no activos, de acuerdo al par metro given.
-     * La lista se devuelve paginada seg n el objeto Pageable dado.
-     * Antes de devolver la lista, se pobla con la informaci n de votos y
-     * comentarios correspondiente a cada post.
+     * Busca todas las publicaciones que contengan el texto dado en el título o
+     * descripción, activas o no activas, de acuerdo al parámetro dado.
+     * La lista se devuelve paginada según el objeto Pageable dado.
+     * Antes de devolver la lista, se pobla con la información de votos y
+     * comentarios correspondiente a cada publicación.
      *
-     * @param q El texto que se busca en el t tulo y descripci n de los posts
-     * @param pageable El objeto que contiene la informaci n de paginaci n
-     * @param activeOnly Indica si se quieren obtener solo los posts activos o no
+     * @param q El texto que se busca en el título y descripción de las publicaciones
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param active Indica si se quieren obtener solo las publicaciones activas o no
+     * @return La lista de publicaciones paginada con su información de votos y comentarios
      */
     @Override
     public Page<Post> search(String q, Pageable pageable, boolean active) {
@@ -90,14 +91,14 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Busca todos los posts, activos o no activos, de acuerdo al par metro given.
-     * La lista se devuelve paginada seg n el objeto Pageable dado.
-     * Antes de devolver la lista, se pobla con la informaci n de votos y comentarios
-     * correspondiente a cada post.
+     * Busca todas los publicaciones, activas o no activas, de acuerdo al parámetro dado.
+     * La lista se devuelve paginada según el objeto Pageable dado.
+     * Antes de devolver la lista, se pobla con la información de votos y comentarios
+     * correspondiente a cada publicación.
      *
-     * @param pageable El objeto que contiene la informaci n de paginaci n
-     * @param activeOnly Indica si se quieren obtener solo los posts activos o no
-     * @return La lista de posts paginada con su informaci n de votos y comentarios
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param activeOnly Indica si se quieren obtener solo las publicaciones activas o no
+     * @return La lista de publicaciones paginada con su información de votos y comentarios
      */
     @Override
     public Page<Post> findAll(Pageable pageable, boolean activeOnly) {
@@ -114,11 +115,11 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Busca un post por su ID y lo devuelve con los comentarios y votos poblados.
+     * Busca una publicación por su ID y lo devuelve con los comentarios y votos poblados.
      *
-     * @param id el ID del post que se busca
-     * @return el post encontrado con comentarios y votos poblados
-     * @throws Fail si el post no es encontrado
+     * @param id El ID de la publicación que se busca
+     * @return La publicación encontrada con comentarios y votos poblados
+     * @throws Fail Si la publicación no es encontrada
      */
     @Override
     public Post findById(Integer id) {
@@ -132,12 +133,12 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Obtiene una página de posts que pertenecen a un OP específico.
+     * Obtiene una página de publicaciones que pertenecen a un OP (autor) específico.
      *
-     * @param originalPoster el ID del usuario que se busca
-     * @param pageable la información de paginación
-     * @return una página de posts que pertenecen al OP dada
-     * @throws Fail si el OP no es encontrada
+     * @param originalPoster El ID del usuario que se busca
+     * @param pageable La información de paginación
+     * @return Una página de publicaciones que pertenecen al OP buscado
+     * @throws Fail Si el OP no es encontrado
      */
     @Override
     public Page<Post> findByOp(Integer originalPoster, Pageable pageable) {
@@ -152,10 +153,10 @@ public class PostServiceImpl implements PostService {
     /**
      * Obtiene una página de posts que pertenecen a una audiencia específica.
      *
-     * @param audience la audiencia que se busca
-     * @param pageable la información de paginación
-     * @return una página de posts que pertenecen a la audiencia dada
-     * @throws Fail si la audiencia no es encontrada
+     * @param audience La audiencia que se busca
+     * @param pageable La información de paginación
+     * @return Una página de publicaciones que pertenecen a la audiencia buscada
+     * @throws Fail Si la audiencia no es encontrada
      */
     @Override
     public Page<Post> findByAudience(Audience audience, Pageable pageable) {
@@ -166,12 +167,12 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Obtiene una página de posts que pertenecen a un tipo específico.
+     * Obtiene una página de publicaciones que pertenecen a un tipo específico.
      *
-     * @param type el ID del tipo de post
-     * @param pageable la información de paginación
-     * @return una página de posts que pertenecen al tipo dado
-     * @throws Fail si el tipo no es encontrado
+     * @param type El ID del tipo de publicación
+     * @param pageable La información de paginación
+     * @return Una página de publicaciones que pertenecen al tipo buscado
+     * @throws Fail Si el tipo no es encontrado
      */
     @Override
     public Page<Post> findByType(Integer type, Pageable pageable) {
@@ -184,12 +185,12 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-    * Obtiene una página de posts relacionados a un subtipo específico.
+    * Obtiene una página de publicaciones que pertenecen a un subtipo específico.
     *
-    * @param subtype el ID del subtipo de post
-    * @param pageable la información de paginación
-    * @return una página de posts que pertenecen al subtipo dado
-    * @throws Fail si el subtipo no es encontrado
+    * @param subtype El ID del subtipo de publicación
+    * @param pageable La información de paginación
+    * @return Una página de publicaciones que pertenecen al subtipo buscado
+    * @throws Fail Si el subtipo no es encontrado
     */
     @Override
     public Page<Post> findBySubtype(Integer subtype, Pageable pageable) {
@@ -202,11 +203,11 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Obtiene posts que se encuentran dentro del rango de fechas indicado.
+     * Obtiene publicaciones que se encuentran dentro del rango de fechas indicado.
      *
-     * @param start fecha de inicio del rango (inclusive)
-     * @param end   fecha de fin del rango (inclusive)
-     * @return      una página de posts que se encuentran en el rango de fechas
+     * @param start Fecha de inicio del rango (inclusive)
+     * @param end Fecha de fin del rango (inclusive)
+     * @return Una página de publicaciones que se encuentran dentro del rango de fechas
      */
     @Override
     public Page<Post> findByDateRange(Timestamp start, Timestamp end, Pageable pageable) {
@@ -217,11 +218,11 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Obtiene posts que comienzan después de una fecha específica.
+     * Obtiene publicaciones que comienzan después de una fecha específica.
      *
-     * @param start la fecha de inicio
-     * @param pageable la paginación
-     * @return una página de posts que comienzan después de la fecha especificada
+     * @param start La fecha de inicio
+     * @param pageable La información de paginación
+     * @return Una página de publicaciones que comienzan después de la fecha especificada
      */
     @Override
     public Page<Post> findByDateStart(Timestamp start, Pageable pageable) {
@@ -232,11 +233,11 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Obtiene posts que terminan en un rango de fechas
+     * Obtiene publicaciones que comienzan antes de una fecha específica.
      *
-     * @param end la fecha de fin del rango
-     * @param pageable la paginación
-     * @return una página de posts que terminan en el rango de fechas
+     * @param end La fecha de fin
+     * @param pageable La información de paginación
+     * @return Una página de publicaciones que comienzan antes de la fecha especificada
      */
     @Override
     public Page<Post> findByDateEnd(Timestamp end, Pageable pageable) {
@@ -247,13 +248,16 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Crea un nuevo post.
+     * Crea una nueva publicación.
      *
-     * El usuario actual debe ser el dueño del post.
+     * El usuario actual debe ser el dueño de la publicación.
      *
-     * @param newPost el nuevo post
-     * @param originalPoster el usuario que hace la petición
-     * @return el post creado
+     * @param newPost La nueva publicación
+     * @param originalPoster El usuario que que hace la petición
+     * @return La publicación creada
+     * @throws Fail Si:
+     * -El subtipo no es encontrado
+     * -El barrio no es encontrado
      */
     @Override
     public Post create(PostCreateRequest newPost, User originalPoster) {
@@ -280,16 +284,18 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Actualiza un post.
+     * Actualiza una publicación.
      *
-     * El usuario actual debe ser el dueño administrador
-     * para poder actualizar el post.
+     * El usuario actual debe ser el dueño o un administrador
+     * para poder actualizar la publicación.
      *
-     * @param id el id del post
-     * @param newPost el nuevo contenido
-     * @param originalPoster el usuario que realiz  la actualizacion
-     * @return el post actualizado
-     * @throws AccessDeniedException si el usuario no es el dueño administrador del post
+     * @param id El ID de la publicación
+     * @param newPost La nueva publicación
+     * @param originalPoster El usuario que realizó la actualización
+     * @return La publicación actualizada
+     * @throws AccessDeniedException Si:
+     * -El usuario no es el dueño de la publicación
+     * -El usuario no es administrador
      */
     @Override
     public Post update(Integer id, PostPatchEditRequest newPost, User originalPoster) throws AccessDeniedException {
@@ -321,14 +327,13 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Elimina un post.
-     * Sólo el propietario del post, el administrador o el moderador del barrio
-     * del post pueden eliminarlo.
+     * Elimina una publicación.
+     * Sólo el propietario de la publicación, el administrador o el moderador del barrio
+     * de la publicación pueden eliminarla.
      *
-     * @param id el ID del post a eliminar
-     * @param originalPoster el usuario que intenta eliminar el post
-     * @throws AccessDeniedException si el usuario no tiene permiso para eliminar
-     * el post
+     * @param id El ID de la publicación a eliminar
+     * @param originalPoster El usuario que intenta eliminar la publicación
+     * @throws AccessDeniedException Si el usuario no tiene permiso para eliminar la publicación
      */
     @Override
     public void delete(Integer id, User originalPoster) throws AccessDeniedException {
@@ -343,23 +348,23 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * Ejecuta el SP "obtenerPosts" y devuelve una lista de DTOs de posts.
+     * Ejecuta el SP "getPosts" y devuelve una lista de DTOs de publicaciones.
      *
-     * @param userBarrio el barrio del usuario logueado
-     * @param userId     el ID del usuario logueado
-     * @return una lista de DTOs de posts
+     * @param userId El ID del usuario autenticado
+     * @param userNeighbourhood El barrio del usuario autenticado
+     * @return Una lista de DTOs de publicaciones
      */
     @Override
-    public List<PostDTO> obtenerPosts(int userBarrio, int userId) {
-        List<Map<String, Object>> rawResults = postRepository.obtenerPosts(userBarrio, userId);
+    public List<PostDTO> findPosts(int userId, int userNeighbourhood) {
+        List<Map<String, Object>> rawResults = postRepository.findPosts(userId, userNeighbourhood);
         return rawResults.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
     /**
-     * Convierte una fila de resultados de la consulta a un DTO de Post.
+     * Convierte una fila de resultados de la consulta a un DTO de publicación.
      *
-     * @param row la fila de resultados
-     * @return el DTO de Post
+     * @param row La fila de resultados
+     * @return El DTO de la publicación
      */
     private PostDTO mapToDTO(Map<String, Object> row) {
         PostDTO dto = new PostDTO();

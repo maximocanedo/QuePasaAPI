@@ -56,12 +56,10 @@ public class PostController {
     }
 
     /**
-     * Crea una publicacion nueva.
+     * Crea una publicación nueva.
      *
-     * @param post    Detalles de la publicacion a crear.
-     * @return        Entidad de respuesta con los detalles de la publicacion creada.
-     * @throws Fail   Si el usuario no esta  autenticado o no tiene permiso para hacerlo.
-     * @throws ValidationError Si la publicacion no cumple con las validaciones.
+     * @param post Detalles de la publicación a crear.
+     * @return Entidad de respuesta con los detalles de la publicación creada.
      */
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {
@@ -70,12 +68,12 @@ public class PostController {
     }
 
     /**
-     * Recupera una lista paginada de publicaciones activas o inactivas, según sea especificado.
+     * Obtiene una lista paginada de publicaciones activas o inactivas, según sea especificado.
      *
-     * @param page     Número de la página a obtener. Comienza en 0.
-     * @param size     Tamaño de la página.
-     * @param activeOnly Si se desean obtener solo las publicaciones activas.
-     * @return          Página de publicaciones encontradas.
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @param activeOnly Si se desean obtener solo las publicaciones activas. Valor predeterminado es true.
+     * @return Entidad de respuesta con una lista paginada de publicaciones encontradas.
      */
     @GetMapping("/all")
     public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
@@ -84,14 +82,14 @@ public class PostController {
     }
 
     /**
-     * Recupera una lista paginada de publicaciones que coinciden con los criterios de búsqueda especificados.
+     * Obtiene una lista paginada de publicaciones que coinciden con los criterios de búsqueda especificados.
      *
-     * @param q El término de búsqueda que se usará para filtrar las publicaciones.
-     * @param sort El criterio de ordenamiento para las publicaciones, con un valor predeterminado de "title,asc".
-     * @param page El número de página a recuperar, con un valor predeterminado de 0.
-     * @param size El número de publicaciones por página, con un valor predeterminado de 10.
-     * @param active Indica si solo se deben recuperar publicaciones activas, con un valor predeterminado de true.
-     * @return Un ResponseEntity que contiene la lista paginada de publicaciones filtradas.
+     * @param q Parámetro de búsqueda que se usará para filtrar las publicaciones.
+     * @param sort Parámetro de ordenamiento para las publicaciones, con un valor predeterminado de "title,asc".
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @param active Si se desean obtener solo las publicaciones activas. Valor predeterminado es true.
+     * @return Entidad de respuesta con una lista paginada de publicaciones filtradas.
      */
     @GetMapping("/search")
     public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="title,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
@@ -104,10 +102,10 @@ public class PostController {
     }
 
     /**
-     * Recupera una publicación por su identificador único.
+     * Obtiene una publicación según su ID.
      *
-     * @param id El identificador único de la publicación a recuperar.
-     * @return Un ResponseEntity que contiene la publicación correspondiente al identificador proporcionado.
+     * @param id ID de la publicación a buscar.
+     * @return Entidad de respuesta que contiene la publicación buscada.
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getPostById(@PathVariable Integer id) {
@@ -115,12 +113,12 @@ public class PostController {
     }
 
     /**
-     * Recupera publicaciones creadas por un usuario específico (autor original).
+     * Obtiene publicaciones que pertenecen a un OP (autor).
      *
-     * @param id El ID del autor original cuyas publicaciones se desean recuperar.
-     * @param page El número de página a recuperar, con un valor predeterminado de 0.
-     * @param size La cantidad de publicaciones por página, con un valor predeterminado de 10.
-     * @return Un ResponseEntity que contiene la lista paginada de publicaciones del usuario especificado.
+     * @param id ID del OP.
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones del usuario especificado.
      */
     @GetMapping("/op/{id}")
     public ResponseEntity<?> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -129,12 +127,12 @@ public class PostController {
     }
 
     /**
-     * Recupera publicaciones filtradas por un tipo de audiencia especificado.
+     * Obtiene publicaciones según su audiencia.
      *
-     * @param audience El tipo de audiencia por el cual se filtrarán las publicaciones.
-     * @param page El número de página a recuperar, el valor predeterminado es 0.
-     * @param size La cantidad de publicaciones por página, el valor predeterminado es 10.
-     * @return Un ResponseEntity que contiene una lista de publicaciones para la audiencia especificada.
+     * @param audience Audiencia de las publicaciones.
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones con la audiencia especificada.
      */
     @GetMapping("/audience/{audience}")
     public ResponseEntity<?> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -143,12 +141,12 @@ public class PostController {
     }
 
     /**
-     * Recupera las publicaciones de un tipo especificado.
+     * Obtiene las publicaciones de un tipo especificado.
      *
-     * @param id El id del tipo
-     * @param page El número de página a recuperar
-     * @param size La cantidad de elementos por página
-     * @return Una lista paginada de publicaciones del tipo especificado
+     * @param id ID del tipo.
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones con el tipo especificado.
      */
     @GetMapping("/type/{id}")
     public ResponseEntity<?> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -157,12 +155,12 @@ public class PostController {
     }
 
     /**
-     * Recupera las publicaciones de un subtipo especificado.
+     * Obtiene las publicaciones de un subtipo especificado.
      * 
-     * @param id El id del subtipo
-     * @param page El n mero de p gina a recuperar
-     * @param size La cantidad de elementos por p gina
-     * @return Una lista paginada de publicaciones del subtipo especificado
+     * @param id ID del subtipo.
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones con el subtipo especificado.
      */
     @GetMapping("/subtype/{id}")
     public ResponseEntity<?> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -171,16 +169,15 @@ public class PostController {
     }
 
     /** Comienza sección de FECHAS **/
-
     /**
-     * Recupera las publicaciones dentro de un rango de fechas especificado.
+     * Obtiene las publicaciones dentro de un rango de fechas especificado.
      *
-     * @param start la fecha de inicio del rango en formato "yyyy-MM-dd"
-     * @param end la fecha de fin del rango en formato "yyyy-MM-dd"
-     * @param page el número de página para la paginación (el valor predeterminado es 0)
-     * @param size la cantidad de publicaciones por página (el valor predeterminado es 10)
-     * @return un ResponseEntity que contiene una página de publicaciones dentro del rango de fechas,
-     *         o una respuesta de solicitud incorrecta si el formato de la fecha es inválido
+     * @param start Fecha de inicio del rango en formato "yyyy-MM-dd"
+     * @param end Fecha de fin del rango en formato "yyyy-MM-dd"
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones dentro del rango de fechas,
+     * o una respuesta de tipo Bad Request indicando que el formato de fecha es inválido.
      */
     @GetMapping("/date/{start}/{end}")
     public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -196,14 +193,13 @@ public class PostController {
         }
     }
 
-
     /**
-     * Obtiene posts que comienzan después de una fecha específica.
+     * Obtiene las publicaciones que comienzan después de una fecha específica.
      *
-     * @param start la fecha de inicio en formato de cadena
-     * @param page el número de página a obtener
-     * @param size el número de elementos por página
-     * @return una respuesta que contiene una página de posts que comienzan después de la fecha especificada
+     * @param start Fecha de inicio en formato String
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones después de la fecha de inicio.
      */
     @GetMapping("/date-start/{start}")
     public ResponseEntity<?> getPostsByDateStart(@PathVariable String start, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -219,12 +215,12 @@ public class PostController {
     }
 
     /**
-     * Obtiene posts que terminan antes de una fecha específica.
+     * Obtiene las publicaciones que comienzan antes de una fecha específica.
      *
-     * @param end la fecha de fin
-     * @param page la página a obtener
-     * @param size el tamaño de la página
-     * @return una página de posts que terminan antes de la fecha especificada
+     * @param end Fecha de fin en formato String
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones antes de la fecha de fin.
      */
     @GetMapping("/date-end/{end}")
     public ResponseEntity<?> getPostsByDateEnd(@PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -242,9 +238,9 @@ public class PostController {
 
     /**
      * Obtiene las publicaciones del usuario autenticado.
-     * @param page Número de página a obtener
-     * @param size Número de elementos por página
-     * @return Publicaciones del usuario autenticado
+     * @param page Número de páginas a obtener. Comienza en 0.
+     * @param size Tamaño de cada página. Comienza en 10.
+     * @return Entidad de respuesta que contiene la lista paginada de publicaciones del usuario autenticado.
      */
     @GetMapping("/me")
     public ResponseEntity<?> getPostsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
@@ -255,10 +251,12 @@ public class PostController {
 
     /**
      * Edita una publicación.
-     * @param id Identificador de la publicación a editar
-     * @param post Información de la publicación a editar
-     * @return La publicación editada
-     * @throws AccessDeniedException si el usuario autenticado no es el due o de la publicación
+     * @param id ID de la publicación a editar.
+     * @param post Nueva publicación.
+     * @return Entidad de respuesta que contiene la publicación editada.
+     * @throws AccessDeniedException si:
+     * -El usuario no es el dueño de la publicación.
+     * -El usuario no es administrador.
      */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updatePost(@PathVariable Integer id, @RequestBody PostPatchEditRequest post) throws AccessDeniedException {
@@ -268,9 +266,12 @@ public class PostController {
 
     /**
      * Elimina una publicación.
-     * @param id Identificador de la publicación a eliminar
-     * @return 204 No Content si se eliminó correctamente, 403 Forbidden si no se tiene permiso
-     * @throws AccessDeniedException si no se tiene permiso para eliminar la publicación
+     * @param id ID de la publicación a eliminar.
+     * @return Entidad de respuesta de tipo 204 (No Content).
+     * @throws AccessDeniedException si:
+     * -El usuario no es el dueño de la publicación.
+     * -El usuario no es administrador.
+     * -El usuario no es moderador.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable Integer id) throws AccessDeniedException {
@@ -280,11 +281,10 @@ public class PostController {
     }
 
     /** Comienza sección de VOTOS **/
-
     /**
-     * Retorna la cuenta de votos de una publicación.
-     * @param id Identificador de la publicación a obtener votos
-     * @return La cuenta de votos actuales de la publicación
+     * Devuelve la cuenta de votos de una publicación.
+     * @param id ID de la publicación a obtener votos.
+     * @return Entidad de respuesta con la cuenta de votos de la publicación.
      */
     @GetMapping("/{id}/votes")
     public ResponseEntity<VoteCount> getVotes(@PathVariable Integer id) {
@@ -293,8 +293,8 @@ public class PostController {
 
     /**
      * Incrementa el voto de una publicación especificada.
-     * @param id Identificador del post a incrementar el voto
-     * @return La nueva cuenta de votos después de incrementar
+     * @param id ID de la publicación a votar.
+     * @return Entidad de respuesta con la cuenta de votos actualizada.
      */
     @PostMapping("/{id}/votes/up")
     public ResponseEntity<VoteCount> upVote(@PathVariable Integer id) {
@@ -305,8 +305,8 @@ public class PostController {
 
     /**
      * Decrementa el voto de una publicación especificada.
-     * @param id Identificador del post a decrementar el voto
-     * @return La nueva cuenta de votos después de decrementar
+     * @param id ID de la publicación a decrementar voto.
+     * @return Entidad de respuesta con la cuenta de votos actualizada.
      */
     @PostMapping("/{id}/votes/down")
     public ResponseEntity<VoteCount> downVote(@PathVariable Integer id) {
@@ -317,12 +317,11 @@ public class PostController {
     /**
      * Comienza sección de COMENTARIOS
      */
-    
     /**
-     * Comenta un post con el contenido dado.
-     * @param id Identificador del post a comentar
-     * @param content Contenido del comentario
-     * @return El comentario creado
+     * Comenta una publicación con el contenido dado.
+     * @param id ID de la publicación a comentar.
+     * @param content Contenido del comentario.
+     * @return Entidad de respuesta con el nuevo comentario.
      */
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> comment(@PathVariable Integer id, @RequestBody String content) {
@@ -330,10 +329,10 @@ public class PostController {
     }
 
     /**
-     * Devuelve una página de comentarios de un post.
-     * @param id Identificador del post
-     * @param pageable Parámetros de paginación
-     * @return Página de comentarios
+     * Devuelve una página de comentarios de una publicación.
+     * @param id ID de la publicación.
+     * @param pageable Parámetros de paginación.
+     * @return Entidad de respuesta con la lista paginada de comentarios.
      */
     @GetMapping("/{id}/comments")
     public ResponseEntity<Page<PostComment>> viewComments(@PathVariable Integer id, Pageable pageable) {
@@ -342,14 +341,14 @@ public class PostController {
     // Termina sección de COMENTARIOS **/
 
     /**
-     * Obtiene los posts de un usuario en su barrio.
-     * @param userId Identificador del usuario
-     * @param userBarrio Identificador del barrio del usuario
+     * Obtiene las publicaciones de un usuario en su barrio.
+     * @param userId ID del usuario.
+     * @param userNeighbourhood ID del barrio del usuario.
      * @return Lista de posts del usuario en su barrio
      */
-    @GetMapping("/user/{userId}/barrio/{userBarrio}")
-    public List<PostDTO> obtenerPosts(@PathVariable int userId, @PathVariable int userBarrio) {
-        return postService.obtenerPosts(userBarrio, userId);
+    @GetMapping("/user/{userId}/neighbourhood/{userNeighbourhood}")
+    public ResponseEntity<List<PostDTO>> getPosts(@PathVariable int userId, @PathVariable int userNeighbourhood) {
+        return ResponseEntity.ok(postService.findPosts(userId, userNeighbourhood));
     }
 
 }
