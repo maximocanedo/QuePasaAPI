@@ -55,7 +55,6 @@ public class PostController {
         this.auth = auth;
     }
 
-
     /**
      * Crea una publicacion nueva.
      *
@@ -84,16 +83,16 @@ public class PostController {
         return ResponseEntity.ok(postService.findAll(pageable, activeOnly));
     }
 
-/**
- * Recupera una lista paginada de publicaciones que coinciden con los criterios de búsqueda especificados.
- *
- * @param q El término de búsqueda que se usará para filtrar las publicaciones.
- * @param sort El criterio de ordenamiento para las publicaciones, con un valor predeterminado de "title,asc".
- * @param page El número de página a recuperar, con un valor predeterminado de 0.
- * @param size El número de publicaciones por página, con un valor predeterminado de 10.
- * @param active Indica si solo se deben recuperar publicaciones activas, con un valor predeterminado de true.
- * @return Un ResponseEntity que contiene la lista paginada de publicaciones filtradas.
- */
+    /**
+     * Recupera una lista paginada de publicaciones que coinciden con los criterios de búsqueda especificados.
+     *
+     * @param q El término de búsqueda que se usará para filtrar las publicaciones.
+     * @param sort El criterio de ordenamiento para las publicaciones, con un valor predeterminado de "title,asc".
+     * @param page El número de página a recuperar, con un valor predeterminado de 0.
+     * @param size El número de publicaciones por página, con un valor predeterminado de 10.
+     * @param active Indica si solo se deben recuperar publicaciones activas, con un valor predeterminado de true.
+     * @return Un ResponseEntity que contiene la lista paginada de publicaciones filtradas.
+     */
     @GetMapping("/search")
     public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="title,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
         Sort.Direction direction = Sort.Direction.ASC;
@@ -104,53 +103,53 @@ public class PostController {
         return ResponseEntity.ok(postService.search(q, pageable, active));
     }
 
-/**
- * Recupera una publicación por su identificador único.
- *
- * @param id El identificador único de la publicación a recuperar.
- * @return Un ResponseEntity que contiene la publicación correspondiente al identificador proporcionado.
- */
+    /**
+     * Recupera una publicación por su identificador único.
+     *
+     * @param id El identificador único de la publicación a recuperar.
+     * @return Un ResponseEntity que contiene la publicación correspondiente al identificador proporcionado.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getPostById(@PathVariable Integer id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 
-/**
- * Recupera publicaciones creadas por un usuario específico (autor original).
- *
- * @param id El ID del autor original cuyas publicaciones se desean recuperar.
- * @param page El número de página a recuperar, con un valor predeterminado de 0.
- * @param size La cantidad de publicaciones por página, con un valor predeterminado de 10.
- * @return Un ResponseEntity que contiene la lista paginada de publicaciones del usuario especificado.
- */
-@GetMapping("/op/{id}")
+    /**
+     * Recupera publicaciones creadas por un usuario específico (autor original).
+     *
+     * @param id El ID del autor original cuyas publicaciones se desean recuperar.
+     * @param page El número de página a recuperar, con un valor predeterminado de 0.
+     * @param size La cantidad de publicaciones por página, con un valor predeterminado de 10.
+     * @return Un ResponseEntity que contiene la lista paginada de publicaciones del usuario especificado.
+     */
+    @GetMapping("/op/{id}")
     public ResponseEntity<?> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByOp(id, pageable));
     }
 
-/**
- * Recupera publicaciones filtradas por un tipo de audiencia especificado.
- *
- * @param audience El tipo de audiencia por el cual se filtrarán las publicaciones.
- * @param page El número de página a recuperar, el valor predeterminado es 0.
- * @param size La cantidad de publicaciones por página, el valor predeterminado es 10.
- * @return Un ResponseEntity que contiene una lista de publicaciones para la audiencia especificada.
- */
+    /**
+     * Recupera publicaciones filtradas por un tipo de audiencia especificado.
+     *
+     * @param audience El tipo de audiencia por el cual se filtrarán las publicaciones.
+     * @param page El número de página a recuperar, el valor predeterminado es 0.
+     * @param size La cantidad de publicaciones por página, el valor predeterminado es 10.
+     * @return Un ResponseEntity que contiene una lista de publicaciones para la audiencia especificada.
+     */
     @GetMapping("/audience/{audience}")
     public ResponseEntity<?> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByAudience(audience, pageable));
     }
 
-/**
- * Recupera las publicaciones de un tipo especificado.
- * 
- * @param id El id del tipo
- * @param page El número de página a recuperar
- * @param size La cantidad de elementos por página
- * @return Una lista paginada de publicaciones del tipo especificado
- */
+    /**
+     * Recupera las publicaciones de un tipo especificado.
+     *
+     * @param id El id del tipo
+     * @param page El número de página a recuperar
+     * @param size La cantidad de elementos por página
+     * @return Una lista paginada de publicaciones del tipo especificado
+     */
     @GetMapping("/type/{id}")
     public ResponseEntity<?> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -172,17 +171,17 @@ public class PostController {
     }
 
     /** Comienza sección de FECHAS **/
-    
-/**
- * Recupera las publicaciones dentro de un rango de fechas especificado.
- *
- * @param start la fecha de inicio del rango en formato "yyyy-MM-dd"
- * @param end la fecha de fin del rango en formato "yyyy-MM-dd"
- * @param page el número de página para la paginación (el valor predeterminado es 0)
- * @param size la cantidad de publicaciones por página (el valor predeterminado es 10)
- * @return un ResponseEntity que contiene una página de publicaciones dentro del rango de fechas,
- *         o una respuesta de solicitud incorrecta si el formato de la fecha es inválido
- */
+
+    /**
+     * Recupera las publicaciones dentro de un rango de fechas especificado.
+     *
+     * @param start la fecha de inicio del rango en formato "yyyy-MM-dd"
+     * @param end la fecha de fin del rango en formato "yyyy-MM-dd"
+     * @param page el número de página para la paginación (el valor predeterminado es 0)
+     * @param size la cantidad de publicaciones por página (el valor predeterminado es 10)
+     * @return un ResponseEntity que contiene una página de publicaciones dentro del rango de fechas,
+     *         o una respuesta de solicitud incorrecta si el formato de la fecha es inválido
+     */
     @GetMapping("/date/{start}/{end}")
     public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         try {
@@ -198,14 +197,14 @@ public class PostController {
     }
 
 
-/**
- * Obtiene posts que comienzan después de una fecha específica.
- *
- * @param start la fecha de inicio en formato de cadena
- * @param page el número de página a obtener
- * @param size el número de elementos por página
- * @return una respuesta que contiene una página de posts que comienzan después de la fecha especificada
- */
+    /**
+     * Obtiene posts que comienzan después de una fecha específica.
+     *
+     * @param start la fecha de inicio en formato de cadena
+     * @param page el número de página a obtener
+     * @param size el número de elementos por página
+     * @return una respuesta que contiene una página de posts que comienzan después de la fecha especificada
+     */
     @GetMapping("/date-start/{start}")
     public ResponseEntity<?> getPostsByDateStart(@PathVariable String start, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         try {
@@ -292,11 +291,11 @@ public class PostController {
         return ResponseEntity.ok(voteService.count(Post.identify(id)));
     }
 
-/**
- * Incrementa el voto de una publicación especificada.
- * @param id Identificador del post a incrementar el voto
- * @return La nueva cuenta de votos después de incrementar
- */
+    /**
+     * Incrementa el voto de una publicación especificada.
+     * @param id Identificador del post a incrementar el voto
+     * @return La nueva cuenta de votos después de incrementar
+     */
     @PostMapping("/{id}/votes/up")
     public ResponseEntity<VoteCount> upVote(@PathVariable Integer id) {
         var post = Post.identify(id);
@@ -304,11 +303,11 @@ public class PostController {
         return ResponseEntity.ok(voteResult);
     }
 
-/**
- * Decrementa el voto de una publicación especificada.
- * @param id Identificador del post a decrementar el voto
- * @return La nueva cuenta de votos después de decrementar
- */
+    /**
+     * Decrementa el voto de una publicación especificada.
+     * @param id Identificador del post a decrementar el voto
+     * @return La nueva cuenta de votos después de decrementar
+     */
     @PostMapping("/{id}/votes/down")
     public ResponseEntity<VoteCount> downVote(@PathVariable Integer id) {
         return ResponseEntity.ok(voteService.vote(Post.identify(id), -1));
@@ -352,6 +351,5 @@ public class PostController {
     public List<PostDTO> obtenerPosts(@PathVariable int userId, @PathVariable int userBarrio) {
         return postService.obtenerPosts(userBarrio, userId);
     }
-
 
 }

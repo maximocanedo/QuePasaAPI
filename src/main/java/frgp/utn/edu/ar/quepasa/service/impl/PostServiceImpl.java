@@ -113,13 +113,13 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
-/**
- * Busca un post por su ID y lo devuelve con los comentarios y votos poblados.
- *
- * @param id el ID del post que se busca
- * @return el post encontrado con comentarios y votos poblados
- * @throws Fail si el post no es encontrado
- */
+    /**
+     * Busca un post por su ID y lo devuelve con los comentarios y votos poblados.
+     *
+     * @param id el ID del post que se busca
+     * @return el post encontrado con comentarios y votos poblados
+     * @throws Fail si el post no es encontrado
+     */
     @Override
     public Post findById(Integer id) {
         return commentService.populate(
@@ -149,7 +149,6 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
-
     /**
      * Obtiene una página de posts que pertenecen a una audiencia específica.
      *
@@ -166,16 +165,14 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Obtiene una página de posts que pertenecen a un tipo específico.
- *
- * @param type el ID del tipo de post
- * @param pageable la información de paginación
- * @return una página de posts que pertenecen al tipo dado
- * @throws Fail si el tipo no es encontrado
- */
-/******  d05db5e3-bd8d-4a55-9a97-938d53a3d44f  *******/
+    /**
+     * Obtiene una página de posts que pertenecen a un tipo específico.
+     *
+     * @param type el ID del tipo de post
+     * @param pageable la información de paginación
+     * @return una página de posts que pertenecen al tipo dado
+     * @throws Fail si el tipo no es encontrado
+     */
     @Override
     public Page<Post> findByType(Integer type, Pageable pageable) {
         PostType postType = postTypeRepository.findById(type)
@@ -186,8 +183,6 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
-
-   
     /**
     * Obtiene una página de posts relacionados a un subtipo específico.
     *
@@ -205,7 +200,6 @@ public class PostServiceImpl implements PostService {
                 .map(voteService::populate)
                 .map(commentService::populate);
     }
-
 
     /**
      * Obtiene posts que se encuentran dentro del rango de fechas indicado.
@@ -237,7 +231,6 @@ public class PostServiceImpl implements PostService {
                 .map(commentService::populate);
     }
 
-
     /**
      * Obtiene posts que terminan en un rango de fechas
      *
@@ -252,7 +245,6 @@ public class PostServiceImpl implements PostService {
                 .map(voteService::populate)
                 .map(commentService::populate);
     }
-
 
     /**
      * Crea un nuevo post.
@@ -286,7 +278,6 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         return commentService.populate(voteService.populate(post));
     }
-
 
     /**
      * Actualiza un post.
@@ -329,7 +320,6 @@ public class PostServiceImpl implements PostService {
         return commentService.populate(voteService.populate(post));
     }
 
-
     /**
      * Elimina un post.
      * Sólo el propietario del post, el administrador o el moderador del barrio
@@ -351,6 +341,7 @@ public class PostServiceImpl implements PostService {
         post.setActive(false);
         postRepository.save(post);
     }
+
     /**
      * Ejecuta el SP "obtenerPosts" y devuelve una lista de DTOs de posts.
      *
@@ -363,6 +354,7 @@ public class PostServiceImpl implements PostService {
         List<Map<String, Object>> rawResults = postRepository.obtenerPosts(userBarrio, userId);
         return rawResults.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
+
     /**
      * Convierte una fila de resultados de la consulta a un DTO de Post.
      *
