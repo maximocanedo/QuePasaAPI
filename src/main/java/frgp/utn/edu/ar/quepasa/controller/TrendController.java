@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import frgp.utn.edu.ar.quepasa.model.Trend;
-import frgp.utn.edu.ar.quepasa.service.TrendService;
+import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,10 +16,10 @@ import java.util.List;
 @RequestMapping("/api/trends")
 public class TrendController {
 
-    private final TrendService trendService;
+    private final TrendServiceImpl trendService;
 
     @Autowired
-    public TrendController(TrendService trendService) {
+    public TrendController(TrendServiceImpl trendService) {
         this.trendService = trendService;
     }
 
@@ -40,7 +40,7 @@ public class TrendController {
     ) {
         try {
             Timestamp fechaBaseTimestamp = Timestamp.valueOf(fechaBase);
-            List<Trend> tendencias = trendService.getTendencias(barrio, fechaBaseTimestamp);
+            List<Trend> tendencias = trendService.getTrends(barrio, fechaBaseTimestamp);
 
             if (tendencias.isEmpty()) {
                 return ResponseEntity.noContent().build();

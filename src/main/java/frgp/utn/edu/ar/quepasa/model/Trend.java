@@ -3,12 +3,9 @@ package frgp.utn.edu.ar.quepasa.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.NamedStoredProcedureQuery;
-import jakarta.persistence.ParameterMode;
-import jakarta.persistence.StoredProcedureParameter;
+import jakarta.persistence.*;
+
 @NamedStoredProcedureQuery(
     name = "contar_tendencias_tags_por_barrio",
     procedureName = "contar_tendencias_tags_por_barrio",
@@ -84,6 +81,14 @@ public class Trend implements Serializable, TrendProjection {
                 "tag='" + tag + '\'' +
                 ", cantidad=" + cantidad +
                 '}';
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
 

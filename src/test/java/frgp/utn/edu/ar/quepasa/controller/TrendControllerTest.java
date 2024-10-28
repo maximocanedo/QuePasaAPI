@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
 import frgp.utn.edu.ar.quepasa.model.Trend;
-import frgp.utn.edu.ar.quepasa.service.TrendService;
+import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -25,13 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.*;
 
 @Transactional
@@ -46,7 +44,7 @@ public class TrendControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private TrendService trendService;
+    private TrendServiceImpl trendService;
 
     private List<Trend> tendencias;
 
@@ -74,7 +72,7 @@ public class TrendControllerTest {
      */
     @Test
     public void testGetTendencias() throws Exception {
-        when(trendService.getTendencias(1, Timestamp.valueOf("2024-10-01 09:30:00")))
+        when(trendService.getTrends(1, Timestamp.valueOf("2024-10-01 09:30:00")))
                 .thenReturn(tendencias);
 
         mockMvc.perform(get("/api/trends/1")
