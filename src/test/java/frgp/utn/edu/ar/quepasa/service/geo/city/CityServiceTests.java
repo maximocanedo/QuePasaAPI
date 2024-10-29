@@ -16,13 +16,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,15 +87,17 @@ public class CityServiceTests {
     @Test
     @DisplayName("Buscar ciudades.")
     public void findCities() {
+        Pageable pageable = PageRequest.of(0, 10);
+
         setAuthContext();
 
         City city = new City();
-        List<City> cities = new ArrayList<>(List.of(city));
+        Page<City> cities =  new PageImpl<>(List.of(city));
 
-        when(cityRepository.findAll()).thenReturn(cities);
+        when(cityRepository.findAllActive(pageable)).thenReturn(cities);
 
         assertDoesNotThrow(() -> {
-            List<City> foundCities = cityService.getAll(false);
+            Page<City> foundCities = cityService.getAll(pageable,true);
 
             assertNotNull(foundCities);
             assertFalse(foundCities.isEmpty());
@@ -104,21 +109,22 @@ public class CityServiceTests {
     @Test
     @DisplayName("Buscar ciudades por país.")
     public void findByCountry_CountryFound() {
+        Pageable pageable = PageRequest.of(0, 10);
         String iso3 = "ARG";
 
         Country country = new Country();
         country.setIso3(iso3);
 
         City city = new City();
-        List<City> cities = new ArrayList<>(List.of(city));
+        Page<City> cities =  new PageImpl<>(List.of(city));
 
         setAuthContext();
 
         when(countryRepository.findByIso3(iso3)).thenReturn(Optional.of(country));
-        when(cityRepository.findByCountry(iso3)).thenReturn(cities);
+        when(cityRepository.findByCountry(iso3, pageable)).thenReturn(cities);
 
         assertDoesNotThrow(() -> {
-            List<City> foundCities = cityService.getByCountry(iso3);
+            Page<City> foundCities = cityService.getByCountry(iso3, pageable);
 
             assertNotNull(foundCities);
             assertFalse(foundCities.isEmpty());
@@ -130,13 +136,14 @@ public class CityServiceTests {
     @Test
     @DisplayName("Buscar ciudades por país, país inexistente.")
     public void findByCountry_CountryNotFound() {
+        Pageable pageable = PageRequest.of(0, 10);
         String iso3 = "ARG";
 
         setAuthContext();
 
         when(countryRepository.findByIso3(iso3)).thenReturn(Optional.empty());
 
-        assertThrows(Fail.class, () -> cityService.getByCountry(iso3));
+        assertThrows(Fail.class, () -> cityService.getByCountry(iso3, pageable));
 
         clearAuthContext();
     }
@@ -144,21 +151,22 @@ public class CityServiceTests {
     @Test
     @DisplayName("Buscar ciudades por división subnacional.")
     public void findBySubdivision_SubdivisionFound() {
+        Pageable pageable = PageRequest.of(0, 10);
         String iso3 = "AR-C";
 
         SubnationalDivision subdivision = new SubnationalDivision();
         subdivision.setIso3(iso3);
 
         City city = new City();
-        List<City> cities = new ArrayList<>(List.of(city));
+        Page<City> cities =  new PageImpl<>(List.of(city));
 
         setAuthContext();
 
         when(subnationalDivisionRepository.findByIso3(iso3)).thenReturn(Optional.of(subdivision));
-        when(cityRepository.findBySubdivision(subdivision)).thenReturn(cities);
+        when(cityRepository.findBySubdivision(subdivision, pageable)).thenReturn(cities);
 
         assertDoesNotThrow(() -> {
-            List<City> foundCities = cityService.getBySubnationalDivision(iso3);
+            Page<City> foundCities = cityService.getBySubnationalDivision(iso3, pageable);
 
             assertNotNull(foundCities);
             assertFalse(foundCities.isEmpty());
@@ -170,13 +178,14 @@ public class CityServiceTests {
     @Test
     @DisplayName("Buscar ciudades por división subnacional, división inexistente.")
     public void findBySubdivision_SubdivisionNotFound() {
+        Pageable pageable = PageRequest.of(0, 10);
         String iso3 = "AR-C";
 
         setAuthContext();
 
         when(subnationalDivisionRepository.findByIso3(iso3)).thenReturn(Optional.empty());
 
-        assertThrows(Fail.class, () -> cityService.getBySubnationalDivision(iso3));
+        assertThrows(Fail.class, () -> cityService.getBySubnationalDivision(iso3, pageable));
 
         clearAuthContext();
     }
