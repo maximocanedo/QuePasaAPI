@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -40,7 +41,14 @@ public class CityServiceImpl implements CityService {
     }
 
     /**
-     * <b>Devuelve una lista paginada de ciudades según la consulta. </b>
+     * Busca todas las ciudades que contengan el texto dado en el nombre,
+     * activas o no activas, de acuerdo al parámetro dado.
+     * La lista se devuelve paginada según el objeto Pageable dado.
+     *
+     * @param q El texto que se busca en el nombre de las ciudades
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param active Indica si se quieren obtener solo las ciudades activas o no
+     * @return La lista de ciudades paginada
      */
     @Override
     public Page<City> search(String q, Pageable pageable, boolean active) {
@@ -48,18 +56,27 @@ public class CityServiceImpl implements CityService {
     }
 
     /**
-     * <b>Devuelve una lista con todas las ciudades. </b>
+     * Busca todas los ciudades, activas o no activas, de acuerdo al parámetro dado.
+     *
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param activeOnly Indica si se quieren obtener solo las ciudades activas o no
+     * @return La lista de ciudades
      */
     @Override
-    public List<City> getAll(boolean activeOnly) {
+    public Page<City> getAll(Pageable pageable, boolean activeOnly) {
         if(activeOnly) {
-            return cityRepository.findAllActive();
+            return cityRepository.findAllActive(pageable);
         }
-        return cityRepository.findAll();
+        return cityRepository.findAll(pageable);
     }
 
     /**
-     * <b>Devuelve una ciudad según su ID o, lanza una excepción. </b>
+     * Busca una ciudad por su ID y la devuelve.
+     *
+     * @param id El ID de la ciudad que se busca
+     * @param activeOnly Indica si se quiere obtener solo una ciudad activa o no
+     * @return La ciudad encontrada
+     * @throws Fail Si la ciudad no es encontrada
      */
     @Override
     public City getById(long id, boolean activeOnly) {
@@ -72,29 +89,45 @@ public class CityServiceImpl implements CityService {
     }
 
     /**
-     * <b>Devuelve una lista de ciudades según su país, o lanza una excepción. </b>
+     * Obtiene una lista de ciudades que pertenecen a un país específico.
+     *
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param iso3 El identificador del país que se busca
+     * @return Una lista de ciudades que pertenecen al país buscado
+     * @throws Fail Si el país no es encontrado
      */
     @Override
-    public List<City> getByCountry(String iso3) {
+    public Page<City> getByCountry(String iso3, Pageable pageable) {
         countryRepository.findByIso3(iso3)
                 .orElseThrow(() -> new Fail("Country not found", HttpStatus.NOT_FOUND));
 
-        return cityRepository.findByCountry(iso3);
+        return cityRepository.findByCountry(iso3, pageable);
     }
 
     /**
-     * <b>Devuelve una lista de ciudades según su división subnacional, o lanza una excepción. </b>
+     * Obtiene una lista de ciudades que pertenecen a una división subnacional específica.
+     *
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param iso3 El identificador de la división que se busca
+     * @return Una lista de ciudades que pertenecen a la división buscada
+     * @throws Fail Si la división no es encontrada
      */
     @Override
-    public List<City> getBySubnationalDivision(String iso3) {
+    public Page<City> getBySubnationalDivision(String iso3, Pageable pageable) {
         SubnationalDivision subdivision = subnationalDivisionRepository.findByIso3(iso3)
                 .orElseThrow(() -> new Fail("Subdivision not found", HttpStatus.NOT_FOUND));
 
-        return cityRepository.findBySubdivision(subdivision);
+        return cityRepository.findBySubdivision(subdivision, pageable);
     }
 
     /**
-     * <b>Crea una nueva ciudad. </b>
+     * Crea una nueva ciudad.
+     *
+     * El usuario actual debe ser administrador.
+     *
+     * @param request La nueva ciudad
+     * @return La ciudad creada
+     * @throws Fail Si la división subnacional no es encontrada
      */
     @Override
     public City create(CityRequest request) {
@@ -109,7 +142,14 @@ public class CityServiceImpl implements CityService {
     }
 
     /**
-     * <b>Actualiza una ciudad existente. </b>
+     * Actualiza una ciudad.
+     *
+     * El usuario actual debe ser administrador
+     *
+     * @param id El ID de la ciudad
+     * @param request La nueva ciudad
+     * @return La ciudad actualizada
+     * @throws Fail Si la división subnacional no es encontrada
      */
     @Override
     public City update(long id, CityRequest request) {
@@ -126,7 +166,11 @@ public class CityServiceImpl implements CityService {
     }
 
     /**
-     * <b>Elimina lógicamente una ciudad existente. </b>
+     * Elimina una ciudad.
+     *
+     * El usuario actual debe ser administrador
+     *
+     * @param id El ID de la ciudad a eliminar
      */
     @Override
     public void delete(long id) {

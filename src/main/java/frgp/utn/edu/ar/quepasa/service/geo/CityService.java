@@ -14,16 +14,16 @@ public interface CityService {
     Page<City> search(String q, Pageable pageable, boolean active);
 
     // Obtener todas las ciudades
-    List<City> getAll(boolean activeOnly);
+    Page<City> getAll(Pageable pageable, boolean activeOnly);
 
     // Obtener una ciudad por su ID
     City getById(long id, boolean activeOnly);
 
     // Obtener ciudades según país
-    List<City> getByCountry(String iso3);
+    Page<City> getByCountry(String iso3, Pageable pageable);
 
     // Obtener ciudades según división subnacional
-    List<City> getBySubnationalDivision(String iso3);
+    Page<City> getBySubnationalDivision(String iso3, Pageable pageable);
 
     // Crear ciudad
     City create(CityRequest request);

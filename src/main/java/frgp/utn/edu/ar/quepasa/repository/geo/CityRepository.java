@@ -18,13 +18,13 @@ public interface CityRepository extends JpaRepository<City, Long> {
     Page<City> search(@NotNull String query, @NotNull Pageable pageable, boolean active);
 
     @Query("SELECT c FROM City c WHERE c.active")
-    List<City> findAllActive();
+    Page<City> findAllActive(Pageable pageable);
 
     @Query("SELECT c FROM City c WHERE c.id = :id AND c.active")
     Optional<City> findByIdActive(long id);
 
     @Query(value = "SELECT c.* FROM cities c INNER JOIN countries country ON country.iso3 = :iso3 WHERE c.active = true", nativeQuery = true)
-    List<City> findByCountry(String iso3);
+    Page<City> findByCountry(String iso3, Pageable pageable);
 
-    List<City> findBySubdivision(SubnationalDivision subdivision);
+    Page<City> findBySubdivision(SubnationalDivision subdivision, Pageable pageable);
 }
