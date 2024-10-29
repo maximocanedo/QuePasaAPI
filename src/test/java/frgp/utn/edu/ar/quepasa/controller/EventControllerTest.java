@@ -3,10 +3,15 @@ package frgp.utn.edu.ar.quepasa.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
-import frgp.utn.edu.ar.quepasa.model.Event;
-import frgp.utn.edu.ar.quepasa.model.EventRsvp;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-import frgp.utn.edu.ar.quepasa.service.EventService;
+import frgp.utn.edu.ar.quepasa.repository.EventRepository;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
+import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -17,27 +22,23 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import jakarta.transaction.Transactional;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,11 +47,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Transactional
-@SpringBootTest
+@SpringBootTest()
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("EventControllerTest")
+@DisplayName("Event Controller Test")
 public class EventControllerTest {
 
     @Autowired
@@ -59,25 +60,21 @@ public class EventControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private EventService eventService;
+    private EventRepository eventRepository;
+    private UserRepository userRepository;
+    private NeighbourhoodRepository neighbourhoodRepository;
 
     @BeforeAll
-    void setUp() {}
+    void setUp() {
+        eventRepository = Mockito.mock(EventRepository.class);
+        userRepository = Mockito.mock(UserRepository.class);
+        neighbourhoodRepository = Mockito.mock(NeighbourhoodRepository.class);
+    }
 
     @Test
     @DisplayName("GET /api/events - Listar eventos")
     void testGetEvents() throws Exception {
         setAuthContext();
-
-        Event event = new Event();
-        event.setTitle("Evento de prueba");
-        event.setDescription("Descripción de prueba");
-
-        Page<Event> eventPage = new PageImpl<>(List.of(event));
-
-        when(eventService.getEvents(anyString(), any(), anyBoolean()))
-            .thenReturn(eventPage);
 
         mockMvc.perform(get("/api/events")
                 .param("page", "0")
@@ -85,30 +82,16 @@ public class EventControllerTest {
                 .with(user("root").password("123456789").roles("ADMIN"))
                 .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(lessThanOrEqualTo(10))))
-                .andExpect(jsonPath("$.content[0].title", is("Evento de prueba")));
+                .andExpect(jsonPath("$.content", hasSize(lessThanOrEqualTo(10))));
 
         clearAuthContext();
     }
 
     @Test
     @WithMockUser(username = "testUser")
-    @DisplayName("GET /api/events - Listar eventos Sort")
+    @DisplayName("GET /api/events - Listar Eventos Sort")
     void testGetEventsSort() throws Exception {
         setAuthContext();
-
-        Event event = new Event();
-        event.setTitle("Evento de prueba");
-        event.setDescription("Descripción de prueba");
-
-        Event event2 = new Event();
-        event2.setTitle("Evento de prueba 2");
-        event2.setDescription("Descripción de prueba 2");
-
-        Page<Event> eventPage = new PageImpl<>(List.of(event, event2));
-
-        when(eventService.getEvents(anyString(), any(), anyBoolean()))
-            .thenReturn(eventPage);
 
         mockMvc.perform(get("/api/events")
                 .param("page", "0")
@@ -118,8 +101,7 @@ public class EventControllerTest {
                 .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(lessThanOrEqualTo(10))))
-                .andExpect(jsonPath("$.content[0].title", is("Evento de prueba")))
-                .andExpect(jsonPath("$.content[1].title", is("Evento de prueba 2")));
+                .andExpect(jsonPath("$.content[0].title", is("Taller de Arte")));
 
         clearAuthContext();
     }
@@ -130,15 +112,29 @@ public class EventControllerTest {
     void testCreateEvent() throws Exception {
         setAuthContext();
 
+        Integer opId = 1;
+        long neighbourhoodId = 1L;
+
+        User owner = new User();
+        owner.setId(opId);
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(owner));
+
+        Neighbourhood neighbourhood = new Neighbourhood();
+        neighbourhood.setId(neighbourhoodId);
+        neighbourhood.setActive(true);
+
+        when(neighbourhoodRepository.findActiveNeighbourhoodById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
+        when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(neighbourhood));
+
         EventPostRequest eventRequest = new EventPostRequest();
-        eventRequest.setTitle("Evento de Prueba");
+        eventRequest.setTitle("Evento de prueba");
         eventRequest.setDescription("Descripción de prueba");
-
-        Event event = new Event();
-        event.setTitle("Evento de Prueba");
-        event.setDescription("Descripción de prueba");
-
-        when(eventService.create(any(EventPostRequest.class), any())).thenReturn(event);
+        eventRequest.setAddress("Dirección de prueba");
+        eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
+        eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
+        eventRequest.setAudience(Audience.PUBLIC);
+        eventRequest.setCategory(EventCategory.EDUCATIVE);
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -151,26 +147,210 @@ public class EventControllerTest {
 
     @Test
     @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin titulo")
+    void testCreateEventNoTitle() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setDescription("Descripción de prueba");
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("El valor no debe ser nulo. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin descripción")
+    void testCreateEventNoDescription() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("El valor no debe ser nulo. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin dirección")
+    void testCreateEventNoAddress() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+        eventRequest.setDescription("Descripción de prueba");
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("El valor no debe ser nulo. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin fecha de inicio")
+    void testCreateEventNoStartDate() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+        eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setAddress("Dirección de prueba");
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("La fecha del evento no puede ser nula. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin fecha de fin")
+    void testCreateEventNoEndDate() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+        eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setAddress("Dirección de prueba");
+        eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("La fecha del evento no puede ser nula. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin audiencia")
+    void testCreateEventNoAudience() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+        eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setAddress("Dirección de prueba");
+        eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
+        eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
+        eventRequest.setCategory(EventCategory.EDUCATIVE);
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("Este campo no puede estar nulo. ")));
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events - Crear evento sin categoría")
+    void testCreateEventNoCategory() throws Exception {
+        setAuthContext();
+
+        EventPostRequest eventRequest = new EventPostRequest();
+        eventRequest.setTitle("Evento de prueba");
+        eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setAddress("Dirección de prueba");
+        eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
+        eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
+        eventRequest.setAudience(Audience.PUBLIC);
+
+        mockMvc.perform(post("/api/events")
+                .with(user("root").password("123456789").roles("ADMIN"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(eventRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.errors[0]", is("La categoría del evento no puede ser nula. ")));
+
+        clearAuthContext();
+    }
+
+
+    @Test
+    @WithMockUser(username = "testUser")
     @DisplayName("POST /api/events/{eventId}/rsvp - Confirmar asistencia a evento")
     void testConfirmEventAssistance() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
-
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("Evento de prueba");
-
-        EventRsvp eventRsvp = new EventRsvp();
-        eventRsvp.setEvent(event);
-
-        when(eventService.confirmEventAssistance(any(UUID.class), any())).thenReturn(eventRsvp);
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
 
         mockMvc.perform(post("/api/events/{eventId}/rsvp", eventId)
             .with(user("root").password("123456789").roles("ADMIN"))
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.event.title", is("Evento de prueba")))
+            .andExpect(jsonPath("$.event.title", is("Taller de Cerámica")))
             .andExpect(jsonPath("$.event.id", is(eventId.toString())))
+        ;
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events/{eventId}/rsvp - Confirmar asistencia a evento inexistente")
+    void testConfirmEventAssistanceNoEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/events/{eventId}/rsvp", eventId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event not found.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isNotFound())
+        ;
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("POST /api/events/{eventId}/rsvp - Confirmar asistencia a evento inactivo")
+    void testConfirmEventAssistanceInactiveEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.fromString("84b669c6-770d-4dfe-90bc-b67d7702fffb");
+
+        mockMvc.perform(post("/api/events/{eventId}/rsvp", eventId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event is not active.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isBadRequest())
         ;
 
         clearAuthContext();
@@ -181,13 +361,7 @@ public class EventControllerTest {
     @DisplayName("GET /api/events/{id} - Obtener evento por ID")
     void testGetEventById() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("Evento de prueba");
-        event.setDescription("Descripción de prueba");
-
-        when(eventService.findById(any(UUID.class))).thenReturn(event);
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
 
         mockMvc.perform(get("/api/events/{id}", eventId)
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -199,20 +373,32 @@ public class EventControllerTest {
 
     @Test
     @WithMockUser(username = "testUser")
+    @DisplayName("GET /api/events/{id} - Obtener evento por ID Inexistente")
+    void testGetEventByIdNoAuth() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.randomUUID();
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/events/{id}", eventId)
+                        .with(user("root").password("123456789").roles("ADMIN"))
+                        .contentType("application/json"))
+                .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+                .andExpect(result -> assertEquals("Event not found.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+                .andExpect(status().isNotFound());
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
     @DisplayName("PATCH /api/events/{id} - Actualizar evento")
     void testUpdateEvent() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
 
         EventPatchEditRequest updatedEventRequest = new EventPatchEditRequest();
         updatedEventRequest.setTitle("Título actualizado");
         updatedEventRequest.setDescription("Descripción actualizada");
-
-        Event updatedEvent = new Event();
-        updatedEvent.setTitle("Título actualizado");
-        updatedEvent.setDescription("Descripción actualizada");
-
-        when(eventService.update(any(UUID.class), any(EventPatchEditRequest.class), any())).thenReturn(updatedEvent);
 
         mockMvc.perform(patch("/api/events/{id}", eventId)
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -228,16 +414,12 @@ public class EventControllerTest {
     @DisplayName("DELETE /api/events/{id} - Eliminar evento")
     void testDeleteEvent() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
-    
-        Mockito.doNothing().when(eventService).delete(eventId);
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
     
         mockMvc.perform(delete("/api/events/{id}", eventId)
         .with(user("root").password("123456789").roles("ADMIN"))
         .contentType("application/json"))
         .andExpect(status().isOk());
- 
-
     
         clearAuthContext();
     }
@@ -247,26 +429,57 @@ public class EventControllerTest {
     @DisplayName("POST /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Agregar barrio a evento")
     void testAddNeighbourhoodEvent() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
         long neighbourhoodId = 1L;
 
         Neighbourhood neighbourhood = new Neighbourhood();
         neighbourhood.setId(neighbourhoodId);
 
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("Evento de prueba");
-        event.setNeighbourhoods(Set.of(neighbourhood));
-
-        when(eventService.addNeighbourhoodEvent(any(UUID.class), any(Long.class))).thenReturn(event);
-
         mockMvc.perform(post("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
             .with(user("root").password("123456789").roles("ADMIN"))
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title", is("Evento de prueba")))
+            .andExpect(jsonPath("$.title", is("Taller de Cerámica")))
             .andExpect(jsonPath("$.id", is(eventId.toString())))
-            .andExpect(jsonPath("$.neighbourhoods", hasSize(1)))
+            .andExpect(jsonPath("$.neighbourhoods", hasSize(2)))
+        ;
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "root", roles = {"ADMIN"})
+    @DisplayName("POST /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Agregar barrio a evento inexistente")
+    void testAddNeighbourhoodEventNoEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.randomUUID();
+        long neighbourhoodId = 1L;
+
+        mockMvc.perform(post("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event not found.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isNotFound())
+        ;
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "root", roles = {"ADMIN"})
+    @DisplayName("POST /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Agregar barrio a evento inactivo")
+    void testAddNeighbourhoodEventInactiveEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.fromString("84b669c6-770d-4dfe-90bc-b67d7702fffb");
+        long neighbourhoodId = 1L;
+
+        mockMvc.perform(post("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event is not active.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isBadRequest())
         ;
 
         clearAuthContext();
@@ -277,28 +490,59 @@ public class EventControllerTest {
     @DisplayName("DELETE /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Eliminar barrio de evento")
     void testRemoveNeighbourhoodEvent() throws Exception {
         setAuthContext();
-        UUID eventId = UUID.randomUUID();
-        Long neighbourhoodId = 1L;
-
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("Evento de prueba");
-        event.setNeighbourhoods(Set.of());
-
-        when(eventService.removeNeighbourhoodEvent(any(UUID.class), any(Long.class))).thenReturn(event);
+        UUID eventId = UUID.fromString("cea268b5-1591-4dbe-b72e-77e7ecdad0fc");
+        Long neighbourhoodId = 3L;
 
         mockMvc.perform(delete("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
             .with(user("root").password("123456789").roles("ADMIN"))
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title", is("Evento de prueba")))
+            .andExpect(jsonPath("$.title", is("Taller de Cerámica")))
             .andExpect(jsonPath("$.id", is(eventId.toString())))
             .andExpect(jsonPath("$.neighbourhoods", hasSize(0)))
         ;
 
         clearAuthContext();
     }
-    
+
+    @Test
+    @WithMockUser(username = "root", roles = {"ADMIN"})
+    @DisplayName("DELETE /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Eliminar barrio de evento inexistente")
+    void testRemoveNeighbourhoodEventNoEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.randomUUID();
+        Long neighbourhoodId = 3L;
+
+        mockMvc.perform(delete("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event not found.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isNotFound())
+        ;
+
+        clearAuthContext();
+    }
+
+    @Test
+    @WithMockUser(username = "root", roles = {"ADMIN"})
+    @DisplayName("DELETE /api/events/{eventId}/neighbourhood/{neighbourhoodId} - Eliminar barrio de evento inactivo")
+    void testRemoveNeighbourhoodEventInactiveEvent() throws Exception {
+        setAuthContext();
+        UUID eventId = UUID.fromString("84b669c6-770d-4dfe-90bc-b67d7702fffb");
+        Long neighbourhoodId = 3L;
+
+        mockMvc.perform(delete("/api/events/{eventId}/neighbourhood/{neighbourhoodId}", eventId, neighbourhoodId)
+            .with(user("root").password("123456789").roles("ADMIN"))
+            .contentType("application/json"))
+            .andExpect(result -> assertInstanceOf(Fail.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals("Event is not active.", Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(status().isBadRequest())
+        ;
+
+        clearAuthContext();
+    }
+
     private void setAuthContext() {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername("root")
