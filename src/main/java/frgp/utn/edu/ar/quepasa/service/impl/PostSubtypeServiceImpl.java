@@ -26,11 +26,29 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         this.postTypeRepository = postTypeRepository;
     }
 
+    /**
+     * Busca todos los subtipos que contengan el texto dado en la descripción,
+     * activos o no activos, de acuerdo al parámetro dado.
+     * La lista se devuelve paginada según el objeto Pageable dado.
+     *
+     * @param q El texto que se busca en el título y descripción de los subtipos
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param active Indica si se quieren obtener solo los subtipos activos o no
+     * @return La lista de subtipos paginada
+     */
     @Override
     public Page<PostSubtype> search(String q, Pageable pageable, boolean active) {
         return postSubtypeRepository.search(q, pageable, active);
     }
 
+    /**
+     * Busca todos los subtipos, activos o no activos, de acuerdo al parámetro dado.
+     * La lista se devuelve paginada según el objeto Pageable dado.
+     *
+     * @param pageable El objeto que contiene la información de la paginación
+     * @param activeOnly Indica si se quieren obtener solo los subtipos activos o no
+     * @return La lista de subtipos paginada
+     */
     @Override
     public Page<PostSubtype> findAll(Pageable pageable, boolean activeOnly) {
         if(activeOnly) {
@@ -39,12 +57,27 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         return postSubtypeRepository.findAll(pageable);
     }
 
+    /**
+     * Busca un subtipo por su ID y lo devuelve.
+     *
+     * @param id El ID del subtipo que se busca
+     * @return El subtipo encontrado
+     * @throws Fail Si el subtipo no es encontrado
+     */
     @Override
     public PostSubtype findById(Integer id) {
         return postSubtypeRepository.findById(id)
                 .orElseThrow(() -> new Fail("Subtype not found", HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Obtiene una página de subtipos que pertenecen a un tipo específico.
+     *
+     * @param pageable La información de paginación
+     * @param type El tipo que se busca
+     * @return Una página de subtipos que pertenecen al tipo buscado
+     * @throws Fail Si el tipo no es encontrado
+     */
     @Override
     public Page<PostSubtype> findByType(Integer type, Pageable pageable) {
         PostType postType = postTypeRepository.findById(type)
@@ -52,6 +85,14 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         return postSubtypeRepository.findByType(postType, pageable);
     }
 
+    /**
+     * Crea un nuevo subtipo.
+     *
+     * El usuario actual debe ser administrador.
+     *
+     * @param newSubtype El nuevo subtipo
+     * @return El subtipo creado
+     */
     @Override
     public PostSubtype create(PostSubtypeRequest newSubtype) {
         PostSubtype subtype = new PostSubtype();
@@ -64,6 +105,15 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         return subtype;
     }
 
+    /**
+     * Actualiza un subtipo.
+     *
+     * El usuario actual debe ser administrador.
+     *
+     * @param id El ID del subtipo
+     * @param newSubtype El nuevo subtipo
+     * @return El subtipo actualizado
+     */
     @Override
     public PostSubtype update(Integer id, PostSubtypeRequest newSubtype) {
         PostSubtype subtype = findById(id);
@@ -76,6 +126,13 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
         return subtype;
     }
 
+    /**
+     * Elimina un subtipo.
+     *
+     * Sólo un administrador puede eliminarlo.
+     *
+     * @param id El ID del subtipo a eliminar
+     */
     @Override
     public void delete(Integer id) {
         PostSubtype subtype = findById(id);
