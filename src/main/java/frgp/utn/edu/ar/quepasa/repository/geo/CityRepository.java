@@ -23,7 +23,7 @@ public interface CityRepository extends JpaRepository<City, Long> {
     @Query("SELECT c FROM City c WHERE c.id = :id AND c.active")
     Optional<City> findByIdActive(long id);
 
-    @Query(value = "SELECT c.* FROM cities c INNER JOIN countries country ON country.iso3 = :iso3 WHERE c.active = true", nativeQuery = true)
+    @Query(value = "SELECT c.id, c.name, c.subdivision, c.active FROM cities c INNER JOIN countries country ON country.iso3 = :iso3 WHERE c.active = true", countQuery = "SELECT COUNT(*) FROM cities c INNER JOIN countries country ON country.iso3 = :iso3 WHERE c.active = true", nativeQuery = true)
     Page<City> findByCountry(String iso3, Pageable pageable);
 
     Page<City> findBySubdivision(SubnationalDivision subdivision, Pageable pageable);
