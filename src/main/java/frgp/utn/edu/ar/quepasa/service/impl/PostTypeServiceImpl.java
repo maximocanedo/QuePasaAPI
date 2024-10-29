@@ -27,7 +27,7 @@ public class PostTypeServiceImpl implements PostTypeService {
      * activos o no activos, de acuerdo al parámetro dado.
      * La lista se devuelve paginada según el objeto Pageable dado.
      *
-     * @param q El texto que se busca en el título y descripción de las publicaciones
+     * @param q El texto que se busca en el título y descripción de los tipos
      * @param pageable El objeto que contiene la información de la paginación
      * @param active Indica si se quieren obtener solo los tipos activos o no
      * @return La lista de tipos paginada
@@ -42,7 +42,7 @@ public class PostTypeServiceImpl implements PostTypeService {
      * La lista se devuelve paginada según el objeto Pageable dado.
      *
      * @param pageable El objeto que contiene la información de la paginación
-     * @param activeOnly Indica si se quieren obtener solo los tipos activas o no
+     * @param activeOnly Indica si se quieren obtener solo los tipos activos o no
      * @return La lista de tipos paginada
      */
     @Override

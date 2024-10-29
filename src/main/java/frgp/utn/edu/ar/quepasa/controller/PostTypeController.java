@@ -57,7 +57,7 @@ public class PostTypeController {
      * Obtiene una lista paginada de tipos que coinciden con los criterios de búsqueda especificados.
      *
      * @param q Parámetro de búsqueda que se usará para filtrar los tipos.
-     * @param sort Parámetro de ordenamiento para los tipos, con un valor predeterminado de "title,asc".
+     * @param sort Parámetro de ordenamiento para los tipos, con un valor predeterminado de "description,asc".
      * @param page Número de páginas a obtener. Comienza en 0.
      * @param size Tamaño de cada página. Comienza en 10.
      * @param active Si se desean obtener solo los tipos activos. Valor predeterminado es true.
