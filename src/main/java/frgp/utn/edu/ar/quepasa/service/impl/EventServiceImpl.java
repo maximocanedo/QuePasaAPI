@@ -19,7 +19,7 @@ import frgp.utn.edu.ar.quepasa.service.validators.objects.AudienceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -68,12 +68,12 @@ public class EventServiceImpl implements EventService {
      * This method is used to get an event by its id
      * @param id id of the event
      * @return event
-     * @throws ResourceNotFoundException if the event is not found
+     * @throws Fail if the event is not found
      */
     @Override
     public Event findById(UUID id) throws Fail {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new Fail("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
     }
 
     /**
@@ -81,12 +81,12 @@ public class EventServiceImpl implements EventService {
      * @param owner owner of the event
      * @param pageable pagination information
      * @return events
-     * @throws ResourceNotFoundException if no events are found
+     * @throws Fail if no events are found
      */
     @Override
     public Page<Event> findByOp(User owner, Pageable pageable) throws Fail {
         return eventRepository.findByOwnerAndActive(owner, true, pageable)
-                .orElseThrow(() -> new Fail("No Events found."))
+                .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
     }
@@ -96,12 +96,12 @@ public class EventServiceImpl implements EventService {
      * @param username username of the event owner
      * @param pageable pagination information
      * @return events
-     * @throws ResourceNotFoundException if no events are found
+     * @throws Fail if no events are found
      */
     @Override
     public Page<Event> findByUsername(String username, Pageable pageable) throws Fail {
         return eventRepository.findByOwnerUsername(username, pageable)
-                .orElseThrow(() -> new Fail("No Events found."))
+                .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
     }
@@ -157,7 +157,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event update(UUID id, EventPatchEditRequest newEvent, User owner) throws Fail {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
         ownerService.of(event)
                 .isAdmin()
                 .isOwner()
@@ -165,9 +165,9 @@ public class EventServiceImpl implements EventService {
 
         if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
-        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).meetsLimits().build());
+        if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).isNotNull().meetsLimits().build());
 
-        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidator(newEvent.getAddress()).meetsLimits().build());
+        if (newEvent.getAddress() != null) event.setAddress(new EventAddressValidator(newEvent.getAddress()).isNotNull().meetsLimits().build());
 
         if (newEvent.getStartDate() != null) event.setStart(new EventDateValidator(newEvent.getStartDate()).isNotPast().build());
 
@@ -193,8 +193,8 @@ public class EventServiceImpl implements EventService {
     public EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail {
         EventRsvp newEventRsvp = new EventRsvp();
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new Fail("Event not found."));
-        if (!event.isActive()) throw new Fail("Event is not active.");
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
+        if (!event.isActive()) throw new Fail("Event is not active.", HttpStatus.BAD_REQUEST);
         newEventRsvp.setEvent(event);
         newEventRsvp.setUser(user);
         eventRsvpRepository.save(newEventRsvp);
@@ -209,7 +209,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void delete(UUID id) throws Fail {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new Fail("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
@@ -223,26 +223,26 @@ public class EventServiceImpl implements EventService {
      * @param eventId id of the event
      * @param neighbourhoodId id of the neighbourhood
      * @return event
-     * @throws ResourceNotFoundException if the event or the neighbourhood is not found
+     * @throws Fail if the event or the neighbourhood is not found
      * @throws Fail if the event is not active
      */
     @Override
     public Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new Fail("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
 
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
                 .orElseFail();
 
-        if (!event.isActive()) throw new Fail("Event is not active.");
+        if (!event.isActive()) throw new Fail("Event is not active.", HttpStatus.BAD_REQUEST);
 
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
-                .orElseThrow(() -> new Fail("Neighbourhood not found."));
+                .orElseThrow(() -> new Fail("Neighbourhood not found.", HttpStatus.NOT_FOUND));
         neighbourhoods.add(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);
@@ -256,25 +256,25 @@ public class EventServiceImpl implements EventService {
      * @param eventId id of the event
      * @param neighbourhoodId id of the neighbourhood
      * @return event
-     * @throws ResourceNotFoundException if the event or the neighbourhood is not found
+     * @throws Fail if the event or the neighbourhood is not found
      * @throws Fail if the event is not active
      */
     @Override
     public Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new Fail("Event not found."));
+                .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
 
         ownerService.of(event)
                 .isOwner()
                 .isAdmin()
                 .orElseFail();
 
-        if (!event.isActive()) throw new Fail("Event is not active.");
+        if (!event.isActive()) throw new Fail("Event is not active.", HttpStatus.BAD_REQUEST);
 
         Set<Neighbourhood> neighbourhoods = event.getNeighbourhoods();
 
         Neighbourhood neighbourhood =  neighbourhoodRepository.findById(neighbourhoodId)
-                .orElseThrow(() -> new Fail("Neighbourhood not found."));
+                .orElseThrow(() -> new Fail("Neighbourhood not found.", HttpStatus.NOT_FOUND));
         neighbourhoods.remove(neighbourhood);
 
         event.setNeighbourhoods(neighbourhoods);
