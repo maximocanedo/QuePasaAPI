@@ -1,6 +1,5 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
@@ -16,10 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -65,6 +62,7 @@ public class EventController {
      * @param event Detalles del evento a crear.
      * @return Entidad de respuesta con el evento creado.
      * @throws Fail Si ocurre un error durante la creación del evento.
+     * @throws ValidationError Si el evento no cumple con las validaciones.
      */
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) throws Fail {
@@ -77,11 +75,10 @@ public class EventController {
      *
      * @param eventId ID del evento al que se quiere confirmar asistencia.
      * @return Entidad de respuesta con el RSVP (confirmación de asistencia) del evento.
-     * @throws ResourceNotFoundException Si el evento no existe.
-     * @throws Fail                      Si ocurre un error durante la confirmación de asistencia.
+     * @throws Fail si ocurre un error durante la confirmación de asistencia.
      */
     @PostMapping("/{eventId}/rsvp")
-    public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) {
+    public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.confirmEventAssistance(eventId, me));
     }
@@ -91,10 +88,10 @@ public class EventController {
      *
      * @param id ID del evento a obtener.
      * @return Entidad de respuesta con los detalles del evento.
-     * @throws ResourceNotFoundException Si el evento no se encuentra.
+     * @throws Fail Si el evento no se encuentra.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventById(@PathVariable UUID id) {
+    public ResponseEntity<?> getEventById(@PathVariable UUID id) throws Fail {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
@@ -105,9 +102,10 @@ public class EventController {
      * @param page     Número de página a obtener.
      * @param size     Tamaño de la página.
      * @return         Entidad de respuesta con la página de eventos del usuario.
+     * @throws Fail    Si el evento no se encuentra.
      */
     @GetMapping("/user/{username}")
-    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) throws Fail {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventService.findByUsername(username, pageable));
     }
@@ -118,9 +116,10 @@ public class EventController {
      * @param page  Número de página a obtener.
      * @param size  Tamaño de la página.
      * @return      Entidad de respuesta con la página de eventos del usuario autenticado.
+     * @throws Fail Si no se en encuentran eventos y/o todos los eventos del estan inactivos.
      */
     @GetMapping("/me")
-    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventService.findByOp(me, pageable));
@@ -154,9 +153,7 @@ public class EventController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
-    /*
-    Seccion Agregar Barrio
-     */
+    /*   Seccion Agregar Barrio  */
 
     /**
      * Agrega un barrio a un evento existente.
@@ -215,10 +212,7 @@ public class EventController {
      * @return         Entidad de respuesta con la cantidad actualizada de votos del evento.
      */
     @PostMapping("/{eventId}/votes/down")
-    
     public ResponseEntity<VoteCount> downVote(@PathVariable UUID eventId) {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
     }
-
-
 }
