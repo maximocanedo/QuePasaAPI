@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,8 +47,6 @@ public class EventServiceTest {
     private NeighbourhoodRepository neighbourhoodRepository;
     private AuthenticationServiceImpl authenticationService;
     private EventServiceImpl eventService;
-    private OwnerServiceImpl ownerService;
-    private VoteService voteService;
 
     @BeforeEach
     void setUp() {
@@ -58,8 +55,8 @@ public class EventServiceTest {
         this.eventRsvpRepository = mock(EventRsvpRepository.class);
         this.neighbourhoodRepository = mock(NeighbourhoodRepository.class);
         this.authenticationService = mock(AuthenticationServiceImpl.class);
-        ownerService = new OwnerServiceImpl(authenticationService);
-        this.voteService = mock(VoteService.class);
+        OwnerServiceImpl ownerService = new OwnerServiceImpl(authenticationService);
+        VoteService voteService = mock(VoteService.class);
         var commentService = mock(CommentServiceImpl.class);
         this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository);
     }
@@ -156,8 +153,8 @@ public class EventServiceTest {
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.findById(eventId)
         );
 
@@ -197,8 +194,8 @@ public class EventServiceTest {
 
         when(eventRepository.findByOwnerAndActive(owner, true, pageable)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.findByOp(owner, pageable)
         );
 
@@ -238,8 +235,8 @@ public class EventServiceTest {
 
         when(eventRepository.findByOwnerUsername(owner.getUsername(), pageable)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.findByUsername(owner.getUsername(), pageable)
         );
 
@@ -505,8 +502,8 @@ public class EventServiceTest {
         eventPatchEditRequest.setCategory(EventCategory.CINEMA);
         eventPatchEditRequest.setAudience(Audience.PUBLIC);
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.update(eventId, eventPatchEditRequest, owner)
         );
 
@@ -597,8 +594,8 @@ public class EventServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(owner));
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.delete(eventId)
         );
 
@@ -676,8 +673,8 @@ public class EventServiceTest {
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.confirmEventAssistance(eventId, user)
         );
 
@@ -757,8 +754,8 @@ public class EventServiceTest {
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.addNeighbourhoodEvent(eventId, neighbourhoodId)
         );
 
@@ -873,8 +870,8 @@ public class EventServiceTest {
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
         when(neighbourhoodRepository.findById(neighbourhoodId)).thenReturn(Optional.of(new Neighbourhood()));
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
+        Fail exception = assertThrows(
+                Fail.class,
                 () -> eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId)
         );
 
