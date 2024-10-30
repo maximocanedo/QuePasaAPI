@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.requests;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,9 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,9 +32,10 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
+import frgp.utn.edu.ar.quepasa.service.impl.request.RoleUpdateRequestServiceImpl;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,9 +45,16 @@ class RoleUpdateRequestServiceTest {
     @Autowired
     private MockMvc mockMvc;
 
+
     @Mock
-    private RoleUpdateRequestService roleUpdateRequestService;
-    @InjectMocks private UserServiceImpl userService;
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    @InjectMocks
+    private RoleUpdateRequestServiceImpl roleUpdateRequestService;
+
 
     @Mock
     private RoleUpdateRequestRepository roleUpdateRequestRepository;
@@ -51,30 +62,34 @@ class RoleUpdateRequestServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        roleUpdateRequestService = mock(RoleUpdateRequestServiceImpl.class);
         setAuthContext();
     }
-    
+
+        
     @Test
     @DisplayName("Test crear solicitud de actualización de rol")
     void testCreateRoleUpdateRequest() {
         Role requestedRole = Role.ADMIN;
         String remarks = "Solicito ser administrador";
         String username = "testUser";
+
         User mockUser = new User();
         mockUser.setUsername(username);
-        User foundUser = userService.findByUsername(username);
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
 
         RoleUpdateRequest savedRequest = new RoleUpdateRequest();
         savedRequest.setRequestedRole(requestedRole);
         savedRequest.setRemarks(remarks);
         savedRequest.setStatus(RequestStatus.WAITING);
-        savedRequest.setRequester(foundUser);
-
+        savedRequest.setRequester(mockUser);
 
         when(roleUpdateRequestRepository.save(any(RoleUpdateRequest.class))).thenReturn(savedRequest);
 
         RoleUpdateRequest result = roleUpdateRequestService.createRoleUpdateRequest(requestedRole, remarks);
-    
+
+        assertNotNull(result, "El resultado no debería ser null");
         assertEquals(requestedRole, result.getRequestedRole(), "El rol solicitado debería ser ADMIN");
         assertEquals(remarks, result.getRemarks(), "Las observaciones deberían coincidir");
         assertEquals(RequestStatus.WAITING, result.getStatus(), "El estado debería ser WAITING");
