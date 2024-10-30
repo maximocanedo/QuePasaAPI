@@ -1,13 +1,20 @@
 package frgp.utn.edu.ar.quepasa.service.requests;
 
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
-import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,22 +25,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.UUID;
+import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
+import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
+import frgp.utn.edu.ar.quepasa.service.impl.UserServiceImpl;
+import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
 
-import java.util.concurrent.atomic.AtomicReference;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
+@SpringBootTest
+@AutoConfigureMockMvc
 @DisplayName("RoleUpdateRequestServiceTest")
 class RoleUpdateRequestServiceTest {
 
@@ -42,28 +43,43 @@ class RoleUpdateRequestServiceTest {
 
     @Mock
     private RoleUpdateRequestService roleUpdateRequestService;
+    @InjectMocks private UserServiceImpl userService;
+
+    @Mock
+    private RoleUpdateRequestRepository roleUpdateRequestRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         setAuthContext();
     }
-
+    
     @Test
-    @DisplayName("GET /api/request/role - Crear solicitud de actualización de rol")
-    void testCreateRoleUpdateRequest() throws Exception {
-        RoleUpdateRequest request = new RoleUpdateRequest();
+    @DisplayName("Test crear solicitud de actualización de rol")
+    void testCreateRoleUpdateRequest() {
+        Role requestedRole = Role.ADMIN;
+        String remarks = "Solicito ser administrador";
+        String username = "testUser";
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        User foundUser = userService.findByUsername(username);
 
-        when(roleUpdateRequestService.createRoleUpdateRequest(any(Role.class), anyString()))
-            .thenReturn(request);
-        
-        mockMvc.perform(get("/api/request/role")
-            .param("role", "ADMIN")
-            .param("username", "testUser")
-            .with(user("root").password("123456789").roles("ADMIN"))
-            .contentType("application/json"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content", hasSize(0)));
+        RoleUpdateRequest savedRequest = new RoleUpdateRequest();
+        savedRequest.setRequestedRole(requestedRole);
+        savedRequest.setRemarks(remarks);
+        savedRequest.setStatus(RequestStatus.WAITING);
+        savedRequest.setRequester(foundUser);
+
+
+        when(roleUpdateRequestRepository.save(any(RoleUpdateRequest.class))).thenReturn(savedRequest);
+
+        RoleUpdateRequest result = roleUpdateRequestService.createRoleUpdateRequest(requestedRole, remarks);
+    
+        assertEquals(requestedRole, result.getRequestedRole(), "El rol solicitado debería ser ADMIN");
+        assertEquals(remarks, result.getRemarks(), "Las observaciones deberían coincidir");
+        assertEquals(RequestStatus.WAITING, result.getStatus(), "El estado debería ser WAITING");
+
+        verify(roleUpdateRequestRepository, times(1)).save(any(RoleUpdateRequest.class));
     }
 
     @Test

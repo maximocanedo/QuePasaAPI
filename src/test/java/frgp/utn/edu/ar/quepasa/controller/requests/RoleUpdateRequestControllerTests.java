@@ -1,151 +1,117 @@
 package frgp.utn.edu.ar.quepasa.controller.requests;
-import frgp.utn.edu.ar.quepasa.controller.request.RoleUpdateRequestController;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
-import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
-import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-import java.util.UUID;
+import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
+import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
+import jakarta.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 @Transactional
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Controladores de solicitudes de rol")
+@DisplayName("Controlador de RoleUpdateRequest")
+public class RoleUpdateRequestControllerTests {
 
-class RoleUpdateRequestControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
 
     @Mock
     private RoleUpdateRequestService roleUpdateRequestService;
 
-    @InjectMocks
-    private RoleUpdateRequestController roleUpdateRequestController;
+    private RoleUpdateRequest sampleRequest;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
+        sampleRequest = new RoleUpdateRequest();
+        sampleRequest.setId(UUID.randomUUID());
+        sampleRequest.setRequestedRole(Role.ADMIN);
+        sampleRequest.setStatus(RequestStatus.WAITING);
+        sampleRequest.setRemarks("Requesting Admin Role");
     }
 
     @Test
-    void testCreateRoleRequest() {
-        Role requestedRole = Role.ADMIN;
-        String remarks = "Promoción a administrador";
-        RoleUpdateRequest request = new RoleUpdateRequest();
-        
-        when(roleUpdateRequestService.createRoleUpdateRequest(requestedRole, remarks)).thenReturn(request);
+    public void testCreateRoleRequest() throws Exception {
+        when(roleUpdateRequestService.createRoleUpdateRequest(Role.ADMIN, "Requesting Admin Role"))
+                .thenReturn(sampleRequest);
 
-        ResponseEntity<RoleUpdateRequest> response = roleUpdateRequestController.createRoleRequest(requestedRole, remarks);
-
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(request, response.getBody());
-        verify(roleUpdateRequestService, times(1)).createRoleUpdateRequest(requestedRole, remarks);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/request/role/request")
+                .param("requestedRole", Role.ADMIN.name())
+                .param("remarks", "Requesting Admin Role")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.requestedRole").value(Role.ADMIN.name()))
+                .andExpect(jsonPath("$.remarks").value("Requesting Admin Role"));
     }
 
-    
     @Test
-    void testRespondToRoleRequest() {
+    public void testRespondToRoleRequest() throws Exception {
         UUID requestId = UUID.randomUUID();
-        boolean approve = true;
-        String reviewerRemarks = "Aprobado";
-        RoleUpdateRequest updatedRequest = new RoleUpdateRequest();
+        when(roleUpdateRequestService.respondToRoleUpdateRequest(requestId, true, "Approved by admin"))
+                .thenReturn(sampleRequest);
 
-
-        when(roleUpdateRequestService.respondToRoleUpdateRequest(requestId, approve, reviewerRemarks)).thenReturn(updatedRequest);
-
-        ResponseEntity<RoleUpdateRequest> response = roleUpdateRequestController.respondToRoleRequest(requestId, approve, reviewerRemarks);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedRequest, response.getBody());
-        verify(roleUpdateRequestService, times(1)).respondToRoleUpdateRequest(requestId, approve, reviewerRemarks);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/request/role/respond")
+                .param("requestId", requestId.toString())
+                .param("approve", "true")
+                .param("reviewerRemarks", "Approved by admin")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(RequestStatus.WAITING.name()));
     }
 
     @Test
-    void testDeleteRoleRequest() {
+    public void testDeleteRoleRequest() throws Exception {
         UUID requestId = UUID.randomUUID();
 
-        doNothing().when(roleUpdateRequestService).deleteRoleUpdateRequest(requestId);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/request/role/" + requestId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
 
-        ResponseEntity<Void> response = roleUpdateRequestController.deleteRoleRequest(requestId);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(roleUpdateRequestService, times(1)).deleteRoleUpdateRequest(requestId);
     }
 
-
     @Test
-    void testGetMyRequests() {
-        List<RoleUpdateRequest> requests = List.of(new RoleUpdateRequest(), new RoleUpdateRequest());
+    public void testGetMyRequests() throws Exception {
+        when(roleUpdateRequestService.getUserRequests()).thenReturn(List.of(sampleRequest));
 
-        when(roleUpdateRequestService.getUserRequests()).thenReturn(requests);
-
-        ResponseEntity<List<RoleUpdateRequest>> response = roleUpdateRequestController.getMyRequests();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(requests, response.getBody());
-        verify(roleUpdateRequestService, times(1)).getUserRequests();
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/request/role/my-requests")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].requestedRole").value(Role.ADMIN.name()));
     }
 
-
     @Test
-    void testGetAllRequests() {
-        List<RoleUpdateRequest> requests = List.of(new RoleUpdateRequest(), new RoleUpdateRequest());
+    public void testGetAllRequests() throws Exception {
+        when(roleUpdateRequestService.getAllRequests()).thenReturn(List.of(sampleRequest));
 
-        when(roleUpdateRequestService.getAllRequests()).thenReturn(requests);
-
-        ResponseEntity<List<RoleUpdateRequest>> response = roleUpdateRequestController.getAllRequests();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(requests, response.getBody());
-        verify(roleUpdateRequestService, times(1)).getAllRequests();
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/request/role/all")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].requestedRole").value(Role.ADMIN.name()));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

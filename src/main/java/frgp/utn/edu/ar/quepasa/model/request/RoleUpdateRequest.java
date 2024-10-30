@@ -1,16 +1,29 @@
 package frgp.utn.edu.ar.quepasa.model.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import frgp.utn.edu.ar.quepasa.model.Ownable;
-import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.media.Document;
-import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import frgp.utn.edu.ar.quepasa.model.Ownable;
+import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.media.Document;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Entidad que representa una solicitud de actualización de rol.
@@ -41,7 +54,7 @@ public class RoleUpdateRequest implements Ownable {
     @ManyToOne
     @JoinColumn(name = "requester", nullable = false)
     public User getRequester() { return requester; }
-    public void setRequester(User requester) { this.requester = requester; }
+    public void setRequester(User user) { this.requester = user; }
 
     @Override
     @Transient
