@@ -3,7 +3,7 @@ package frgp.utn.edu.ar.quepasa.service.validators.objects;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
 
 public class PostValidator extends ValidatorBuilder<PostValidator, Post> {
 

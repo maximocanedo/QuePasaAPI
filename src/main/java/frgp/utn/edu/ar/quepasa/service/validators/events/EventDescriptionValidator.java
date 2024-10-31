@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service.validators.events;
 
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
+import quepasa.api.validators.commons.builders.StringValidatorBuilder;
 
 public class EventDescriptionValidator extends StringValidatorBuilder<EventDescriptionValidator> {
 

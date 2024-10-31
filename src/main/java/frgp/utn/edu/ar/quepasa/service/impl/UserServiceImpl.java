@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
@@ -16,7 +17,7 @@ import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.NeighbourhoodValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.PictureValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.users.NameValidator;
+import quepasa.api.validators.users.NameValidator;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final PictureRepository pictureRepository;
     private final RoleUpdateRequestRepository roleUpdateRequestRepository;
+    private OwnerServiceImpl ownerService;
 
     @Autowired
     public UserServiceImpl(
@@ -119,9 +121,14 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
             user.setNeighbourhood(neighbourhood);
         }
         if(data.getPicture() != null) {
+            Picture pic = pictureRepository
+                    .findById(data.getPicture().getId())
+                    .orElseThrow(() -> new Fail("Picture not found. "));
+            ownerService.of(pic)
+                    .isOwner()
+                    .orElseFail();
             var picture = new PictureValidator(data.getPicture())
                     .isActive(pictureRepository)
-                    .isOwner(pictureRepository, user, userRepository)
                     .build();
             user.setProfilePicture(picture);
         }
@@ -255,5 +262,10 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
             throw new Fail("No tiene permiso para ver todas las solicitudes.", HttpStatus.FORBIDDEN);
         }
         return roleUpdateRequestRepository.findAllByActiveTrue();
+    }
+
+    @Autowired
+    public void setOwnerService(OwnerServiceImpl ownerService) {
+        this.ownerService = ownerService;
     }
 }

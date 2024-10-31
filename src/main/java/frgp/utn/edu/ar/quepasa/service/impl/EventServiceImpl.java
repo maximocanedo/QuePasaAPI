@@ -15,12 +15,12 @@ import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.validators.events.*;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.AudienceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import quepasa.api.validators.commons.ObjectValidator;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -132,10 +132,10 @@ public class EventServiceImpl implements EventService {
         var endDate = new EventDateValidator(event.getEndDate()).isNotNull().isNotPast().isAfterStartDate(startDate).build();
         newEvent.setEnd(endDate);
 
-        var category = new EventCategoryValidator(event.getCategory()).isNotNull().build();
+        var category = new ObjectValidator<>(event.getCategory()).isNotNull().build();
         newEvent.setCategory(category);
 
-        var audience = new AudienceValidator(event.getAudience()).isNotNull().build();
+        var audience = new ObjectValidator<>(event.getAudience()).isNotNull().build();
         newEvent.setAudience(audience);
 
         newEvent.setActive(true);
@@ -175,7 +175,7 @@ public class EventServiceImpl implements EventService {
 
         if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidator(newEvent.getCategory()).build());
 
-        if (newEvent.getAudience() != null) event.setAudience(new AudienceValidator(newEvent.getAudience()).build());
+        if (newEvent.getAudience() != null) event.setAudience(new ObjectValidator<>(newEvent.getAudience()).build());
 
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));

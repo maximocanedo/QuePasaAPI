@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
 
 import java.util.Optional;
 

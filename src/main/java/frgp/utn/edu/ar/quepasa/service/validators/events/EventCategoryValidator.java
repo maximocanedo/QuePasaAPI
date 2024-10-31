@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.validators.events;
 
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
 
 public final class EventCategoryValidator extends ValidatorBuilder<EventCategoryValidator, EventCategory> {
 

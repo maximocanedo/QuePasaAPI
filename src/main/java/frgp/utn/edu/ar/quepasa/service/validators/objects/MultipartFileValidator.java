@@ -1,8 +1,8 @@
 package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
-import frgp.utn.edu.ar.quepasa.service.validators.commons.StringValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.commons.StringValidator;
+import quepasa.api.validators.commons.builders.StringValidatorBuilder;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
