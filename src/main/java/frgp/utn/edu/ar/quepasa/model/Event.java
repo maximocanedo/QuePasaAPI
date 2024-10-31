@@ -6,6 +6,8 @@ import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-public class Event implements Ownable, Votable, Commentable {
+public class Event implements Ownable, Votable, Commentable, Activatable {
 
     private UUID id;
     private String title;

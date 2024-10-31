@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name="documents")
-public class Document implements Ownable {
+public class Document implements Ownable, Activatable {
     private UUID id;
     private User owner;
     private String description;

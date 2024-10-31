@@ -3,13 +3,14 @@ package frgp.utn.edu.ar.quepasa.model.auth;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import frgp.utn.edu.ar.quepasa.model.User;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
 @Table(name = "singleUseRequests")
-public class SingleUseRequest {
+public class SingleUseRequest implements Activatable {
 
     private UUID id;
     private String hash;

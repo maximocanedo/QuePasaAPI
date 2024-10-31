@@ -1,13 +1,14 @@
 package frgp.utn.edu.ar.quepasa.model;
 
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa el tipo de una publicación.
  */
 @Entity
 @Table(name = "postTypes")
-public class PostType {
+public class PostType implements Activatable {
     private Integer id;
     private String description;
     private boolean active = true;

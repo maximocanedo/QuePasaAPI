@@ -10,7 +10,7 @@ import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.DocumentServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

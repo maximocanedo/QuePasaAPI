@@ -2,6 +2,7 @@ package frgp.utn.edu.ar.quepasa.model.geo;
 
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa las <a href="https://es.wikipedia.org/wiki/Demarcaci%C3%B3n_administrativa">divisiones administrativas de segundo orden</a> vinculadas a un país.
@@ -9,7 +10,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name="states")
-public class SubnationalDivision {
+public class SubnationalDivision implements Activatable {
     private String iso3;
     private String label;
     private SubnationalDivisionDenomination denomination;

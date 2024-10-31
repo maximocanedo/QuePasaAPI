@@ -1,10 +1,9 @@
-package frgp.utn.edu.ar.quepasa.service.validators.commons;
+package frgp.utn.edu.ar.quepasa.service.validators;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.service.validators.BooleanBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

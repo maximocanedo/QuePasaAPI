@@ -1,4 +1,4 @@
-package frgp.utn.edu.ar.quepasa.service.validators.events;
+package quepasa.api.validators.events;
 
 import quepasa.api.validators.commons.builders.StringValidatorBuilder;
 

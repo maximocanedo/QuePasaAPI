@@ -5,7 +5,7 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import quepasa.api.validators.commons.builders.ValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.events.*;
+import quepasa.api.validators.events.*;
 
 import java.util.function.Consumer;
 

@@ -14,7 +14,7 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import frgp.utn.edu.ar.quepasa.service.validators.events.*;
+import quepasa.api.validators.events.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -173,9 +173,9 @@ public class EventServiceImpl implements EventService {
 
         if (newEvent.getEndDate() != null) event.setEnd(new EventDateValidator(newEvent.getEndDate()).isNotPast().isAfterStartDate(event.getStart()).build());
 
-        if (newEvent.getCategory() != null) event.setCategory(new EventCategoryValidator(newEvent.getCategory()).build());
+        if (newEvent.getCategory() != null) event.setCategory(new ObjectValidator<>(newEvent.getCategory()).isNotNull().build());
 
-        if (newEvent.getAudience() != null) event.setAudience(new ObjectValidator<>(newEvent.getAudience()).build());
+        if (newEvent.getAudience() != null) event.setAudience(new ObjectValidator<>(newEvent.getAudience()).isNotNull().build());
 
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));

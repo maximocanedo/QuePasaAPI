@@ -24,13 +24,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa una solicitud de actualización de rol.
  */
 @Entity
 @Table(name = "roleUpdateRequests")
-public class RoleUpdateRequest implements Ownable {
+public class RoleUpdateRequest implements Ownable, Activatable {
     private UUID id;
     private User requester;
     private Role requestedRole;

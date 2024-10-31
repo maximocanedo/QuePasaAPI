@@ -15,8 +15,7 @@ import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.UserService;
 import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.NeighbourhoodValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.PictureValidator;
+import quepasa.api.validators.commons.ActivatableValidator;
 import quepasa.api.validators.users.NameValidator;
 
 import java.util.List;
@@ -115,25 +114,23 @@ public class UserServiceImpl implements UserService, RoleUpdateRequestService {
         }
         if(data.getAddress() != null) user.setAddress(data.getAddress());
         if(data.getNeighbourhood() != null) {
-            var neighbourhood = new NeighbourhoodValidator(data.getNeighbourhood())
-                    .isActive(neighbourhoodRepository)
-                    .build();
+            var neighbourhood = neighbourhoodRepository
+                    .findActiveNeighbourhoodById(data.getNeighbourhood().getId())
+                    .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
             user.setNeighbourhood(neighbourhood);
         }
         if(data.getPicture() != null) {
-            Picture pic = pictureRepository
+            Picture pic = (Picture) new ActivatableValidator(
+                    pictureRepository
                     .findById(data.getPicture().getId())
-                    .orElseThrow(() -> new Fail("Picture not found. "));
+                    .orElseThrow(() -> new Fail("Picture not found. "))
+            ).isActive().build();
             ownerService.of(pic)
                     .isOwner()
                     .orElseFail();
-            var picture = new PictureValidator(data.getPicture())
-                    .isActive(pictureRepository)
-                    .build();
-            user.setProfilePicture(picture);
+            user.setProfilePicture(pic);
         }
-        var u = userRepository.save(user);
-        return u;
+        return userRepository.save(user);
     }
 
     /**
