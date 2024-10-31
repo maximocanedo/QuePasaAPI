@@ -45,6 +45,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
+
+                    request.requestMatchers(HttpMethod.HEAD, "/api/users/**")
+                            .permitAll();
+
                     request.requestMatchers(
                                     "/api/signup",
                                     "/api/login",
@@ -60,6 +64,7 @@ public class SecurityConfig {
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/users/**")
                             .hasAuthority(Role.ADMIN.name());
+
 
                     request.requestMatchers(HttpMethod.GET, "/api/countries", "/api/countries/**")
                                     .permitAll();
