@@ -1,6 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -53,7 +54,8 @@ public class PostSubtypeServiceTests {
         PostSubtype mockSubtype = new PostSubtype();
         mockSubtype.setId(id);
 
-        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+
+        when(postSubtypeRepository.findActiveById(id)).thenReturn(Optional.of(mockSubtype));
 
         PostSubtype foundSubtype = postSubtypeService.findById(id);
         assertNotNull(foundSubtype);
@@ -142,7 +144,7 @@ public class PostSubtypeServiceTests {
         PostType mockType = new PostType();
         mockType.setId(idType);
 
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
+        when(postTypeRepository.findActiveById(idType)).thenReturn(Optional.of(mockType));
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(1);
@@ -160,19 +162,19 @@ public class PostSubtypeServiceTests {
     @Test
     @DisplayName("Crear subtipo de post. Tipo inexistente.")
     public void createSubtype_SubtypeNotFound_ThrowsException() {
-        Integer idType = 1;
+        int idType = 1;
 
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
+        when(postTypeRepository.findActiveById(idType)).thenReturn(Optional.empty());
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(1);
         request.setDescription("Entretenimiento");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        Fail exception = assertThrows(Fail.class, () -> {
             postSubtypeService.create(request);
         });
 
-        assertEquals("No value present", exception.getMessage());
+        assertEquals("Type not found. ", exception.getMessage());
     }
 
     @Test
@@ -184,12 +186,12 @@ public class PostSubtypeServiceTests {
         PostType mockType = new PostType();
         mockType.setId(idType);
 
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.of(mockType));
+        when(postTypeRepository.findActiveById(idType)).thenReturn(Optional.of(mockType));
 
         PostSubtype mockSubtype = new PostSubtype();
         mockSubtype.setId(id);
 
-        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+        when(postSubtypeRepository.findActiveById(id)).thenReturn(Optional.of(mockSubtype));
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(idType);
@@ -233,22 +235,22 @@ public class PostSubtypeServiceTests {
         Integer id = 1;
         Integer idType = 4;
 
-        when(postTypeRepository.findById(idType)).thenReturn(Optional.empty());
+        when(postTypeRepository.findActiveById(idType)).thenReturn(Optional.empty());
 
         PostSubtype mockSubtype = new PostSubtype();
         mockSubtype.setId(id);
 
-        when(postSubtypeRepository.findById(id)).thenReturn(Optional.of(mockSubtype));
+        when(postSubtypeRepository.findActiveById(id)).thenReturn(Optional.of(mockSubtype));
 
         PostSubtypeRequest request = new PostSubtypeRequest();
         request.setType(idType);
         request.setDescription("Entretenimiento");
 
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
+        Fail exception = assertThrows(Fail.class, () -> {
             postSubtypeService.update(id, request);
         });
 
-        assertEquals("No value present", exception.getMessage());
+        assertEquals("Type not found. ", exception.getMessage());
     }
 
     @Test

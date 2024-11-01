@@ -51,6 +51,7 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     implementation("commons-codec:commons-codec:1.17.1")
     implementation(files("./Entities/Entities/build/libs/Entities-1.0.0.jar"))
+    testImplementation(files("./Entities/Entities/build/libs/Entities-1.0.0.jar"))
 
 }
 

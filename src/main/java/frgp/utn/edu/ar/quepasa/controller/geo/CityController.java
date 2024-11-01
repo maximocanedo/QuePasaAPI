@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.controller.geo;
 
 import frgp.utn.edu.ar.quepasa.data.request.geo.CityRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.service.geo.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

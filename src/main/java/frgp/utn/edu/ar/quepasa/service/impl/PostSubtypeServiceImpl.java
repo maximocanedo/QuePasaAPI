@@ -65,7 +65,7 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
      */
     @Override
     public PostSubtype findById(Integer id) {
-        return postSubtypeRepository.findById(id)
+        return postSubtypeRepository.findActiveById(id)
                 .orElseThrow(() -> new Fail("Subtype not found", HttpStatus.NOT_FOUND));
     }
 
@@ -96,7 +96,7 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     public PostSubtype create(PostSubtypeRequest newSubtype) {
         PostSubtype subtype = new PostSubtype();
         var type = postTypeRepository.findActiveById(newSubtype.getType())
-                .orElseThrow(() -> new Fail("Subtype not found. ", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new Fail("Type not found. ", HttpStatus.BAD_REQUEST));
         subtype.setType(type);
         subtype.setDescription(newSubtype.getDescription());
         postSubtypeRepository.save(subtype);
@@ -116,7 +116,7 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
     public PostSubtype update(Integer id, PostSubtypeRequest newSubtype) {
         PostSubtype subtype = findById(id);
         var type = postTypeRepository.findActiveById(newSubtype.getType())
-                .orElseThrow(() -> new Fail("Subtype not found. ", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new Fail("Type not found. ", HttpStatus.BAD_REQUEST));
         subtype.setType(type);
         subtype.setDescription(newSubtype.getDescription());
         postSubtypeRepository.save(subtype);
@@ -132,7 +132,9 @@ public class PostSubtypeServiceImpl implements PostSubtypeService {
      */
     @Override
     public void delete(Integer id) {
-        PostSubtype subtype = findById(id);
+        PostSubtype subtype = postSubtypeRepository
+                .findById(id)
+                .orElseThrow(() -> new Fail("Subtype not found. ", HttpStatus.NOT_FOUND));
         subtype.setActive(false);
         postSubtypeRepository.save(subtype);
     }

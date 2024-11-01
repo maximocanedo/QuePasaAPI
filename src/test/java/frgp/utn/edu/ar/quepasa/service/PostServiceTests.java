@@ -497,7 +497,7 @@ public class PostServiceTests {
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.of(subtype));
+        when(postSubtypeRepository.findActiveById(subId)).thenReturn(Optional.of(subtype));
         when(neighbourhoodRepository.findActiveNeighbourhoodById(neighId)).thenReturn(Optional.of(neighbourhood));
         when(neighbourhoodRepository.findById(neighId)).thenReturn(Optional.of(neighbourhood));
 
@@ -529,12 +529,12 @@ public class PostServiceTests {
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.empty());
+        when(postSubtypeRepository.findActiveById(subId)).thenReturn(Optional.empty());
         when(neighbourhoodRepository.findById(neighId)).thenReturn(Optional.of(neighbourhood));
 
         PostCreateRequest request = mockPostCreate(username, subId, neighId);
 
-        assertThrows(NoSuchElementException.class, () -> service.create(request, mockUser));
+        assertThrows(Fail.class, () -> service.create(request, mockUser));
 
         clearAuthContext();
     }
@@ -639,12 +639,12 @@ public class PostServiceTests {
 
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(postSubtypeRepository.findById(subId)).thenReturn(Optional.empty());
+        when(postSubtypeRepository.findActiveById(subId)).thenReturn(Optional.empty());
         when(postRepository.findById(id)).thenReturn(Optional.of(mockPost));
 
         var request = mockPostEdit(subId, null);
 
-        assertThrows(NoSuchElementException.class, () -> service.update(id, request, mockUser));
+        assertThrows(Fail.class, () -> service.update(id, request, mockUser));
 
         clearAuthContext();
     }

@@ -340,7 +340,7 @@ public class PostControllerTests {
                         .with(user("root").password("123456789").roles("ADMIN"))
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         clearAuthContext();
     }
@@ -420,7 +420,7 @@ public class PostControllerTests {
                         .with(user("root").password("123456789").roles("ADMIN"))
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         clearAuthContext();
     }

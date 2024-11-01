@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.controller;
 
 import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import org.springframework.beans.factory.annotation.Autowired;

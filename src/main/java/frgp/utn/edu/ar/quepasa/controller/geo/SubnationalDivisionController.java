@@ -3,7 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller.geo;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
 import org.springframework.beans.factory.annotation.Autowired;

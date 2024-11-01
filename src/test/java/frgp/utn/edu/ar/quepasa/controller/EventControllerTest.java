@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
@@ -271,7 +271,7 @@ public class EventControllerTest {
                 .content(objectMapper.writeValueAsString(eventRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
-                .andExpect(jsonPath("$.errors[0]", is("Este campo no puede estar nulo. ")));
+                .andExpect(jsonPath("$.errors[0]", is("El valor es nulo. ")));
 
         clearAuthContext();
     }
@@ -296,7 +296,7 @@ public class EventControllerTest {
                 .content(objectMapper.writeValueAsString(eventRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertInstanceOf(ValidationError.class, result.getResolvedException()))
-                .andExpect(jsonPath("$.errors[0]", is("La categoría del evento no puede ser nula. ")));
+                .andExpect(jsonPath("$.errors[0]", is("El valor es nulo. ")));
 
         clearAuthContext();
     }

@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Ownable;

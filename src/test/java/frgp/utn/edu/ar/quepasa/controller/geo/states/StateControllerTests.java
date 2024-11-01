@@ -231,7 +231,7 @@ public class StateControllerTests {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.iso3").doesNotExist())
                 .andExpect(jsonPath("$.field").exists())
-                .andExpect(jsonPath("$.field").value("country"))
+                .andExpect(jsonPath("$.field").value("countryIso3"))
                 .andExpect(jsonPath("$.errors").exists())
                 .andExpect(jsonPath("$.errors").isArray());
     }

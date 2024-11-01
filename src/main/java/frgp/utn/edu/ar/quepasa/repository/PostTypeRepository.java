@@ -15,9 +15,9 @@ public interface PostTypeRepository extends JpaRepository<PostType, Integer> {
     @Query("SELECT p FROM PostType p WHERE (p.description LIKE %:query%) AND p.active = :active")
     Page<PostType> search(@NotNull String query, @NotNull Pageable pageable, boolean active);
 
-    @Query("SELECT p FROM PostType P WHERE p.id = :id AND p.active = true")
+    @Query("SELECT p FROM PostType p WHERE p.id = :id AND p.active = true")
     Optional<PostType> findActiveById(int id);
 
-    @Query("SELECT p FROM PostType p WHERE p.active")
+    @Query("SELECT p FROM PostType p WHERE p.active = true")
     Page<PostType> findAllActive(Pageable pageable);
 }

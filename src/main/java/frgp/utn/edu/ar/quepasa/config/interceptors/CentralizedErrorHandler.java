@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.config.interceptors;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

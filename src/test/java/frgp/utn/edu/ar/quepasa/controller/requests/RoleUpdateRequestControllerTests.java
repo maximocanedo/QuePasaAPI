@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller.requests;
 import java.util.List;
 import java.util.UUID;
 
+import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
-import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
 import jakarta.transaction.Transactional;
 
 @Transactional
@@ -57,7 +57,7 @@ public class RoleUpdateRequestControllerTests {
 
     @Test
     public void testCreateRoleRequest() throws Exception {
-        when(roleUpdateRequestService.createRoleUpdateRequest(Role.ADMIN, "Requesting Admin Role"))
+        when(roleUpdateRequestService.create(Role.ADMIN, "Requesting Admin Role"))
                 .thenReturn(sampleRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/request/role/request")
@@ -72,7 +72,7 @@ public class RoleUpdateRequestControllerTests {
     @Test
     public void testRespondToRoleRequest() throws Exception {
         UUID requestId = UUID.randomUUID();
-        when(roleUpdateRequestService.respondToRoleUpdateRequest(requestId, true, "Approved by admin"))
+        when(roleUpdateRequestService.close(requestId, true, "Approved by admin"))
                 .thenReturn(sampleRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/request/role/respond")
@@ -92,12 +92,12 @@ public class RoleUpdateRequestControllerTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(roleUpdateRequestService, times(1)).deleteRoleUpdateRequest(requestId);
+        verify(roleUpdateRequestService, times(1)).delete(requestId);
     }
 
     @Test
     public void testGetMyRequests() throws Exception {
-        when(roleUpdateRequestService.getUserRequests()).thenReturn(List.of(sampleRequest));
+        when(roleUpdateRequestService.findByUser()).thenReturn(List.of(sampleRequest));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/request/role/my-requests")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -107,7 +107,7 @@ public class RoleUpdateRequestControllerTests {
 
     @Test
     public void testGetAllRequests() throws Exception {
-        when(roleUpdateRequestService.getAllRequests()).thenReturn(List.of(sampleRequest));
+        when(roleUpdateRequestService.findAll()).thenReturn(List.of(sampleRequest));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/request/role/all")
                 .contentType(MediaType.APPLICATION_JSON))

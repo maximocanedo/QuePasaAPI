@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,8 @@ import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.request.RoleUpdateRequestService;
 
 @Service
-@Primary
 public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
 
     private final RoleUpdateRequestRepository roleUpdateRequestRepository;
@@ -37,7 +36,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @return La solicitud creada.
      */
     @Override
-    public RoleUpdateRequest createRoleUpdateRequest(Role requestedRole, String remarks) {
+    public RoleUpdateRequest create(Role requestedRole, String remarks) {
         RoleUpdateRequest request = new RoleUpdateRequest();
         request.setRequestedRole(requestedRole);
         request.setRemarks(remarks);
@@ -54,7 +53,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @throws IllegalArgumentException si no se encontr&oacute; la solicitud.
      */
     @Override
-    public void reviewRoleUpdateRequest(UUID requestId, boolean approve, String adminRemarks) {
+    public void review(UUID requestId, boolean approve, String adminRemarks) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
 
         if (optionalRequest.isPresent()) {
@@ -77,7 +76,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @throws IllegalArgumentException si no se encontro la solicitud.
      */
     @Override
-    public RoleUpdateRequest respondToRoleUpdateRequest(UUID requestId, boolean approve, String reviewerRemarks) {
+    public RoleUpdateRequest close(UUID requestId, boolean approve, String reviewerRemarks) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
 
         if (optionalRequest.isPresent()) {
@@ -97,7 +96,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @throws IllegalArgumentException si no se encontró la solicitud.
      */
     @Override
-    public void deleteRoleUpdateRequest(UUID requestId) {
+    public void delete(UUID requestId) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
 
         if (optionalRequest.isPresent()) {
@@ -116,7 +115,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @return Un listado de solicitudes de actualizacion de rol.
      */
     @Override
-    public List<RoleUpdateRequest> getUserRequests() {
+    public List<RoleUpdateRequest> findByUser() {
         User currentUser = getCurrentUser();
         return roleUpdateRequestRepository.findByRequesterAndActiveTrue(currentUser);
     }
@@ -127,7 +126,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @return Un listado de solicitudes de actualizacion de rol.
      */
     @Override
-    public List<RoleUpdateRequest> getAllRequests() {
+    public List<RoleUpdateRequest> findAll() {
         return roleUpdateRequestRepository.findAllByActiveTrue();
     }
 
@@ -135,4 +134,6 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
     private User getCurrentUser() {
         return authenticationService.getCurrentUserOrDie();
     }
+
+
 }
