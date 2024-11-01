@@ -3,7 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller.media;
 import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawDocument;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.service.media.DocumentService;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;

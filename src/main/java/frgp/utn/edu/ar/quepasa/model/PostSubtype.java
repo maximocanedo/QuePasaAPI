@@ -1,13 +1,14 @@
 package frgp.utn.edu.ar.quepasa.model;
 
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa el subtipo de una publicación.
  */
 @Entity
 @Table(name = "postSubtypes")
-public class PostSubtype {
+public class PostSubtype implements Activatable {
     private Integer id;
     private PostType type;
     private String description;

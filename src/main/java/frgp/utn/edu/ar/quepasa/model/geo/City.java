@@ -1,13 +1,14 @@
 package frgp.utn.edu.ar.quepasa.model.geo;
 
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa una ciudad.
  */
 @Entity
 @Table(name="cities")
-public class City {
+public class City implements Activatable {
     private long id;
     private String name;
     private SubnationalDivision subdivision;

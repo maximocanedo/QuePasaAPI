@@ -1,13 +1,14 @@
 package frgp.utn.edu.ar.quepasa.service.validators.objects;
 
-import frgp.utn.edu.ar.quepasa.service.validators.commons.StringValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.StringValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.commons.StringValidator;
+import quepasa.api.validators.commons.builders.ObjectValidatorBuilder;
+import quepasa.api.validators.commons.builders.StringValidatorBuilder;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-public class MultipartFileValidator extends ValidatorBuilder<MultipartFileValidator, MultipartFile> {
+public class MultipartFileValidator extends ObjectValidatorBuilder<MultipartFileValidator, MultipartFile> {
 
     public static final long KB = 1024L;
     public static final long MB = 1024L * KB;
@@ -28,9 +29,7 @@ public class MultipartFileValidator extends ValidatorBuilder<MultipartFileValida
     }
 
     public MultipartFileValidator isNotNull() {
-        if(getValue() == null)
-            super.invalidate("Se recibió un valor nulo en lugar de un archivo. ");
-        return this;
+        return this.isNotNull("Se recibió un valor nulo en lugar de un archivo. ");
     }
 
     public MultipartFileValidator hasContentType() {
@@ -84,14 +83,5 @@ public class MultipartFileValidator extends ValidatorBuilder<MultipartFileValida
         return this.weighsLessThan(10 * MB);
     }
 
-    public StringValidator validateContentAsString() {
-        byte[] b = {};
-        try {
-            b = getValue().getBytes();
-        } catch(IOException expected) {
-            super.invalidate("No se puede leer el contenido del archivo como una cadena de texto. ");
-        }
-        return new StringValidator(new String(b));
-    }
 
 }

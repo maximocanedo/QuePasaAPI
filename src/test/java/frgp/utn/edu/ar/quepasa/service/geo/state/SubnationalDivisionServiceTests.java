@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.geo.state;
 
 import frgp.utn.edu.ar.quepasa.data.request.geo.SubnationalDivisionUpdateRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.enums.SubnationalDivisionDenomination;
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;

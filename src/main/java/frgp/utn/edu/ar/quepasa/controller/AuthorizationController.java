@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

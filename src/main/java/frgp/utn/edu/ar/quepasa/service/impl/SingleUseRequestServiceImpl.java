@@ -16,7 +16,7 @@ import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;
-import frgp.utn.edu.ar.quepasa.service.validators.users.PasswordValidator;
+import quepasa.api.validators.users.PasswordValidator;
 import jakarta.mail.MessagingException;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;

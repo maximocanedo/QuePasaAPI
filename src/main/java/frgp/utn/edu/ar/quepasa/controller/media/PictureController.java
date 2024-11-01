@@ -4,7 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.media.PictureService;

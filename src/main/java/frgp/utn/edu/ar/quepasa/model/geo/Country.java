@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa un país.
@@ -13,7 +14,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "countries")
-public class Country {
+public class Country implements Activatable {
 
     private String iso3;
     private String label;

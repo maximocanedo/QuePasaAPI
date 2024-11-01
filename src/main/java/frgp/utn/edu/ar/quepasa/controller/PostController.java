@@ -30,7 +30,6 @@ import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.commenting.PostComment;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.service.Auth;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
@@ -44,15 +43,13 @@ public class PostController {
     private final AuthenticationService authenticationService;
     private final VoteService voteService;
     private final CommentService commentService;
-    private final Auth auth;
 
     @Autowired
-    public PostController(PostService postService, AuthenticationService authenticationService, VoteService voteService, CommentService commentService, Auth auth) {
+    public PostController(PostService postService, AuthenticationService authenticationService, VoteService voteService, CommentService commentService) {
         this.postService = postService;
         this.authenticationService = authenticationService;
         this.voteService = voteService;
         this.commentService = commentService;
-        this.auth = auth;
     }
 
     /**

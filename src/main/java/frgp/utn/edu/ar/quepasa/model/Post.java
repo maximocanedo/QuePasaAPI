@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
 
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "posts")
-public class Post implements Ownable, Votable, Commentable {
+public class Post implements Ownable, Votable, Commentable, Activatable {
     
     private Integer id;
     private User owner;

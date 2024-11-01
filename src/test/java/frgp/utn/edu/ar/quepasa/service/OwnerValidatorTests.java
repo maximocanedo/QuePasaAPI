@@ -4,7 +4,7 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

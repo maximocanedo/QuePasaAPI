@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PostSubtypeRepository extends JpaRepository<PostSubtype, Integer> {
     @Query("SELECT p FROM PostSubtype p WHERE (p.description LIKE %:query% AND p.type.description LIKE %:query%) AND p.active = :active")
@@ -16,6 +18,9 @@ public interface PostSubtypeRepository extends JpaRepository<PostSubtype, Intege
 
     @Query("SELECT p FROM PostSubtype p WHERE p.active")
     Page<PostSubtype> findAllActive(Pageable pageable);
+
+    @Query("SELECT p FROM PostSubtype p WHERE p.id = :id AND p.active = true")
+    Optional<PostSubtype> findActiveById(int id);
 
     Page<PostSubtype> findByType(PostType type, Pageable pageable);
 }

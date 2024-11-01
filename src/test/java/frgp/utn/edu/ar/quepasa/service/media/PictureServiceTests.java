@@ -2,7 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
@@ -12,7 +12,7 @@ import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.impl.VoteServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.media.impl.PictureServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

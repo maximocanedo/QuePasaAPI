@@ -69,7 +69,7 @@ class RoleUpdateRequestServiceTest {
         
     @Test
     @DisplayName("Test crear solicitud de actualización de rol")
-    void testCreateRoleUpdateRequest() {
+    void testCreate() {
         Role requestedRole = Role.ADMIN;
         String remarks = "Solicito ser administrador";
         String username = "testUser";
@@ -87,7 +87,7 @@ class RoleUpdateRequestServiceTest {
 
         when(roleUpdateRequestRepository.save(any(RoleUpdateRequest.class))).thenReturn(savedRequest);
 
-        RoleUpdateRequest result = roleUpdateRequestService.createRoleUpdateRequest(requestedRole, remarks);
+        RoleUpdateRequest result = roleUpdateRequestService.create(requestedRole, remarks);
 
         assertNotNull(result, "El resultado no debería ser null");
         assertEquals(requestedRole, result.getRequestedRole(), "El rol solicitado debería ser ADMIN");
@@ -99,71 +99,71 @@ class RoleUpdateRequestServiceTest {
 
     @Test
     @DisplayName("Test revisar solicitud de actualización de rol")
-    void testReviewRoleUpdateRequest() {
+    void testReview() {
         UUID requestId = UUID.randomUUID();
         boolean approved = true;
         String reviewerUsername = "adminUser";
 
-        doNothing().when(roleUpdateRequestService).reviewRoleUpdateRequest(requestId, approved, reviewerUsername);
+        doNothing().when(roleUpdateRequestService).review(requestId, approved, reviewerUsername);
 
-        roleUpdateRequestService.reviewRoleUpdateRequest(requestId, approved, reviewerUsername);
+        roleUpdateRequestService.review(requestId, approved, reviewerUsername);
         verify(roleUpdateRequestService, times(1))
-            .reviewRoleUpdateRequest(requestId, approved, reviewerUsername);
+            .review(requestId, approved, reviewerUsername);
     }
 
     @Test
     @DisplayName("Test responder a solicitud de actualización de rol")
-    void testRespondToRoleUpdateRequest() {
+    void testClose() {
         UUID requestId = UUID.randomUUID();
         boolean approved = false;
         String response = "Solicitud rechazada";
         RoleUpdateRequest request = new RoleUpdateRequest();
 
-        when(roleUpdateRequestService.respondToRoleUpdateRequest(requestId, approved, response))
+        when(roleUpdateRequestService.close(requestId, approved, response))
             .thenReturn(request);
 
-        RoleUpdateRequest result = roleUpdateRequestService.respondToRoleUpdateRequest(requestId, approved, response);
+        RoleUpdateRequest result = roleUpdateRequestService.close(requestId, approved, response);
         assertNotNull(result);
         verify(roleUpdateRequestService, times(1))
-            .respondToRoleUpdateRequest(requestId, approved, response);
+            .close(requestId, approved, response);
     }
 
     @Test
     @DisplayName("Test eliminar solicitud de actualización de rol")
-    void testDeleteRoleUpdateRequest() {
+    void testDelete() {
         UUID requestId = UUID.randomUUID();
-        doNothing().when(roleUpdateRequestService).deleteRoleUpdateRequest(requestId);
-        roleUpdateRequestService.deleteRoleUpdateRequest(requestId);
-        verify(roleUpdateRequestService, times(1)).deleteRoleUpdateRequest(requestId);
+        doNothing().when(roleUpdateRequestService).delete(requestId);
+        roleUpdateRequestService.delete(requestId);
+        verify(roleUpdateRequestService, times(1)).delete(requestId);
     }
 
     @Test
     @DisplayName("Test obtener solicitudes de usuario")
-    void testGetUserRequests() {
+    void testFindByUser() {
         RoleUpdateRequest request = new RoleUpdateRequest();
         List<RoleUpdateRequest> requests = List.of(request);
 
-        when(roleUpdateRequestService.getUserRequests()).thenReturn(requests);
-        List<RoleUpdateRequest> result = roleUpdateRequestService.getUserRequests();
+        when(roleUpdateRequestService.findByUser()).thenReturn(requests);
+        List<RoleUpdateRequest> result = roleUpdateRequestService.findByUser();
         
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(roleUpdateRequestService, times(1)).getUserRequests();
+        verify(roleUpdateRequestService, times(1)).findByUser();
     }
 
     @Test
     @DisplayName("Test obtener todas las solicitudes")
-    void testGetAllRequests() {
+    void testFindAll() {
         RoleUpdateRequest request1 = new RoleUpdateRequest();
         RoleUpdateRequest request2 = new RoleUpdateRequest();
         List<RoleUpdateRequest> requests = List.of(request1, request2);
 
-        when(roleUpdateRequestService.getAllRequests()).thenReturn(requests);
-        List<RoleUpdateRequest> result = roleUpdateRequestService.getAllRequests();
+        when(roleUpdateRequestService.findAll()).thenReturn(requests);
+        List<RoleUpdateRequest> result = roleUpdateRequestService.findAll();
         
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(roleUpdateRequestService, times(1)).getAllRequests();
+        verify(roleUpdateRequestService, times(1)).findAll();
     }
 
     private void setAuthContext() {

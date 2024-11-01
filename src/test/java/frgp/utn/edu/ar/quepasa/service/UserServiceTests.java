@@ -2,7 +2,8 @@ package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
@@ -43,10 +44,13 @@ public class UserServiceTests {
     @InjectMocks private UserServiceImpl userService;
     @Mock
     private AuthenticationService authenticationService;
+    @Mock
+    private OwnerService ownerService;
 
     public UserServiceTests() {
         MockitoAnnotations.openMocks(this);
         userService.setAuthenticationService(authenticationService);
+        userService.setOwnerService(ownerService);
     }
 
     @BeforeEach
@@ -190,7 +194,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -214,7 +218,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update(request);
         });
     }
@@ -234,7 +238,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -258,7 +262,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setNeighbourhood(inactiveMockFile);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update(request);
         });
     }
@@ -306,7 +310,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update(request);
         });
     }
@@ -331,11 +335,13 @@ public class UserServiceTests {
         when(authenticationService.getCurrentUserOrDie()).thenReturn(mockUser);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
         when(pictureRepository.findById(x)).thenReturn(Optional.of(inactivePicture));
+        var mo = new OwnerValidator(inactivePicture, mockUser);
+        when(ownerService.of(any())).thenReturn(mo);
         var request = new UserPatchEditRequest();
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update(request);
         });
     }
@@ -382,7 +388,7 @@ public class UserServiceTests {
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update("testUser", request);
         });
     }
@@ -405,11 +411,13 @@ public class UserServiceTests {
         inactivePicture.setActive(true);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
         when(pictureRepository.findById(x)).thenReturn(Optional.of(inactivePicture));
+        var mo = new OwnerValidator(inactivePicture, mockUser);
+        when(ownerService.of(any())).thenReturn(mo);
         var request = new UserPatchEditRequest();
         request.setName("Don Alberto Hermenegildo");
         request.setPicture(inactivePicture);
         request.setAddress("Balcarce 50");
-        assertThrows(ValidationError.class, () -> {
+        assertThrows(Fail.class, () -> {
             userService.update("testUser", request);
         });
     }

@@ -31,8 +31,6 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.PostService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.NeighbourhoodValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.PostSubtypeValidator;
 
 
 @Service("postService")
@@ -265,17 +263,13 @@ public class PostServiceImpl implements PostService {
         post.setOwner(originalPoster);
         post.setAudience((newPost.getAudience()));
         post.setTitle(newPost.getTitle());
-        var subtype = new PostSubtypeValidator(newPost.getSubtype(), postSubtypeRepository)
-                .isActive(postSubtypeRepository)
-                .build();
+        var subtype = postSubtypeRepository.findActiveById(newPost.getSubtype())
+                .orElseThrow(() -> new Fail("Subtype not found. ", HttpStatus.BAD_REQUEST));
         post.setSubtype(subtype);
         post.setDescription(newPost.getDescription());
-        var n = neighbourhoodRepository
+        var neighbourhood = neighbourhoodRepository
                 .findActiveNeighbourhoodById(newPost.getNeighbourhood())
                 .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
-        var neighbourhood = new NeighbourhoodValidator(n)
-                .isActive(neighbourhoodRepository)
-                .build();
         post.setNeighbourhood(neighbourhood);
         post.setTimestamp(newPost.getTimestamp());
         post.setTags(newPost.getTags());
@@ -306,19 +300,15 @@ public class PostServiceImpl implements PostService {
                 .orElseFail();
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
-            var subtype = new PostSubtypeValidator(newPost.getSubtype(), postSubtypeRepository)
-                    .isActive(postSubtypeRepository)
-                    .build();
+            var subtype = postSubtypeRepository.findActiveById(newPost.getSubtype())
+                    .orElseThrow(() -> new Fail("Subtype not found. ", HttpStatus.BAD_REQUEST));
             post.setSubtype(subtype);
         }
         if(newPost.getDescription() != null) post.setDescription(newPost.getDescription());
         if(newPost.getNeighbourhood() != null) {
-            var n = neighbourhoodRepository
+            var neighbourhood = neighbourhoodRepository
                     .findActiveNeighbourhoodById(newPost.getNeighbourhood())
                     .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
-            var neighbourhood = new NeighbourhoodValidator(n)
-                    .isActive(neighbourhoodRepository)
-                    .build();
             post.setNeighbourhood(neighbourhood);
         }
         if(newPost.getTags() != null) post.setTags(newPost.getTags());

@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.fakedata.NapoleonBonaparteInspiredData;
 import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
@@ -13,7 +13,7 @@ import frgp.utn.edu.ar.quepasa.repository.PostRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.EventCommentRepository;
 import frgp.utn.edu.ar.quepasa.repository.commenting.PostCommentRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.CommentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.OwnerValidator;
+import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

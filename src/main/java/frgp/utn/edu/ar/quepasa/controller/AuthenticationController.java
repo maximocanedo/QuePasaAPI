@@ -7,7 +7,7 @@ import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetAttempt;
 import frgp.utn.edu.ar.quepasa.data.request.auth.PasswordResetRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.auth.SingleUseRequest;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.SingleUseRequestService;

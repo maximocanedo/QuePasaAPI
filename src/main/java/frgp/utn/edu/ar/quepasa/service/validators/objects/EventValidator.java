@@ -4,8 +4,8 @@ import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.service.validators.commons.builders.ValidatorBuilder;
-import frgp.utn.edu.ar.quepasa.service.validators.events.*;
+import quepasa.api.validators.commons.builders.ValidatorBuilder;
+import quepasa.api.validators.events.*;
 
 import java.util.function.Consumer;
 
@@ -38,41 +38,6 @@ public class EventValidator extends ValidatorBuilder<EventValidator, Event> {
                     super.invalidate("Este elemento no está disponible en tu país. ");
                 break;
         }
-        return this;
-    }
-
-    public EventValidator title(Consumer<EventTitleValidator> handler) {
-        handler.accept(new EventTitleValidator(getValue().getTitle()));
-        return this;
-    }
-
-    public EventValidator description(Consumer<EventDescriptionValidator> handler) {
-        handler.accept(new EventDescriptionValidator(getValue().getDescription()));
-        return this;
-    }
-
-    public EventValidator address(Consumer<EventAddressValidator> handler) {
-        handler.accept(new EventAddressValidator(getValue().getAddress()));
-        return this;
-    }
-
-    public EventValidator start(Consumer<EventDateValidator> handler) {
-        handler.accept(new EventDateValidator(getValue().getStart()));
-        return this;
-    }
-
-    public EventValidator end(Consumer<EventDateValidator> handler) {
-        handler.accept(new EventDateValidator(getValue().getEnd()));
-        return this;
-    }
-
-    public EventValidator category(Consumer<EventCategoryValidator> handler) {
-        handler.accept(new EventCategoryValidator(getValue().getCategory()));
-        return this;
-    }
-
-    public EventValidator audience(Consumer<AudienceValidator> handler) {
-        handler.accept(new AudienceValidator(getValue().getAudience()));
         return this;
     }
 

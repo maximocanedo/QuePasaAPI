@@ -18,13 +18,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 /**
  * Entidad que representa un usuario.
  */
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, Activatable {
 
     private Integer id;
     private String username;

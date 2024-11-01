@@ -7,12 +7,13 @@ import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
 import frgp.utn.edu.ar.quepasa.repository.geo.CountryRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.SubnationalDivisionRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionCountryValidator;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionISO3Validator;
-import frgp.utn.edu.ar.quepasa.service.validators.geo.subnationaldivision.SubnationalDivisionLabelValidator;
+import quepasa.api.validators.geo.subnationaldivision.SubnationalDivisionISO3Validator;
+import quepasa.api.validators.geo.subnationaldivision.SubnationalDivisionLabelValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import quepasa.api.validators.commons.ObjectValidator;
+import quepasa.api.validators.geo.subnationaldivision.CountryIso3Validator;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,10 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
                 .isValidLabel()
                 .hasValidLength()
                 .build();
-        Country country = new SubnationalDivisionCountryValidator(file.getCountry())
+        Country country = new ObjectValidator<>(file.getCountry(), "country")
+                .isNotNull()
+                .build();
+        String countryCode = new CountryIso3Validator(country.getIso3())
                 .exists(countryRepository)
                 .build();
         file.setIso3(iso3);
@@ -87,7 +91,10 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
             file.setDenomination(request.getDenomination());
         }
         if(request.hasCountry()) {
-            Country country = new SubnationalDivisionCountryValidator(request.getCountry())
+            Country country = new ObjectValidator<>(request.getCountry(), "country")
+                    .isNotNull()
+                    .build();
+            String countryCode = new CountryIso3Validator(country.getIso3())
                     .exists(countryRepository)
                     .build();
             file.setCountry(country);

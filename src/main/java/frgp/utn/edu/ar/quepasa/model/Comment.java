@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
+import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "comments")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Comment implements Ownable, Votable {
+public abstract class Comment implements Ownable, Votable, Activatable {
     private UUID id;
     private String content;
     private User author;

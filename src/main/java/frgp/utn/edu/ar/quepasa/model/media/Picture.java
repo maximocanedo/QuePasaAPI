@@ -13,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.voting.Votable;
 import jakarta.persistence.*;
 import org.springframework.http.MediaType;
+import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "pictures")
-public class Picture implements Ownable, Votable {
+public class Picture implements Ownable, Votable, Activatable {
     private UUID id;
     private String description;
     private boolean active = true;

@@ -26,7 +26,7 @@ import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.JwtService;
 import frgp.utn.edu.ar.quepasa.service.MailSenderService;
-import frgp.utn.edu.ar.quepasa.service.validators.users.*;
+import quepasa.api.validators.users.*;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.jetbrains.annotations.NotNull;
@@ -252,13 +252,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String generateVerificationCodeHash(int code) {
         return passwordEncoder.encode(String.valueOf(code));
-    }
-
-    public void validateMail(String mail) {
-        Pattern p = Pattern.compile(".+@.+\\..+");
-        Matcher m = p.matcher(mail);
-        if(!m.matches())
-            throw new Fail("Invalid email address. ", HttpStatus.BAD_REQUEST);
     }
 
 
