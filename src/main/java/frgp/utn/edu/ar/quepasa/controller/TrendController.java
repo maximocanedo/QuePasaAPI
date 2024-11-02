@@ -57,8 +57,8 @@ public class TrendController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(List.of(new Trend("Error en fechaBase: formato incorrecto", 0)));
         } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
