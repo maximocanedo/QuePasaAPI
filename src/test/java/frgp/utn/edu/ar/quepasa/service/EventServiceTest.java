@@ -3,6 +3,8 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.repository.media.EventPictureRepository;
+import frgp.utn.edu.ar.quepasa.service.media.impl.PictureServiceImpl;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
@@ -58,7 +60,9 @@ public class EventServiceTest {
         OwnerServiceImpl ownerService = new OwnerServiceImpl(authenticationService);
         VoteService voteService = mock(VoteService.class);
         var commentService = mock(CommentServiceImpl.class);
-        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository);
+        var pictureService = mock(PictureServiceImpl.class);
+        var eventPictureRepository = mock(EventPictureRepository.class);
+        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository, pictureService, eventPictureRepository);
     }
 
 
