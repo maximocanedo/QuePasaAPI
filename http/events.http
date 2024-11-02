@@ -10,8 +10,14 @@ Content-Type: application/json
   "startDate": "2024-12-15 11:45",
   "endDate": "2024-12-15 13:30",
   "category": "EDUCATIVE",
-  "audience": "PUBLIC"
+  "audience": "PUBLIC",
+  "pictureId": "308d95da-95ea-4b87-939e-af93943145e9"
 }
+
+### Creacion evento con imagen
+GET {{base}}/api/pictures/308d95da-95ea-4b87-939e-af93943145e9
+Authorization: Bearer {{token}}
+Content-Type: image/jpeg
 
 ### Modificar evento
 PATCH {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc
