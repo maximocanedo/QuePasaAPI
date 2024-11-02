@@ -180,7 +180,9 @@ public class EventServiceImpl implements EventService {
                 .orElseFail();
 
 
-        Optional<Picture> picture = newEvent.getPictureId() != null ? pictureService.getPictureById(newEvent.getPictureId()) : Optional.empty();
+        Optional<Picture> picture = newEvent.getPictureId() != null ?
+                Optional.ofNullable(pictureService.getPictureById(newEvent.getPictureId()).orElseThrow(() -> new Fail("Picture not found.", HttpStatus.NOT_FOUND))) :
+                Optional.empty();
 
         if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
