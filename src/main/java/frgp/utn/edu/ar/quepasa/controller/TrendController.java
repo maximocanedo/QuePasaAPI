@@ -1,16 +1,21 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.model.Trend;
-import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
+import frgp.utn.edu.ar.quepasa.model.Trend;
+import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
 
 @RestController
 @RequestMapping("/api/trends")
@@ -52,7 +57,8 @@ public class TrendController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(List.of(new Trend("Error en fechaBase: formato incorrecto", 0)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
     }
 }
