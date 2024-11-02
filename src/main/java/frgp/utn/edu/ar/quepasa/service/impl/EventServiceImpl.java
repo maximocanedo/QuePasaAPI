@@ -28,6 +28,7 @@ import quepasa.api.validators.commons.ObjectValidator;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -128,8 +129,8 @@ public class EventServiceImpl implements EventService {
         Event newEvent = new Event();
 
         if (event.getPictureId() == null) throw new Fail("Picture is required.", HttpStatus.BAD_REQUEST);
-        Picture picture = pictureService.getPictureById(event.getPictureId())
-                .orElseThrow(() -> new Fail("Picture not found.", HttpStatus.NOT_FOUND));
+        Optional<Picture> picture = pictureService.getPictureById(event.getPictureId());
+        if (picture.isEmpty()) throw new Fail("Picture not found.", HttpStatus.NOT_FOUND);
 
         var title = new EventTitleValidator(event.getTitle()).meetsLimits().build();
         newEvent.setTitle(title);
@@ -178,8 +179,8 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
-        Picture picture = pictureService.getPictureById(newEvent.getPictureId())
-                .orElseThrow(() -> new Fail("Picture not found.", HttpStatus.NOT_FOUND));
+
+        Optional<Picture> picture = newEvent.getPictureId() != null ? pictureService.getPictureById(newEvent.getPictureId()) : Optional.empty();
 
         if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
@@ -303,17 +304,19 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
-    void setPictureEvent(Event event, Picture picture) {
+    void setPictureEvent(Event event, Optional<Picture> picture) {
         EventPicture eventPicture = eventPictureRepository.findByEventId(event.getId())
                 .orElse(new EventPicture());
-        eventPicture.setId(picture.getId());
-        eventPicture.setDescription(picture.getDescription());
-        eventPicture.setActive(picture.isActive());
-        eventPicture.setMediaType(picture.getMediaType());
-        eventPicture.setUploadedAt(picture.getUploadedAt());
-        eventPicture.setOwner(picture.getOwner());
-        eventPicture.setVotes(picture.getVotes());
-        eventPicture.setEvent(event);
+        if (picture.isPresent() && eventPicture.getId() == null) {
+            eventPicture.setId(picture.get().getId());
+            eventPicture.setDescription(picture.get().getDescription());
+            eventPicture.setActive(picture.get().isActive());
+            eventPicture.setMediaType(picture.get().getMediaType());
+            eventPicture.setUploadedAt(picture.get().getUploadedAt());
+            eventPicture.setOwner(picture.get().getOwner());
+            eventPicture.setVotes(picture.get().getVotes());
+            eventPicture.setEvent(event);
+        }
         eventPictureRepository.save(eventPicture);
     }
 }
