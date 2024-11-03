@@ -1,36 +1,30 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.model.Trend;
-import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-//
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-
-
-//
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.hamcrest.Matchers.*;
+import frgp.utn.edu.ar.quepasa.model.Trend;
+import frgp.utn.edu.ar.quepasa.service.impl.TrendServiceImpl;
+import jakarta.transaction.Transactional;
 
 @Transactional
 @SpringBootTest()
@@ -72,7 +66,7 @@ public class TrendControllerTest {
      */
     @Test
     public void testGetTendencias() throws Exception {
-        when(trendService.getTrends(1, Timestamp.valueOf("2024-10-01 09:30:00")))
+        when(trendService.getTrends(1, "2024-10-01 00:00:00"))
                 .thenReturn(tendencias);
 
         mockMvc.perform(get("/api/trends/1")

@@ -6,5 +6,5 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface TrendService {
-    List<Trend> getTrends(int neighborhood, Timestamp baseDate);
+    List<Trend> getTrends(int neighborhood, String baseDate);
 }
