@@ -11,8 +11,8 @@ public class NameValidator extends StringValidatorBuilder<NameValidator> {
 
     public NameValidator validateCompoundNames() {
         return super.matches(
-            "^[A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,}( [A-Za-zÁÉÍÓÚáéíóúñÑ'’-]{2,})*$",
-            "Cada nombre debe tener al menos dos caracteres válidos. "
+            "^(?![\\d\\s\\W])[\\w\\s\\W]+(?<![\\d\\s\\W])$",
+            "El nombre no puede empezar con espacios, números o símbolos especiales. "
         );
     }
 

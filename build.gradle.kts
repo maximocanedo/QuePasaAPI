@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "frgp.utn.edu.ar"
-version = "v8.10.9-beta (Imperial Ruso)"
+version = "v8.16.10 (Imperial Ruso)"
 
 
 java {

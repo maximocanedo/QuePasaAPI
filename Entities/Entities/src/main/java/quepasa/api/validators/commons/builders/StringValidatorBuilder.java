@@ -231,6 +231,44 @@ public abstract class StringValidatorBuilder<T extends StringValidatorBuilder<T>
         return this.hasAtMostXSpecialCharacters(max, "No debe tener más de " + max + " caracteres especiales. ");
     }
 
+    public T equals(String content, String feedback) {
+        if(!getValue().equals(content))
+            super.invalidate(feedback);
+        return (T) this;
+    }
 
+    public T equals(String content) {
+        return this.equals(content, "Los valores no coinciden. ");
+    }
+
+    public T equalsIgnoreCase(String content, String feedback) {
+        if(!getValue().equalsIgnoreCase(content))
+            super.invalidate(feedback);
+        return (T) this;
+    }
+
+    public T equalsIgnoreCase(String content) {
+        return this.equalsIgnoreCase(content, "Los valores no coinciden. ");
+    }
+
+    public T isDifferentTo(String content, String feedback) {
+        if(getValue().equals(content))
+            super.invalidate(feedback);
+        return (T) this;
+    }
+
+    public T isDifferentTo(String content) {
+        return this.isDifferentTo(content, "Los valores coinciden. ");
+    }
+
+    public T isDifferentToIgnoreCase(String content, String feedback) {
+        if(getValue().equalsIgnoreCase(content))
+            super.invalidate(feedback);
+        return (T) this;
+    }
+
+    public T isDifferentToIgnoreCase(String content) {
+        return this.isDifferentToIgnoreCase(content, "Los valores coinciden. ");
+    }
 
 }

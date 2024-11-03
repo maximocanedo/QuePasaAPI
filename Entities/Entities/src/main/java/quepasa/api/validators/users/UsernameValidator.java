@@ -1,7 +1,7 @@
 package quepasa.api.validators.users;
 
-import quepasa.api.validators.commons.builders.StringValidatorBuilder;
 import quepasa.api.verifiers.UserVerifier;
+import quepasa.api.validators.commons.builders.StringValidatorBuilder;
 
 public class UsernameValidator extends StringValidatorBuilder<UsernameValidator> {
 
