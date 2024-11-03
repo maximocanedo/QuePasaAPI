@@ -32,8 +32,8 @@ public class TrendServiceImpl implements TrendService {
     @Override
     public List<Trend> getTrends(int barrio, String fechaBase) {
         if (fechaBase == null) {
-            Set<String> errors = new HashSet<>();
-            errors.add("La fecha base no puede ser nula o con formato incorrecto.");
+            /*Set<String> errors = new HashSet<>();
+            errors.add("La fecha base no puede ser nula o con formato incorrecto.");*/
             //throw new ValidationError("fechaBase", errors);
         }
 
@@ -47,8 +47,8 @@ public class TrendServiceImpl implements TrendService {
             return tendencias;
 
         } catch (IllegalArgumentException e) {
-            Set<String> errors = new HashSet<>();
-            errors.add("Formato de fecha incorrecto: " + e.getMessage());
+            /*Set<String> errors = new HashSet<>();
+            errors.add("Formato de fecha incorrecto: " + e.getMessage());*/
            // throw new ValidationError("fechaBase", errors);
         } 
         return null;
