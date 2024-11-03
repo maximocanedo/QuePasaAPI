@@ -7,8 +7,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Trend;
 import frgp.utn.edu.ar.quepasa.repository.TrendRepository;
 import frgp.utn.edu.ar.quepasa.service.TrendService;
@@ -31,29 +29,28 @@ public class TrendServiceImpl implements TrendService {
      * @return una lista de tendencias, donde cada tendencia est  representada por un
      *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
-@Override
-public List<Trend> getTrends(int barrio, String fechaBase) {
-    if (fechaBase == null) {
-        Set<String> errors = new HashSet<>();
-        errors.add("La fecha base no puede ser nula o con formato incorrecto.");
-        throw new ValidationError("fechaBase", errors);
-    }
-
-    try {
-        List<Trend> tendencias = trendRepository.getTendencias(barrio, fechaBase);
-
-        if (tendencias == null || tendencias.isEmpty()) {
-            throw new Fail("No se encontraron tendencias para el barrio especificado.");
+    @Override
+    public List<Trend> getTrends(int barrio, String fechaBase) {
+        if (fechaBase == null) {
+            Set<String> errors = new HashSet<>();
+            errors.add("La fecha base no puede ser nula o con formato incorrecto.");
+            //throw new ValidationError("fechaBase", errors);
         }
 
-        return tendencias;
+        try {
+            List<Trend> tendencias = trendRepository.getTendencias(barrio, fechaBase);
 
-    } catch (IllegalArgumentException e) {
-        Set<String> errors = new HashSet<>();
-        errors.add("Formato de fecha incorrecto: " + e.getMessage());
-        throw new ValidationError("fechaBase", errors);
-    } catch (Fail e) {
-        throw new Fail("Error interno del servidor: " + e.getMessage());
+            if (tendencias == null || tendencias.isEmpty()) {
+                //throw new Fail("No se encontraron tendencias para el barrio especificado.");
+            }
+
+            return tendencias;
+
+        } catch (IllegalArgumentException e) {
+            Set<String> errors = new HashSet<>();
+            errors.add("Formato de fecha incorrecto: " + e.getMessage());
+           // throw new ValidationError("fechaBase", errors);
+        } 
+        return null;
     }
-}
 }
