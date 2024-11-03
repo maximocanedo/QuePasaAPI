@@ -3,6 +3,8 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.repository.media.EventPictureRepository;
+import frgp.utn.edu.ar.quepasa.service.media.impl.PictureServiceImpl;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
@@ -58,7 +60,9 @@ public class EventServiceTest {
         OwnerServiceImpl ownerService = new OwnerServiceImpl(authenticationService);
         VoteService voteService = mock(VoteService.class);
         var commentService = mock(CommentServiceImpl.class);
-        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository);
+        var pictureService = mock(PictureServiceImpl.class);
+        var eventPictureRepository = mock(EventPictureRepository.class);
+        this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository, pictureService, eventPictureRepository);
     }
 
 
@@ -429,6 +433,222 @@ public class EventServiceTest {
                 () -> eventService.create(eventPostRequest, owner)
         );
 
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con titulo vacio")
+    void createEvent_EmptyTitle_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("title", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con titulo demasiado largo")
+    void createEvent_TitleTooLong_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("a".repeat(101));
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("title", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con descripcion vacia")
+    void createEvent_EmptyDescription_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("description", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con descripcion demasiado larga")
+    void createEvent_DescriptionTooLong_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("a".repeat(501));
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("description", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con direccion vacia")
+    void createEvent_EmptyAddress_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("address", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con direccion demasiado larga")
+    void createEvent_AddressTooLong_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("a".repeat(101));
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("address", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con Fecha de Inicio en el pasado")
+    void createEvent_StartDateInPast_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().minusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("start", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con Fecha de Fin en el pasado")
+    void createEvent_EndDateInPast_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setEndDate(LocalDateTime.now().minusHours(2));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("start", exception.getField());
+        assertEquals(exception.getErrors().size(), 1);
+    }
+
+    @Test
+    @DisplayName("Crear Evento con Fecha de Fin antes de la de Inicio")
+    void createEvent_EndDateBeforeStartDate_ThrowFail() {
+        User owner = new User();
+        owner.setUsername("owner");
+
+        EventPostRequest eventPostRequest = new EventPostRequest();
+        eventPostRequest.setTitle("event");
+        eventPostRequest.setDescription("description");
+        eventPostRequest.setAddress("address");
+        eventPostRequest.setStartDate(LocalDateTime.now().plusHours(2));
+        eventPostRequest.setEndDate(LocalDateTime.now().plusHours(1));
+        eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setAudience(Audience.PUBLIC);
+
+        ValidationError exception = assertThrows(
+                ValidationError.class,
+                () -> eventService.create(eventPostRequest, owner)
+        );
+
+        assertEquals("start", exception.getField());
         assertEquals(exception.getErrors().size(), 1);
     }
 

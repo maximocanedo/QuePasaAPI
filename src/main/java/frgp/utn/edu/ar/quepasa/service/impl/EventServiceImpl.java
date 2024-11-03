@@ -7,13 +7,17 @@ import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.model.media.EventPicture;
+import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.repository.media.EventPictureRepository;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
+import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import quepasa.api.validators.events.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +28,7 @@ import quepasa.api.validators.commons.ObjectValidator;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +41,8 @@ public class EventServiceImpl implements EventService {
     private final CommentService commentService;
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final EventRsvpRepository eventRsvpRepository;
+    private final PictureService pictureService;
+    private final EventPictureRepository eventPictureRepository;
 
     @Autowired
     public EventServiceImpl(
@@ -43,7 +50,9 @@ public class EventServiceImpl implements EventService {
             VoteService voteService,
             EventRepository eventRepository, CommentService commentService,
             NeighbourhoodRepository neighbourhoodRepository,
-            EventRsvpRepository eventRsvpRepository
+            EventRsvpRepository eventRsvpRepository,
+            PictureService pictureService,
+            EventPictureRepository eventPictureRepository
     ) {
         this.ownerService = ownerService;
         this.voteService = voteService;
@@ -51,6 +60,8 @@ public class EventServiceImpl implements EventService {
         this.commentService = commentService;
         this.neighbourhoodRepository = neighbourhoodRepository;
         this.eventRsvpRepository = eventRsvpRepository;
+        this.pictureService = pictureService;
+        this.eventPictureRepository = eventPictureRepository;
     }
 
     /**
@@ -117,6 +128,10 @@ public class EventServiceImpl implements EventService {
     public Event create(EventPostRequest event, User owner) throws Fail {
         Event newEvent = new Event();
 
+        if (event.getPictureId() == null) throw new Fail("Picture is required.", HttpStatus.BAD_REQUEST);
+        Optional<Picture> picture = pictureService.getPictureById(event.getPictureId());
+        if (picture.isEmpty()) throw new Fail("Picture not found.", HttpStatus.NOT_FOUND);
+
         var title = new EventTitleValidator(event.getTitle()).meetsLimits().build();
         newEvent.setTitle(title);
 
@@ -143,6 +158,7 @@ public class EventServiceImpl implements EventService {
         newEvent.setOwner(owner);
         eventRepository.save(newEvent);
         commentService.populate(voteService.populate(newEvent));
+        setPictureEvent(newEvent, picture);
         return newEvent;
     }
 
@@ -163,6 +179,11 @@ public class EventServiceImpl implements EventService {
                 .isOwner()
                 .orElseFail();
 
+
+        Optional<Picture> picture = newEvent.getPictureId() != null ?
+                Optional.ofNullable(pictureService.getPictureById(newEvent.getPictureId()).orElseThrow(() -> new Fail("Picture not found.", HttpStatus.NOT_FOUND))) :
+                Optional.empty();
+
         if (newEvent.getTitle() != null) event.setTitle(new EventTitleValidator(newEvent.getTitle()).meetsLimits().build());
 
         if (newEvent.getDescription() != null) event.setDescription(new EventDescriptionValidator(newEvent.getDescription()).isNotNull().meetsLimits().build());
@@ -179,6 +200,7 @@ public class EventServiceImpl implements EventService {
 
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));
+        setPictureEvent(event, picture);
         return event;
     }
 
@@ -282,5 +304,21 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));
         return event;
+    }
+
+    void setPictureEvent(Event event, Optional<Picture> picture) {
+        EventPicture eventPicture = eventPictureRepository.findByEventId(event.getId())
+                .orElse(new EventPicture());
+        if (picture.isPresent() && eventPicture.getId() == null) {
+            eventPicture.setId(picture.get().getId());
+            eventPicture.setDescription(picture.get().getDescription());
+            eventPicture.setActive(picture.get().isActive());
+            eventPicture.setMediaType(picture.get().getMediaType());
+            eventPicture.setUploadedAt(picture.get().getUploadedAt());
+            eventPicture.setOwner(picture.get().getOwner());
+            eventPicture.setVotes(picture.get().getVotes());
+            eventPicture.setEvent(event);
+        }
+        eventPictureRepository.save(eventPicture);
     }
 }

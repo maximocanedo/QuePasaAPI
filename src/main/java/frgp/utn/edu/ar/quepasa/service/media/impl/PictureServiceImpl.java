@@ -7,7 +7,6 @@ import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
-import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import frgp.utn.edu.ar.quepasa.service.media.StorageService;
 import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
@@ -30,18 +29,18 @@ public class PictureServiceImpl implements PictureService {
     private StorageService storageService;
     private AuthenticationService authenticationService;
     private OwnerService ownerService;
-    private VoteService voteService;
+    //private VoteService voteService;
 
     @Autowired
     public void setOwnerService(OwnerService ownerService) {
         this.ownerService = ownerService;
     }
-
+    /*
     @Autowired
     public void setVoteService(VoteService voteService) {
         this.voteService = voteService;
     }
-
+    */
     @Autowired @Lazy
     public void setPictureRepository(PictureRepository pictureRepository) {
         this.pictureRepository = pictureRepository;
@@ -84,7 +83,8 @@ public class PictureServiceImpl implements PictureService {
         var op = pictureRepository
                 .findById(id);
         if(op.isEmpty() || !op.get().isActive()) throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
-        return new RawPicture(voteService.populate(op.get()), storageService.loadAsResource("picture." + id.toString()));
+        //return new RawPicture(voteService.populate(op.get()), storageService.loadAsResource("picture." + id.toString()));
+        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id));
     }
 
     @Override
@@ -95,8 +95,7 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public Optional<Picture> getPictureById(UUID id) {
         return pictureRepository
-                .findById(id)
-                .map(voteService::populate);
+                .findById(id);
     }
 
     @Override
@@ -108,8 +107,7 @@ public class PictureServiceImpl implements PictureService {
     public Page<Picture> getMyPics(Pageable pageable) {
         var current = authenticationService.getCurrentUserOrDie();
         return pictureRepository
-                .findByOwner(current, pageable)
-                .map(voteService::populate);
+                .findByOwner(current, pageable);
     }
 
     @Override
