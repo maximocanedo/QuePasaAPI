@@ -6,9 +6,12 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+/* 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.exception.ValidationError;
+import frgp.utn.edu.ar.quepasa.exception.ValidationError;*/
+import quepasa.api.exception.Fail;
+import quepasa.api.exception.ValidationError;
+
 import frgp.utn.edu.ar.quepasa.model.Trend;
 import frgp.utn.edu.ar.quepasa.repository.TrendRepository;
 import frgp.utn.edu.ar.quepasa.service.TrendService;
@@ -38,16 +41,16 @@ public class TrendServiceImpl implements TrendService {
             errors.add("La fecha base no puede ser nula o con formato incorrecto.");
             throw new ValidationError("fechaBase", errors);
         }
-
+    
         try {
             List<Trend> tendencias = trendRepository.getTendencias(barrio, fechaBase);
-
+    
             if (tendencias == null || tendencias.isEmpty()) {
                 throw new Fail("No se encontraron tendencias para el barrio especificado.");
             }
-
+    
             return tendencias;
-
+    
         } catch (IllegalArgumentException e) {
             Set<String> errors = new HashSet<>();
             errors.add("Formato de fecha incorrecto: " + e.getMessage());
@@ -56,4 +59,4 @@ public class TrendServiceImpl implements TrendService {
             throw new Fail("Error interno del servidor: " + e.getMessage());
         }
     }
-}
+    }
