@@ -11,7 +11,7 @@ import jakarta.persistence.*;
     procedureName = "contar_tendencias_tags_por_barrio",
     parameters = {
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "barrio", type = Integer.class),
-        @StoredProcedureParameter(mode = ParameterMode.IN, name = "fechaBase", type = Timestamp.class)
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "fechaBase", type = String.class)
     },
     resultClasses = Trend.class
 )
