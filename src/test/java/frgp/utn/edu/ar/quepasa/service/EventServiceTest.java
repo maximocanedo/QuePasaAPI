@@ -3,7 +3,9 @@ package frgp.utn.edu.ar.quepasa.service;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.repository.media.EventPictureRepository;
+import frgp.utn.edu.ar.quepasa.service.media.PictureService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.PictureServiceImpl;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
@@ -49,6 +51,7 @@ public class EventServiceTest {
     private NeighbourhoodRepository neighbourhoodRepository;
     private AuthenticationServiceImpl authenticationService;
     private EventServiceImpl eventService;
+    private PictureService pictureService;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +63,7 @@ public class EventServiceTest {
         OwnerServiceImpl ownerService = new OwnerServiceImpl(authenticationService);
         VoteService voteService = mock(VoteService.class);
         var commentService = mock(CommentServiceImpl.class);
-        var pictureService = mock(PictureServiceImpl.class);
+        pictureService = mock(PictureServiceImpl.class);
         var eventPictureRepository = mock(EventPictureRepository.class);
         this.eventService = new EventServiceImpl(ownerService, voteService, eventRepository, commentService, neighbourhoodRepository, eventRsvpRepository, pictureService, eventPictureRepository);
     }
@@ -253,6 +256,8 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
         Event event = new Event();
         event.setTitle("event");
         event.setDescription("description");
@@ -264,6 +269,7 @@ public class EventServiceTest {
         event.setOwner(owner);
 
         when(eventRepository.save(event)).thenReturn(event);
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
 
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
@@ -273,6 +279,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         Event createdEvent = eventService.create(eventPostRequest, owner);
 
@@ -287,6 +294,9 @@ public class EventServiceTest {
     void createEvent_NoTitle_ThrowFail() {
         User owner = new User();
         owner.setUsername("owner");
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
 
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setDescription("description");
@@ -295,6 +305,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -310,6 +321,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setAddress("address");
@@ -317,6 +332,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -332,6 +348,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -339,6 +359,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -354,6 +375,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -361,6 +386,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -376,6 +402,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -383,6 +413,7 @@ public class EventServiceTest {
         eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -398,6 +429,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -405,6 +440,7 @@ public class EventServiceTest {
         eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -420,6 +456,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -427,6 +467,7 @@ public class EventServiceTest {
         eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -442,6 +483,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("");
         eventPostRequest.setDescription("description");
@@ -450,6 +495,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -466,6 +512,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("a".repeat(101));
         eventPostRequest.setDescription("description");
@@ -474,6 +524,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -490,6 +541,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("");
@@ -498,6 +553,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -514,6 +570,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("a".repeat(501));
@@ -522,6 +582,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -538,6 +599,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -546,6 +611,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -562,6 +628,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -570,6 +640,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -586,6 +657,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -594,6 +669,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -610,6 +686,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -618,6 +698,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().minusHours(2));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
@@ -634,6 +715,10 @@ public class EventServiceTest {
         User owner = new User();
         owner.setUsername("owner");
 
+        UUID pictureId = UUID.randomUUID();
+
+        when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
+
         EventPostRequest eventPostRequest = new EventPostRequest();
         eventPostRequest.setTitle("event");
         eventPostRequest.setDescription("description");
@@ -642,6 +727,7 @@ public class EventServiceTest {
         eventPostRequest.setEndDate(LocalDateTime.now().plusHours(1));
         eventPostRequest.setCategory(EventCategory.CINEMA);
         eventPostRequest.setAudience(Audience.PUBLIC);
+        eventPostRequest.setPictureId(pictureId);
 
         ValidationError exception = assertThrows(
                 ValidationError.class,
