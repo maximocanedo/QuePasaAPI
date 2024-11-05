@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import org.junit.jupiter.api.*;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
@@ -13,10 +14,6 @@ import frgp.utn.edu.ar.quepasa.repository.EventRepository;
 import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +61,8 @@ public class EventControllerTest {
     private UserRepository userRepository;
     private NeighbourhoodRepository neighbourhoodRepository;
 
-    @BeforeAll
+
+    @BeforeEach
     void setUp() {
         eventRepository = Mockito.mock(EventRepository.class);
         userRepository = Mockito.mock(UserRepository.class);
@@ -135,6 +133,7 @@ public class EventControllerTest {
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setAudience(Audience.PUBLIC);
         eventRequest.setCategory(EventCategory.EDUCATIVE);
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -153,6 +152,7 @@ public class EventControllerTest {
 
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -173,6 +173,7 @@ public class EventControllerTest {
 
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setTitle("Evento de prueba");
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -194,6 +195,7 @@ public class EventControllerTest {
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setTitle("Evento de prueba");
         eventRequest.setDescription("Descripción de prueba");
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -216,6 +218,7 @@ public class EventControllerTest {
         eventRequest.setTitle("Evento de prueba");
         eventRequest.setDescription("Descripción de prueba");
         eventRequest.setAddress("Dirección de prueba");
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -239,6 +242,7 @@ public class EventControllerTest {
         eventRequest.setDescription("Descripción de prueba");
         eventRequest.setAddress("Dirección de prueba");
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -264,6 +268,7 @@ public class EventControllerTest {
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setCategory(EventCategory.EDUCATIVE);
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -289,6 +294,7 @@ public class EventControllerTest {
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setAudience(Audience.PUBLIC);
+        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -399,6 +405,7 @@ public class EventControllerTest {
         EventPatchEditRequest updatedEventRequest = new EventPatchEditRequest();
         updatedEventRequest.setTitle("Título actualizado");
         updatedEventRequest.setDescription("Descripción actualizada");
+        updatedEventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(patch("/api/events/{id}", eventId)
                 .with(user("root").password("123456789").roles("ADMIN"))
