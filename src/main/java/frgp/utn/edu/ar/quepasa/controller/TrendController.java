@@ -37,6 +37,7 @@ public class TrendController {
      *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
     @GetMapping("/{barrio}")
+    @SuppressWarnings("CallToPrintStackTrace")
     public ResponseEntity<List<Trend>> getTendencias(
             @PathVariable("barrio") int barrio,
             @RequestParam("fechaBase") String fechaBase
@@ -53,6 +54,7 @@ public class TrendController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(List.of(new Trend("Error en fechaBase: formato incorrecto", 0)));
         } catch (Exception e) {
+            e.printStackTrace();
             // Manejo genérico de excepciones, puede mejorarse según el caso
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

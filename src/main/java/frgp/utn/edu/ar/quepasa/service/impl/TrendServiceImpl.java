@@ -1,11 +1,10 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import frgp.utn.edu.ar.quepasa.model.Trend;
 import frgp.utn.edu.ar.quepasa.repository.TrendRepository;
@@ -29,6 +28,7 @@ public class TrendServiceImpl implements TrendService {
      * @return una lista de tendencias, donde cada tendencia est  representada por un
      *     objeto Trend con la etiqueta y la cantidad de veces que ha sido etiquetada.
      */
+    @Transactional(readOnly = false)
     @Override
     public List<Trend> getTrends(int barrio, String fechaBase) {
         if (fechaBase == null) {
