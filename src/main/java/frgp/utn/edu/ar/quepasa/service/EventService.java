@@ -6,6 +6,8 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,6 +22,10 @@ public interface EventService {
     Page<Event> findByOp(User owner, Pageable pageable) throws Fail;
 
     Page<Event> findByUsername(String username, Pageable pageable) throws Fail;
+
+    Page<Event> findByAudience(Audience audience, Pageable pageable) throws Fail;
+
+    Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable) throws Fail;
 
     Event create(EventPostRequest event, User owner) throws Fail;
 

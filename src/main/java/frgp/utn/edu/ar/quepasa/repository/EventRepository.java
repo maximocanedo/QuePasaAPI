@@ -2,6 +2,8 @@ package frgp.utn.edu.ar.quepasa.repository;
 
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,10 @@ import java.util.UUID;
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
     Optional<Page<Event>> findByOwnerAndActive(User owner, Boolean active, Pageable pageable);
+
+    Optional<Page<Event>> findByAudience(Audience audience, Pageable pageable);
+
+    Optional<Page<Event>> findByCategory(EventCategory eventCategory, Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.owner.username = :username AND e.active = true")
     Optional<Page<Event>> findByOwnerUsername(@NotNull String username, @NotNull Pageable pageable);

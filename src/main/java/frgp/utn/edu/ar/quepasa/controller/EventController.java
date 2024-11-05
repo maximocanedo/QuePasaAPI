@@ -4,6 +4,8 @@ import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -123,6 +125,18 @@ public class EventController {
         User me = authenticationService.getCurrentUserOrDie();
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventService.findByOp(me, pageable));
+    }
+
+    @GetMapping("/audience/{audience}")
+    public ResponseEntity<?> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(eventService.findByAudience(audience, pageable));
+    }
+
+    @GetMapping("/eventCategory/{category}")
+    public ResponseEntity<?> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(eventService.findByEventCategory(category, pageable));
     }
 
     /**

@@ -6,6 +6,8 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.model.media.EventPicture;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
@@ -112,6 +114,22 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> findByUsername(String username, Pageable pageable) throws Fail {
         return eventRepository.findByOwnerUsername(username, pageable)
+                .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
+                .map(commentService::populate)
+                .map(voteService::populate);
+    }
+
+    @Override
+    public Page<Event> findByAudience(Audience audience, Pageable pageable) throws Fail {
+        return eventRepository.findByAudience(audience, pageable)
+                .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
+                .map(commentService::populate)
+                .map(voteService::populate);
+    }
+
+    @Override
+    public Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable) throws Fail {
+        return eventRepository.findByCategory(eventCategory, pageable)
                 .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
