@@ -6,6 +6,7 @@ import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
+import frgp.utn.edu.ar.quepasa.service.CommentService;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Event;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -30,12 +31,14 @@ public class EventController {
     private final EventService eventService;
     private final AuthenticationService authenticationService;
     private final VoteService voteService;
+    private final CommentService commentService;
 
     @Autowired
-    public EventController(EventService eventService, AuthenticationService authenticationService, VoteService voteService) {
+    public EventController(EventService eventService, AuthenticationService authenticationService, VoteService voteService, CommentService commentService) {
         this.eventService = eventService;
         this.authenticationService = authenticationService;
         this.voteService = voteService;
+        this.commentService = commentService;
     }
 
     /**
@@ -228,5 +231,16 @@ public class EventController {
     @PostMapping("/{eventId}/votes/down")
     public ResponseEntity<VoteCount> downVote(@PathVariable UUID eventId) {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
+    }
+
+    @PostMapping("/{eventId}/comments")
+    public ResponseEntity<?> addComment(@PathVariable UUID eventId, @RequestBody String content) {
+        return ResponseEntity.ok(commentService.create(content, Event.identify(eventId)));
+    }
+
+    @GetMapping("/{eventId}/comments")
+    public ResponseEntity<?> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(commentService.findAllFromEvent(eventId, pageable));
     }
 }
