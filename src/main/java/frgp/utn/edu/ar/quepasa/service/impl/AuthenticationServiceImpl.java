@@ -228,7 +228,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = getCurrentUserOrDie();
         if(!user.hasTotpEnabled()) throw new Fail("Totp not enabled. ", HttpStatus.CONFLICT);
         if(validateTOTP(user.getTotp(), code)) {
-            var jwt = jwtService.generateToken(user, user.hasTotpEnabled());
+            var jwt = jwtService.generateToken(user, false);
             JwtAuthenticationResponse e = new JwtAuthenticationResponse();
             e.setToken(jwt);
             e.setTotpRequired(false);
