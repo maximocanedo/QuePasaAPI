@@ -11,9 +11,9 @@ public class EventTitleValidator extends StringValidatorBuilder<EventTitleValida
     public EventTitleValidator meetsLimits() {
         return super.meetsLimits(
                 1,
-                100,
+                60,
                 "El título no puede estar vacío. ",
-                "El título no puede pasar de los cien caracteres. "
+                "El título no puede pasar de los sesenta caracteres. "
         );
     }
 

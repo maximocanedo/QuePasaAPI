@@ -517,7 +517,7 @@ public class EventServiceTest {
         when(pictureService.getPictureById(pictureId)).thenReturn(Optional.of(new Picture()));
 
         EventPostRequest eventPostRequest = new EventPostRequest();
-        eventPostRequest.setTitle("a".repeat(101));
+        eventPostRequest.setTitle("a".repeat(61));
         eventPostRequest.setDescription("description");
         eventPostRequest.setAddress("address");
         eventPostRequest.setStartDate(LocalDateTime.now().plusHours(1));
