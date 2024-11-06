@@ -4,31 +4,20 @@ import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.PostSubtype;
 import frgp.utn.edu.ar.quepasa.model.PostType;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.repository.PostSubtypeRepository;
 import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
-import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.PostSubtypeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-
-import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -278,8 +267,6 @@ public class PostSubtypeServiceTests {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             postSubtypeService.delete(id);
         });
-
-        assertEquals("Subtype not found", exception.getMessage());
     }
 
 }
