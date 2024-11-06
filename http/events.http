@@ -4,8 +4,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Taller de Arte",
-  "description": "Se realizará un taller de arte en la Plaza San Martín",
+  "title": "Taller de Carpinteria",
+  "description": "Se realizará un taller de carpinteria y escultura en madera en la Plaza San Martín",
   "address": "Av Siempre Viva 963, Tigre, Provincia de Buenos Aires",
   "startDate": "2024-12-15 11:45",
   "endDate": "2024-12-15 13:30",
@@ -20,13 +20,13 @@ Authorization: Bearer {{token}}
 Content-Type: image/jpeg
 
 ### Modificar evento
-PATCH {{base}}/api/events/03d73034-78ee-4372-9492-f5b97b344d78
+PATCH {{base}}/api/events/9e11f195-73d8-4c78-a70e-d2c147c50435
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Taller de Arte",
-  "description": "Se realizará un taller de arte en la Plaza San Martín",
+  "title": "Taller de Carpinteria",
+  "description": "Se realizará un taller de carpinteria y escultura en madera en la Plaza San Martín",
   "address": "Av Siempre Viva 963, Tigre, Provincia de Buenos Aires",
   "startDate": "2024-12-15 11:45",
   "endDate": "2024-12-15 13:30",
