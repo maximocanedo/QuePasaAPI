@@ -118,6 +118,13 @@ public class EventServiceImpl implements EventService {
                 .map(voteService::populate);
     }
 
+    /**
+     * This method is used to get all the events by the audience
+     * @param audience audience of the event
+     * @param pageable pagination information
+     * @return events
+     * @throws Fail if no events are found
+     */
     @Override
     public Page<Event> findByAudience(Audience audience, Pageable pageable) throws Fail {
         return eventRepository.findByAudience(audience, pageable)
@@ -126,6 +133,13 @@ public class EventServiceImpl implements EventService {
                 .map(voteService::populate);
     }
 
+    /**
+     * This method is used to get all the events by the event category
+     * @param eventCategory category of the event
+     * @param pageable pagination information
+     * @return events
+     * @throws Fail if no events are found
+     */
     @Override
     public Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable) throws Fail {
         return eventRepository.findByCategory(eventCategory, pageable)

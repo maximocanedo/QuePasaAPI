@@ -130,12 +130,28 @@ public class EventController {
         return ResponseEntity.ok(eventService.findByOp(me, pageable));
     }
 
+    /**
+     * Obtiene una lista paginada de eventos según la audiencia.
+     * @param audience Enum de Audiencia
+     * @param page Número de página a obtener.
+     * @param size Tamaño de la página.
+     * @return Entidad de respuesta con la página de eventos de la audiencia.
+     * @throws Fail Si no se encuentran eventos de la audiencia.
+     */
     @GetMapping("/audience/{audience}")
     public ResponseEntity<?> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventService.findByAudience(audience, pageable));
     }
 
+    /**
+     * Obtiene una lista paginada de eventos según la categoría.
+     * @param category Enum de Categoría
+     * @param page Número de página a obtener.
+     * @param size Tamaño de la página.
+     * @return Entidad de respuesta con la página de eventos de la categoría.
+     * @throws Fail Si no se encuentran eventos de la categoría.
+     */
     @GetMapping("/eventCategory/{category}")
     public ResponseEntity<?> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
         Pageable pageable = PageRequest.of(page, size);
@@ -237,7 +253,7 @@ public class EventController {
      * Agrega un comentario a un evento existente.
      * @param eventId ID del evento al que se va a agregar el comentario.
      * @body content Contenido del comentario.
-     * @return Event Devuelve el evento con el nuevo comentario.
+     * @return Entidad de respuesta con el comentario creado.
      */
     @PostMapping("/{eventId}/comments")
     public ResponseEntity<?> addComment(@PathVariable UUID eventId, @RequestBody String content) {
@@ -246,10 +262,10 @@ public class EventController {
 
     /**
      * Obtiene los comentarios de un evento.
-     * @param eventId
-     * @param page
-     * @param size
-     * @return Page<EventComment> Devuelve una página de comentarios para un evento especifico.
+     * @param eventId ID del evento a obtener los comentarios.
+     * @param page Número de página a obtener.
+     * @param size Tamaño de la página.
+     * @return Entidad de respuesta con los comentarios del evento.
      */
     @GetMapping("/{eventId}/comments")
     public ResponseEntity<?> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
