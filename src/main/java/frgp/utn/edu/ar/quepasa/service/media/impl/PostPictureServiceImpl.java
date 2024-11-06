@@ -57,11 +57,14 @@ public class PostPictureServiceImpl implements PostPictureService {
     }
 
     @Override
-    public PostPicture upload(MultipartFile file, String description) {
+    public PostPicture upload(MultipartFile file, Integer post, String description) {
         User current = authenticationService.getCurrentUserOrDie();
+        Post ownerPost = postRepository.findById(post)
+                .orElseThrow(() -> new Fail("Post not found", HttpStatus.NOT_FOUND));
         PostPicture picture = new PostPicture();
         picture.setDescription(description);
         picture.setOwner(current);
+        picture.setPost(ownerPost);
         var finalFile = new MultipartFileValidator(file)
                 .isNotNull()
                 .isNotEmpty()

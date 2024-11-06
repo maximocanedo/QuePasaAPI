@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 public interface PostPictureService {
-    PostPicture upload(MultipartFile file, String description);
+    PostPicture upload(MultipartFile file, Integer post, String description);
 
     PostPicture getPictureById(UUID id);
 
