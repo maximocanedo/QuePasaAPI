@@ -233,11 +233,24 @@ public class EventController {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
     }
 
+    /**
+     * Agrega un comentario a un evento existente.
+     * @param eventId ID del evento al que se va a agregar el comentario.
+     * @body content Contenido del comentario.
+     * @return Event Devuelve el evento con el nuevo comentario.
+     */
     @PostMapping("/{eventId}/comments")
     public ResponseEntity<?> addComment(@PathVariable UUID eventId, @RequestBody String content) {
         return ResponseEntity.ok(commentService.create(content, Event.identify(eventId)));
     }
 
+    /**
+     * Obtiene los comentarios de un evento.
+     * @param eventId
+     * @param page
+     * @param size
+     * @return Page<EventComment> Devuelve una página de comentarios para un evento especifico.
+     */
     @GetMapping("/{eventId}/comments")
     public ResponseEntity<?> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);

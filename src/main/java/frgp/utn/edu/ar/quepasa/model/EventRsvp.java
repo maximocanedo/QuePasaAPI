@@ -15,6 +15,7 @@ public class EventRsvp {
     private int id;
     private Event event;
     private User user;
+    private boolean confirmed = false;
 
     /**
      * Devuelve el ID único del RSVP.
@@ -39,5 +40,12 @@ public class EventRsvp {
     @JoinColumn(name = "user", nullable = false)
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    /**
+     * Devuelve si el usuario confirmó su asistencia.
+     */
+    @Column(name = "confirmed", nullable = false)
+    public boolean isConfirmed() { return confirmed; }
+    public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
 
 }

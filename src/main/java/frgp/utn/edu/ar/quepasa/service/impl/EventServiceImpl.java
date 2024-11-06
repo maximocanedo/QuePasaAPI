@@ -231,12 +231,21 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public EventRsvp confirmEventAssistance(UUID eventId, User user) throws Fail {
-        EventRsvp newEventRsvp = new EventRsvp();
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
         if (!event.isActive()) throw new Fail("Event is not active.", HttpStatus.BAD_REQUEST);
-        newEventRsvp.setEvent(event);
-        newEventRsvp.setUser(user);
+
+        EventRsvp newEventRsvp = eventRsvpRepository.findByEventAndUser(event, user)
+                .orElse(new EventRsvp());
+
+        if (newEventRsvp.isConfirmed()) {
+            newEventRsvp.setConfirmed(false);
+        } else {
+            newEventRsvp.setEvent(event);
+            newEventRsvp.setUser(user);
+            newEventRsvp.setConfirmed(true);
+        }
+
         eventRsvpRepository.save(newEventRsvp);
         return newEventRsvp;
     }
