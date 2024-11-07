@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,6 +69,7 @@ public class DocumentServiceImpl implements DocumentService {
         storageService.store(finalFile, "document." + document.getId().toString());
         document.setActive(true);
         document.setUploadedAt(new Timestamp(System.currentTimeMillis()));
+        document.setMediaType(MediaType.valueOf(Objects.requireNonNull(finalFile.getContentType())));
         documentRepository.save(document);
         return document;
     }
@@ -76,7 +79,7 @@ public class DocumentServiceImpl implements DocumentService {
         var op = documentRepository.findById(id);
         if(op.isEmpty() || !op.get().isActive()) throw new Fail("Document not found. ", HttpStatus.NOT_FOUND);
         ownerService.of(op.get()).isOwner().isAdmin();
-        return new RawDocument(op.get(), storageService.loadAsResource("document." + id.toString()));
+        return new RawDocument(op.get(), storageService.loadAsResource("document." + id, op.get().getMediaType()));
     }
 
     @Override

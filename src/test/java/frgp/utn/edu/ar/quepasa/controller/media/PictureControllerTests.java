@@ -5,7 +5,6 @@ import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
-import frgp.utn.edu.ar.quepasa.repository.media.PictureRepository;
 import frgp.utn.edu.ar.quepasa.service.impl.AuthenticationServiceImpl;
 import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
 import frgp.utn.edu.ar.quepasa.service.media.StorageService;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,7 +33,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -166,7 +163,7 @@ public class PictureControllerTests {
         pic.setDescription(mockPic.getDescription());
         Resource mr = new ByteArrayResource(content);
         var rd = new RawPicture(pic, mr);
-        when(storageService.loadAsResource(anyString())).thenAnswer(_ -> mr);
+        when(storageService.loadAsResource(anyString(), any(MediaType.class))).thenAnswer(_ -> mr);
         when(pictureService.getRawPictureById(any(String.class)))
                 .thenAnswer(_ -> rd);
         when(pictureService.getRawPictureById(any(UUID.class)))

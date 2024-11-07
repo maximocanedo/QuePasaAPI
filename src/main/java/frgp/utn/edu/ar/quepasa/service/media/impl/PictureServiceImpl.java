@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,6 +75,7 @@ public class PictureServiceImpl implements PictureService {
         storageService.store(finalFile, "picture." + picture.getId().toString());
         picture.setActive(true);
         picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
+        picture.setMediaType(MediaType.valueOf(Objects.requireNonNull(finalFile.getContentType())));
         pictureRepository.save(picture);
 
         return picture;
@@ -84,7 +87,7 @@ public class PictureServiceImpl implements PictureService {
                 .findById(id);
         if(op.isEmpty() || !op.get().isActive()) throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
         //return new RawPicture(voteService.populate(op.get()), storageService.loadAsResource("picture." + id.toString()));
-        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id));
+        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id, op.get().getMediaType()));
     }
 
     @Override

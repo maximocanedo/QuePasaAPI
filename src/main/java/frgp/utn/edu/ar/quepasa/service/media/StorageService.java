@@ -1,7 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
-import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public interface StorageService {
 
     Path load(String filename);
 
-    Resource loadAsResource(String filename);
+    Resource loadAsResource(String filename, MediaType mediaType);
 
     void deleteAll();
 

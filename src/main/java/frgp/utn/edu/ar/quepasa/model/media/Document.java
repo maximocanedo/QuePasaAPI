@@ -5,6 +5,7 @@ import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import jakarta.persistence.*;
+import org.springframework.http.MediaType;
 import quepasa.api.entities.Activatable;
 
 import java.sql.Timestamp;
@@ -25,6 +26,7 @@ public class Document implements Ownable, Activatable {
     private Set<RoleUpdateRequest> roleUpdateRequestsLinked = new HashSet<>();
     private Timestamp uploadedAt = null;
     private boolean active = true;
+    private MediaType mediaType;
 
     /**
      * Devuelve el ID del registro.
@@ -79,4 +81,10 @@ public class Document implements Ownable, Activatable {
     public Timestamp getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(Timestamp uploadedAt) { this.uploadedAt = uploadedAt; }
 
+    /**
+     * Devuelve el media type del documento.
+     */
+    @Column(nullable = false)
+    public MediaType getMediaType() { return mediaType; }
+    public void setMediaType(MediaType mediaType) { this.mediaType = mediaType; }
 }
