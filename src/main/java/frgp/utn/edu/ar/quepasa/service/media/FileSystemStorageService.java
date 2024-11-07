@@ -40,11 +40,22 @@ public class FileSystemStorageService implements StorageService {
                     .isNotEmpty()
                     .hasContentType()
                     .build();
+
+            String originalFilename = finalFile.getOriginalFilename();
+            String fileExtension = null;
+
+            if(originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            if(fileExtension == null) {
+                fileExtension = ".jpg";
+            }
+
             Path destinationFile = this.rootLocation.resolve(
-                            Paths.get(finalFilename))
+                            Paths.get(finalFilename + fileExtension))
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-                // This is a security check
                 throw new StorageException(
                         "Cannot store file outside current directory.");
             }

@@ -65,6 +65,9 @@ public class PostPictureServiceImpl implements PostPictureService {
         picture.setDescription(description);
         picture.setOwner(current);
         picture.setPost(ownerPost);
+        picture.setActive(true);
+        picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
+        System.out.println(picture.getDescription());
         var finalFile = new MultipartFileValidator(file)
                 .isNotNull()
                 .isNotEmpty()
@@ -74,10 +77,7 @@ public class PostPictureServiceImpl implements PostPictureService {
                 .build();
         pictureRepository.save(picture);
         storageService.store(finalFile, "picture." + picture.getId().toString());
-        picture.setActive(true);
-        picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
         pictureRepository.save(picture);
-
         return picture;
     }
 
