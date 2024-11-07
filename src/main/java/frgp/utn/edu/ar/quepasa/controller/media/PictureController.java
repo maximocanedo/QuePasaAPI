@@ -1,21 +1,17 @@
 package frgp.utn.edu.ar.quepasa.controller.media;
 
-import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import quepasa.api.exceptions.ValidationError;
+import org.springframework.data.domain.PageRequest;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
 import frgp.utn.edu.ar.quepasa.service.media.PictureService;
-import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +55,12 @@ public class PictureController {
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         pictureService.delete(id);
         return ResponseEntity.status(204).build();
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Page<Picture>> getPictures(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(pictureService.getPictures(pageable));
     }
 
     @GetMapping("/{id}")

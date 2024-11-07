@@ -1,9 +1,7 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
 import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
-import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.model.media.Picture;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +12,8 @@ import java.util.UUID;
 public interface PictureService {
 
     Picture upload(MultipartFile file, String description);
+
+    Page<Picture> getPictures(Pageable pageable);
 
     RawPicture getRawPictureById(UUID id);
 

@@ -18,6 +18,9 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
     @NotNull
     Optional<Picture> findById(@NotNull UUID id);
 
+    @Query("SELECT p FROM Picture p WHERE p.active")
+    Page<Picture> findAllActive(@NotNull Pageable pageable);
+
     @NotNull
     @Query("SELECT p FROM Picture p WHERE p.owner.username = :username")
     Page<Picture> findAll(@NotNull Pageable pageable, @NotNull String username);

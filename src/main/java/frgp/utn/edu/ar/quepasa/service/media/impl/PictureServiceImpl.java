@@ -82,6 +82,11 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
+    public Page<Picture> getPictures(Pageable pageable) {
+        return pictureRepository.findAllActive(pageable);
+    }
+
+    @Override
     public RawPicture getRawPictureById(UUID id) {
         var op = pictureRepository
                 .findById(id);
