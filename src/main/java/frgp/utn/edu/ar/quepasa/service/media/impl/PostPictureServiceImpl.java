@@ -16,10 +16,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -65,9 +67,6 @@ public class PostPictureServiceImpl implements PostPictureService {
         picture.setDescription(description);
         picture.setOwner(current);
         picture.setPost(ownerPost);
-        picture.setActive(true);
-        picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
-        System.out.println(picture.getDescription());
         var finalFile = new MultipartFileValidator(file)
                 .isNotNull()
                 .isNotEmpty()
@@ -77,6 +76,9 @@ public class PostPictureServiceImpl implements PostPictureService {
                 .build();
         pictureRepository.save(picture);
         storageService.store(finalFile, "picture." + picture.getId().toString());
+        picture.setActive(true);
+        picture.setUploadedAt(new Timestamp(System.currentTimeMillis()));
+        picture.setMediaType(MediaType.valueOf(Objects.requireNonNull(finalFile.getContentType())));
         pictureRepository.save(picture);
         return picture;
     }
