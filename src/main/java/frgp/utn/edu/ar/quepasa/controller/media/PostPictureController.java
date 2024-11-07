@@ -25,8 +25,8 @@ public class PostPictureController {
     }
 
     @PostMapping
-    public ResponseEntity<PostPicture> upload(@RequestParam("file") MultipartFile file, @RequestParam("description") String description) {
-        PostPicture pic = pictureService.upload(file, description);
+    public ResponseEntity<PostPicture> upload(@RequestParam("file") MultipartFile file, @RequestParam("post") Integer post, @RequestParam("description") String description) {
+        PostPicture pic = pictureService.upload(file, post, description);
         return ResponseEntity.ok(pic);
     }
 
