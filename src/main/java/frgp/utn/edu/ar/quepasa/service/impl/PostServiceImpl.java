@@ -271,7 +271,12 @@ public class PostServiceImpl implements PostService {
                 .findActiveNeighbourhoodById(newPost.getNeighbourhood())
                 .orElseThrow(() -> new Fail("Neighbourhood not found. ", HttpStatus.BAD_REQUEST));
         post.setNeighbourhood(neighbourhood);
-        post.setTimestamp(newPost.getTimestamp());
+        if(newPost.getTimestamp() != null) {
+            post.setTimestamp(newPost.getTimestamp());
+        }
+        else {
+            post.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        }
         post.setTags(newPost.getTags());
         postRepository.save(post);
         return commentService.populate(voteService.populate(post));
