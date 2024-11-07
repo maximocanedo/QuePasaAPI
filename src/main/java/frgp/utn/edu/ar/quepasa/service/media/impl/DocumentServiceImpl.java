@@ -114,7 +114,7 @@ public class DocumentServiceImpl implements DocumentService {
             throw new Fail("Document not found. ", HttpStatus.NOT_FOUND);
         var file = doc.get();
         ownerService.of(file).isOwner().isAdmin();
-        storageService.delete("document."+file.getId().toString());
+        storageService.delete("document."+file.getId().toString(), file.getMediaType());
         documentRepository.delete(doc.get());
     }
 

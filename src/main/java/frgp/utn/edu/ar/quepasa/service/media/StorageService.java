@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public interface StorageService {
 
-    void delete(String filename);
+    void delete(String filename, MediaType mediaType);
 
     void init();
 

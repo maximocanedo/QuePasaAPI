@@ -96,7 +96,7 @@ public class EventPictureServiceImpl implements EventPictureService {
         ownerService.of(file)
                 .isOwner()
                 .isAdmin();
-        storageService.delete("picture." + file.getId().toString());
+        storageService.delete("picture." + file.getId().toString(), file.getMediaType());
         pictureRepository.delete(doc.get());
     }
 }

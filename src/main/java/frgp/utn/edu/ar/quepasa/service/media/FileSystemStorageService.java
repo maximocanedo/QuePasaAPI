@@ -112,9 +112,12 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void delete(String filename) {
+    public void delete(String filename, MediaType mediaType) {
         try {
+
             Path path = load(filename);
+            String fileExtension = "." + mediaType.getSubtype();
+            path = Paths.get(path.toString() + fileExtension);
             Files.delete(path);
         } catch (MalformedURLException e) {
             throw new Fail("Could not read file: " + filename, HttpStatus.NOT_FOUND);

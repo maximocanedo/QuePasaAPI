@@ -120,7 +120,7 @@ public class PictureServiceImpl implements PictureService {
             throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
         var file = doc.get();
         ownerService.of(file).isOwner().isAdmin();
-        storageService.delete("picture."+file.getId().toString());
+        storageService.delete("picture."+file.getId().toString(), file.getMediaType());
         pictureRepository.delete(doc.get());
     }
 
