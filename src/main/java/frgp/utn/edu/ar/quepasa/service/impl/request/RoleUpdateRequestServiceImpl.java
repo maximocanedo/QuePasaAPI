@@ -16,6 +16,7 @@ import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 
+@Deprecated
 @Service
 public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
 
@@ -35,6 +36,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @param remarks       Comentarios sobre la solicitud.
      * @return La solicitud creada.
      */
+    @Deprecated
     @Override
     public RoleUpdateRequest create(Role requestedRole, String remarks) {
         RoleUpdateRequest request = new RoleUpdateRequest();
@@ -52,6 +54,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @param adminRemarks Comentarios del administrador.
      * @throws IllegalArgumentException si no se encontr&oacute; la solicitud.
      */
+    @Deprecated
     @Override
     public void review(UUID requestId, boolean approve, String adminRemarks) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
@@ -75,6 +78,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @return La solicitud actualizada.
      * @throws IllegalArgumentException si no se encontro la solicitud.
      */
+    @Deprecated
     @Override
     public RoleUpdateRequest close(UUID requestId, boolean approve, String reviewerRemarks) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
@@ -95,6 +99,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * @param requestId ID de la solicitud a eliminar.
      * @throws IllegalArgumentException si no se encontró la solicitud.
      */
+    @Deprecated
     @Override
     public void delete(UUID requestId) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
@@ -114,6 +119,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * 
      * @return Un listado de solicitudes de actualizacion de rol.
      */
+    @Deprecated
     @Override
     public List<RoleUpdateRequest> findByUser() {
         User currentUser = getCurrentUser();
@@ -125,12 +131,14 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      * 
      * @return Un listado de solicitudes de actualizacion de rol.
      */
+    @Deprecated
     @Override
     public List<RoleUpdateRequest> findAll() {
         return roleUpdateRequestRepository.findAllByActiveTrue();
     }
 
 
+    @Deprecated(forRemoval = true)
     private User getCurrentUser() {
         return authenticationService.getCurrentUserOrDie();
     }
