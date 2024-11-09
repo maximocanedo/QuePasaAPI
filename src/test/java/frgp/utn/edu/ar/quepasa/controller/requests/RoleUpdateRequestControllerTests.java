@@ -3,17 +3,14 @@ package frgp.utn.edu.ar.quepasa.controller.requests;
 import java.util.List;
 import java.util.UUID;
 
-import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,10 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import frgp.utn.edu.ar.quepasa.model.enums.RequestStatus;
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
+import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import jakarta.transaction.Transactional;
 
 @Transactional
-@SpringBootTest()
+@SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -40,14 +38,12 @@ public class RoleUpdateRequestControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
     private RoleUpdateRequestService roleUpdateRequestService;
 
     private RoleUpdateRequest sampleRequest;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         sampleRequest = new RoleUpdateRequest();
         sampleRequest.setId(UUID.randomUUID());
         sampleRequest.setRequestedRole(Role.ADMIN);

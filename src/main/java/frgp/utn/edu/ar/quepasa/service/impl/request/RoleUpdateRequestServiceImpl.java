@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -15,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 
 @Service
 public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
@@ -37,12 +36,26 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
      */
     @Override
     public RoleUpdateRequest create(Role requestedRole, String remarks) {
+        User requester = getCurrentUser();
+        Role currentRole = requester.getRole();
+    
+        if (requestedRole == Role.MOD || requestedRole == Role.ADMIN) {
+            throw new IllegalArgumentException("No se permite solicitar el rol de MOD o ADMIN.");
+        }
+        if (requestedRole.ordinal() < currentRole.ordinal()) {
+            throw new IllegalArgumentException("El rol solicitado no puede ser inferior que el rol actual.");
+        }
+    
         RoleUpdateRequest request = new RoleUpdateRequest();
         request.setRequestedRole(requestedRole);
         request.setRemarks(remarks);
+        request.setRequester(requester);
+        request.setActive(true);
         request.setStatus(RequestStatus.WAITING);
+    
         return roleUpdateRequestRepository.save(request);
     }
+    
 
     /**
      * Revisa una solicitud de actualizacion de rol.
@@ -78,16 +91,23 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
     @Override
     public RoleUpdateRequest close(UUID requestId, boolean approve, String reviewerRemarks) {
         Optional<RoleUpdateRequest> optionalRequest = roleUpdateRequestRepository.findById(requestId);
-
+    
         if (optionalRequest.isPresent()) {
             RoleUpdateRequest request = optionalRequest.get();
+            if (request.getStatus() != RequestStatus.WAITING) {
+                throw new IllegalStateException("La solicitud ya ha sido revisada y no puede modificarse.");
+            }
             request.setStatus(approve ? RequestStatus.APPROVED : RequestStatus.REJECTED);
+            request.setReviewer(getCurrentUser());
             request.setRemarks(reviewerRemarks);
+            request.setActive(false);
+    
             return roleUpdateRequestRepository.save(request);
         }
-
-        throw new IllegalArgumentException("RoleUpdateRequest ID " + requestId + " no enocontrado");
+    
+        throw new IllegalArgumentException("RoleUpdateRequest: " + requestId + " no encontrado");
     }
+    
 
     /**
      * Elimina lógicamente una solicitud de actualización de rol.
