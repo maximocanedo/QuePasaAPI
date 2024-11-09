@@ -6,7 +6,6 @@ public class MailValidator extends StringValidatorBuilder<MailValidator> {
 
     public MailValidator(String value) {
         super(value, "mail");
-        setValue(value.trim());
     }
 
     public MailValidator isValidAddress() {
