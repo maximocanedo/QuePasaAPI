@@ -6,7 +6,7 @@ import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Set;
 
 public class EventPatchEditRequest {
     private String title = null;
@@ -20,7 +20,7 @@ public class EventPatchEditRequest {
     private LocalDateTime endDate = null;
     private EventCategory category = null;
     private Audience audience = null;
-    private UUID pictureId = null;
+    private Set<Long> neighbourhoods = null;
 
     public EventPatchEditRequest() {}
 
@@ -45,6 +45,6 @@ public class EventPatchEditRequest {
     public Audience getAudience() { return audience; }
     public void setAudience(Audience audience) { this.audience = audience; }
 
-    public UUID getPictureId() { return pictureId; }
-    public void setPictureId(UUID pictureId) { this.pictureId = pictureId; }
+    public Set<Long> getNeighbourhoods() { return neighbourhoods; }
+    public void setNeighbourhoods(Set<Long> neighbourhoods) { this.neighbourhoods = neighbourhoods; }
 }

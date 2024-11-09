@@ -26,6 +26,7 @@ import quepasa.api.validators.commons.ObjectValidator;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -170,6 +171,19 @@ public class EventServiceImpl implements EventService {
         var audience = new ObjectValidator<>(event.getAudience()).isNotNull().build();
         newEvent.setAudience(audience);
 
+        if (event.getNeighbourhoods() == null) {
+            newEvent.setNeighbourhoods(Set.of());
+        }
+
+        Set<Neighbourhood> neighbourhoods = new HashSet<>();
+        event.getNeighbourhoods().forEach(
+                neighbourhoodId -> {
+                    Neighbourhood neighbourhood = neighbourhoodRepository.findById(neighbourhoodId)
+                            .orElseThrow(() -> new Fail("Neighbourhood not found.", HttpStatus.NOT_FOUND));
+                    neighbourhoods.add(neighbourhood);
+                }
+        );
+        newEvent.setNeighbourhoods(neighbourhoods);
         newEvent.setActive(true);
         newEvent.setCreatedAt(Timestamp.from(Instant.now()));
         newEvent.setOwner(owner);
@@ -208,6 +222,17 @@ public class EventServiceImpl implements EventService {
         if (newEvent.getCategory() != null) event.setCategory(new ObjectValidator<>(newEvent.getCategory()).isNotNull().build());
 
         if (newEvent.getAudience() != null) event.setAudience(new ObjectValidator<>(newEvent.getAudience()).isNotNull().build());
+
+        if (newEvent.getNeighbourhoods() != null) {
+            event.getNeighbourhoods().clear();
+            newEvent.getNeighbourhoods().forEach(
+                    neighbourhoodId -> {
+                        Neighbourhood neighbourhood = neighbourhoodRepository.findById(neighbourhoodId)
+                                .orElseThrow(() -> new Fail("Neighbourhood not found.", HttpStatus.NOT_FOUND));
+                        event.getNeighbourhoods().add(neighbourhood);
+                    }
+            );
+        }
 
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));
