@@ -58,8 +58,8 @@ public class SecurityConfig {
                             ).permitAll();
 
                     // Sección usuarios
-                    request.requestMatchers(HttpMethod.PATCH, "/api/users/me")
-                                    .authenticated();
+                    request.requestMatchers("/api/users/me")
+                            .authenticated();
                     request.requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.PATCH, "/api/users/**")

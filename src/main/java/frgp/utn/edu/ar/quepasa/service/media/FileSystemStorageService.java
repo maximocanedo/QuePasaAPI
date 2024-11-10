@@ -54,7 +54,7 @@ public class FileSystemStorageService implements StorageService {
             }
 
             Path destinationFile = this.rootLocation.resolve(
-                            Paths.get(finalFilename + fileExtension))
+                            Paths.get(finalFilename))
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
                 throw new StorageException(
@@ -93,7 +93,7 @@ public class FileSystemStorageService implements StorageService {
         try {
             Path file = load(filename);
             String fileExtension = "." + mediaType.getSubtype();
-            Resource resource = new UrlResource(file.toUri() + fileExtension);
+            Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             }

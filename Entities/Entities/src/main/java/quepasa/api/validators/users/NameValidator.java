@@ -6,7 +6,6 @@ public class NameValidator extends StringValidatorBuilder<NameValidator> {
 
     public NameValidator(String value) {
         super(value, "name");
-        this.setValue(value.trim());
     }
 
     public NameValidator validateCompoundNames() {

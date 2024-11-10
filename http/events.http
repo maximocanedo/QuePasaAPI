@@ -4,14 +4,14 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Taller de Carpinteria",
-  "description": "Se realizará un taller de carpinteria y escultura en madera en la Plaza San Martín",
+  "title": "Taller de Agricultura",
+  "description": "Se realizará un taller de agricultura y riego en la Plaza San Martín",
   "address": "Av Siempre Viva 963, Tigre, Provincia de Buenos Aires",
   "startDate": "2024-12-15 11:45",
   "endDate": "2024-12-15 13:30",
   "category": "EDUCATIVE",
   "audience": "PUBLIC",
-  "pictureId": "308d95da-95ea-4b87-939e-af93943145e9"
+  "neighbourhoods": [1, 2, 3]
 }
 
 ### Creacion evento con imagen
@@ -32,7 +32,7 @@ Content-Type: application/json
   "endDate": "2024-12-15 13:30",
   "category": "EDUCATIVE",
   "audience": "PUBLIC",
-  "pictureId": "308d95da-95ea-4b87-939e-af93943145e9"
+  "neighbourhoods": [1, 3]
 }
 
 ### Asistencia a evento
@@ -41,7 +41,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### Consultar evento
-GET {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc
+GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d
 Authorization: Bearer {{token}}
 
 ### Consultar eventos del usuario autenticado
