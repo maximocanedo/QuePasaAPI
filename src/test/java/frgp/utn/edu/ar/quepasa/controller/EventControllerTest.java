@@ -133,7 +133,6 @@ public class EventControllerTest {
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setAudience(Audience.PUBLIC);
         eventRequest.setCategory(EventCategory.EDUCATIVE);
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -152,7 +151,6 @@ public class EventControllerTest {
 
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setDescription("Descripción de prueba");
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -173,7 +171,6 @@ public class EventControllerTest {
 
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setTitle("Evento de prueba");
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -195,7 +192,6 @@ public class EventControllerTest {
         EventPostRequest eventRequest = new EventPostRequest();
         eventRequest.setTitle("Evento de prueba");
         eventRequest.setDescription("Descripción de prueba");
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -218,7 +214,6 @@ public class EventControllerTest {
         eventRequest.setTitle("Evento de prueba");
         eventRequest.setDescription("Descripción de prueba");
         eventRequest.setAddress("Dirección de prueba");
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -242,7 +237,6 @@ public class EventControllerTest {
         eventRequest.setDescription("Descripción de prueba");
         eventRequest.setAddress("Dirección de prueba");
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -268,7 +262,6 @@ public class EventControllerTest {
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setCategory(EventCategory.EDUCATIVE);
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -294,7 +287,6 @@ public class EventControllerTest {
         eventRequest.setStartDate(LocalDateTime.now().plusDays(1));
         eventRequest.setEndDate(LocalDateTime.now().plusDays(2));
         eventRequest.setAudience(Audience.PUBLIC);
-        eventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(post("/api/events")
                 .with(user("root").password("123456789").roles("ADMIN"))
@@ -405,7 +397,6 @@ public class EventControllerTest {
         EventPatchEditRequest updatedEventRequest = new EventPatchEditRequest();
         updatedEventRequest.setTitle("Título actualizado");
         updatedEventRequest.setDescription("Descripción actualizada");
-        updatedEventRequest.setPictureId(UUID.fromString("308d95da-95ea-4b87-939e-af93943145e9"));
 
         mockMvc.perform(patch("/api/events/{id}", eventId)
                 .with(user("root").password("123456789").roles("ADMIN"))

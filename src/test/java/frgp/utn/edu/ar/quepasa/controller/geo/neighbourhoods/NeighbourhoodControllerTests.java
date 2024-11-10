@@ -15,9 +15,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
 
@@ -76,7 +81,11 @@ public class NeighbourhoodControllerTests {
         Neighbourhood neighbourhood2 = new Neighbourhood();
         neighbourhood2.setName("Palermo");
 
-        when(neighbourhoodService.getAllNeighbourhoods(true)).thenReturn(List.of(neighbourhood1, neighbourhood2));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(Arrays.asList(neighbourhood1, neighbourhood2));
+
+        when(neighbourhoodService.getAllNeighbourhoods(true, pageable)).thenReturn(neighbourhoodsPage);
 
         mockMvc.perform(get("/api/neighbourhoods?activeOnly=true"))
                 .andExpect(status().isOk())
@@ -106,7 +115,10 @@ public class NeighbourhoodControllerTests {
         Neighbourhood neighbourhood = new Neighbourhood();
         neighbourhood.setName("Belgrano");
 
-        when(neighbourhoodService.searchNeighbourhoodsByName("Belgrano")).thenReturn(List.of(neighbourhood));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(List.of(neighbourhood));
+
+        when(neighbourhoodService.searchNeighbourhoodsByName("Belgrano", pageable)).thenReturn(neighbourhoodsPage);
 
         mockMvc.perform(get("/api/neighbourhoods/search?name=Belgrano"))
                 .andExpect(status().isOk())

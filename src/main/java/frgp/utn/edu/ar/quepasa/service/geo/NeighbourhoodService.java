@@ -1,8 +1,9 @@
 package frgp.utn.edu.ar.quepasa.service.geo;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface NeighbourhoodService {
@@ -10,13 +11,13 @@ public interface NeighbourhoodService {
     Neighbourhood createNeighbourhood(Neighbourhood neighbourhood);
 
     // Obtener todos los barrios
-    List<Neighbourhood> getAllNeighbourhoods(boolean activeOnly);
+    Page<Neighbourhood> getAllNeighbourhoods(boolean activeOnly, Pageable pageable);
 
     // Obtener un barrio por su ID
     Optional<Neighbourhood> getNeighbourhoodById(long id, boolean activeOnly);
 
     // Buscar barrios por nombre
-    List<Neighbourhood> searchNeighbourhoodsByName(String name);
+    Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable);
 
     // Actualizar un barrio existente
     Neighbourhood updateNeighbourhood(Neighbourhood updatedNeighbourhood);
