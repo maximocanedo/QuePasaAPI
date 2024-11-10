@@ -11,6 +11,8 @@ public interface PostTypeService {
 
     PostType findById(Integer id);
 
+    PostType findBySubtype(Integer id);
+
     PostType create(String description);
 
     PostType update(Integer id, String description);

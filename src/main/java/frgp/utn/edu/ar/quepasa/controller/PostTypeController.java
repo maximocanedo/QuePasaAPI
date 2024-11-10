@@ -1,7 +1,5 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +9,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/post-types")
@@ -82,6 +77,17 @@ public class PostTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPostTypeById(@PathVariable Integer id) {
         return ResponseEntity.ok(postTypeService.findById(id));
+    }
+
+    /**
+     * Obtiene un tipo según su subtipo.
+     *
+     * @param id ID del subtipo que pertenece al tipo a buscar.
+     * @return Entidad de respuesta que contiene el tipo buscado.
+     */
+    @GetMapping("/subtype/{id}")
+    public ResponseEntity<?> getPostTypeBySubtype(@PathVariable Integer id) {
+        return ResponseEntity.ok(postTypeService.findBySubtype(id));
     }
 
     /**

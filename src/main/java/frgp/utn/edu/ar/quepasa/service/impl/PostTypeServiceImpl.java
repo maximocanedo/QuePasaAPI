@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
-
 @Service("postTypeService")
 public class PostTypeServiceImpl implements PostTypeService {
 
@@ -63,6 +61,19 @@ public class PostTypeServiceImpl implements PostTypeService {
     @Override
     public PostType findById(Integer id) {
         return postTypeRepository.findById(id)
+                .orElseThrow(() -> new Fail("Type not found", HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * Busca un tipo por su subtipo y lo devuelve.
+     *
+     * @param id El ID del subtipo que pertenece al tipo buscado
+     * @return El tipo encontrado
+     * @throws Fail Si el tipo no es encontrado
+     */
+    @Override
+    public PostType findBySubtype(Integer id) {
+        return postTypeRepository.findBySubtype(id)
                 .orElseThrow(() -> new Fail("Type not found", HttpStatus.NOT_FOUND));
     }
 
