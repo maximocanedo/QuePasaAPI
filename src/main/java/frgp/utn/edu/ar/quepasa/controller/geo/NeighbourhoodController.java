@@ -3,10 +3,12 @@ package frgp.utn.edu.ar.quepasa.controller.geo;
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
 import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -29,8 +31,9 @@ public class NeighbourhoodController {
 
     // Obtener todos los barrios
     @GetMapping
-    public List<Neighbourhood> getAllNeighbourhoods(@RequestParam(defaultValue = "true") boolean activeOnly) {
-        return neighbourhoodService.getAllNeighbourhoods(activeOnly);
+    public Page<Neighbourhood> getAllNeighbourhoods(@RequestParam(defaultValue = "true") boolean activeOnly, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return neighbourhoodService.getAllNeighbourhoods(activeOnly, pageable);
     }
 
     // Obtener un barrio por ID
@@ -42,8 +45,9 @@ public class NeighbourhoodController {
 
     // Buscar barrio por nombre
     @GetMapping("/search")
-    public List<Neighbourhood> searchNeighbourhoodsByName(@RequestParam String name) {
-        return neighbourhoodService.searchNeighbourhoodsByName(name);
+    public Page<Neighbourhood> searchNeighbourhoodsByName(@RequestParam String name, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return neighbourhoodService.searchNeighbourhoodsByName(name, pageable);
     }
 
     // Actualizar un barrio

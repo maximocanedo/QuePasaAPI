@@ -1,11 +1,12 @@
 package frgp.utn.edu.ar.quepasa.repository.geo;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,9 +14,10 @@ public interface NeighbourhoodRepository extends JpaRepository<Neighbourhood, Lo
 
     @Query("SELECT n FROM Neighbourhood n WHERE n.id = :id AND n.active")
     Optional<Neighbourhood> findActiveNeighbourhoodById(long id);
- 
-    List<Neighbourhood> findByNameContainingIgnoreCase(String name);
 
-    List<Neighbourhood> findByActiveTrue();
+    @Query("SELECT n FROM Neighbourhood n WHERE n.name LIKE %:name% AND n.active = true")
+    Page<Neighbourhood> findByNameAndActive(String name, Pageable page);
+
+    Page<Neighbourhood> findByActiveTrue(Pageable page);
 
 }

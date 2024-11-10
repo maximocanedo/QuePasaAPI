@@ -4,9 +4,10 @@ import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
 import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,11 +28,11 @@ public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     // Obtener todos los barrios
     @Override
-    public List<Neighbourhood> getAllNeighbourhoods(boolean activeOnly) {
+    public Page<Neighbourhood> getAllNeighbourhoods(boolean activeOnly, Pageable pageable) {
         if (activeOnly) {
-            return neighbourhoodRepository.findByActiveTrue();
+            return neighbourhoodRepository.findByActiveTrue(pageable);
         }
-        return neighbourhoodRepository.findAll();
+        return neighbourhoodRepository.findAll(pageable);
     }
 
     // Obtener un barrio por su ID
@@ -45,8 +46,8 @@ public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     // Buscar barrios por nombre
     @Override
-    public List<Neighbourhood> searchNeighbourhoodsByName(String name) {
-        return neighbourhoodRepository.findByNameContainingIgnoreCase(name);
+    public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable) {
+        return neighbourhoodRepository.findByNameAndActive(name, pageable);
     }
 
     // Actualizar un barrio existente
