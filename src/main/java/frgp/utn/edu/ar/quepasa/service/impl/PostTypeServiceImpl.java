@@ -6,9 +6,13 @@ import frgp.utn.edu.ar.quepasa.repository.PostTypeRepository;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("postTypeService")
 public class PostTypeServiceImpl implements PostTypeService {
@@ -65,16 +69,24 @@ public class PostTypeServiceImpl implements PostTypeService {
     }
 
     /**
-     * Busca un tipo por su subtipo y lo devuelve.
+     * Busca un tipo por su subtipo y lo devuelve primero en una lista de tipos.
      *
      * @param id El ID del subtipo que pertenece al tipo buscado
-     * @return El tipo encontrado
+     * @return La lista de tipos paginada, con el tipo buscado primero.
      * @throws Fail Si el tipo no es encontrado
      */
     @Override
-    public PostType findBySubtype(Integer id) {
-        return postTypeRepository.findBySubtype(id)
+    public Page<PostType> findBySubtype(Integer id, Pageable pageable) {
+        PostType prioritizedPostType = postTypeRepository.findBySubtype(id)
                 .orElseThrow(() -> new Fail("Type not found", HttpStatus.NOT_FOUND));
+
+        Page<PostType> otherPostTypes = postTypeRepository.findOthersBySubtype(id, pageable);
+
+        List<PostType> postTypes = new ArrayList<>();
+        postTypes.add(prioritizedPostType);
+        postTypes.addAll(otherPostTypes.getContent());
+
+        return new PageImpl<>(postTypes, pageable, otherPostTypes.getTotalElements() + 1);
     }
 
     /**

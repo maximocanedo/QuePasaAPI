@@ -1,8 +1,10 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.model.PostType;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.PostTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -80,14 +82,15 @@ public class PostTypeController {
     }
 
     /**
-     * Obtiene un tipo según su subtipo.
+     * Obtiene un tipo según su subtipo y lo devuelve primero en una lista de tipos.
      *
      * @param id ID del subtipo que pertenece al tipo a buscar.
-     * @return Entidad de respuesta que contiene el tipo buscado.
+     * @return Entidad de respuesta que contiene la lista de tipos paginada, con el tipo buscado primero.
      */
     @GetMapping("/subtype/{id}")
-    public ResponseEntity<?> getPostTypeBySubtype(@PathVariable Integer id) {
-        return ResponseEntity.ok(postTypeService.findBySubtype(id));
+    public ResponseEntity<Page<PostType>> getPostTypeBySubtype(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @PathVariable Integer id) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(postTypeService.findBySubtype(id, pageable));
     }
 
     /**

@@ -24,4 +24,7 @@ public interface PostTypeRepository extends JpaRepository<PostType, Integer> {
 
     @Query("SELECT p FROM PostType p INNER JOIN PostSubtype s ON s.type = p WHERE s.id = :id AND p.active = true")
     Optional<PostType> findBySubtype(@Param("id") int id);
+
+    @Query("SELECT p FROM PostType p INNER JOIN PostSubtype s ON s.type != p WHERE s.id = :id AND p.active = true ORDER BY p.id ASC")
+    Page<PostType> findOthersBySubtype(@Param("id") int id, Pageable pageable);
 }
