@@ -1,7 +1,36 @@
 package frgp.utn.edu.ar.quepasa.service.media;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+
 import frgp.utn.edu.ar.quepasa.exception.Fail;
-import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.Ownable;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
@@ -9,27 +38,10 @@ import frgp.utn.edu.ar.quepasa.repository.media.DocumentRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.media.impl.DocumentServiceImpl;
-import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
 import frgp.utn.edu.ar.quepasa.service.validators.OwnerValidator;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator;
 import static frgp.utn.edu.ar.quepasa.service.validators.objects.MultipartFileValidator.MB;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import quepasa.api.exceptions.ValidationError;
 
 @DisplayName("Servicio de documentos")
 public class DocumentServiceTests {
@@ -229,7 +241,8 @@ public class DocumentServiceTests {
 
         verify(documentRepository, times(1)).findById(documentId);
         verify(documentRepository, never()).delete(any(Document.class));
-        verify(storageService, never()).delete(anyString());
+        verify(storageService, never()).delete(anyString(), any(MediaType.class));
+
     }
 
     @Test
@@ -243,12 +256,13 @@ public class DocumentServiceTests {
         when(vb.isAdmin()).thenReturn(vb);
         when(ownerService.of(any(Ownable.class))).thenReturn(vb);
 
-        doNothing().when(storageService).delete("document." + documentId);
+        doNothing().when(storageService).delete("document." + documentId, MediaType.APPLICATION_PDF);
+
 
         documentService.delete(documentId);
 
         verify(documentRepository, times(1)).findById(documentId);
-        verify(storageService, times(1)).delete(anyString());
+        verify(storageService, times(1)).delete(anyString(), any(MediaType.class));
         verify(documentRepository, times(1)).delete(mockDocument);
     }
 
