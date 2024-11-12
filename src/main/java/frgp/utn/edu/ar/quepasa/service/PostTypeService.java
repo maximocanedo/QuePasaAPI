@@ -11,6 +11,8 @@ public interface PostTypeService {
 
     PostType findById(Integer id);
 
+    Page<PostType> findBySubtype(Integer id, Pageable pageable);
+
     PostType create(String description);
 
     PostType update(Integer id, String description);
