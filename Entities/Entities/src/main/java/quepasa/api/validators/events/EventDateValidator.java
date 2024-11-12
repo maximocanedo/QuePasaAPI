@@ -20,4 +20,8 @@ public final class EventDateValidator extends LocalDateTimeValidatorBuilder<Even
     public EventDateValidator isAfterStartDate(LocalDateTime date) {
         return super.isNotBefore(date, "La fecha del evento no puede ser anterior a la fecha de inicio. ");
     }
+
+    public EventDateValidator isBeforeEndDate(LocalDateTime date) {
+        return super.isNotAfter(date, "La fecha del evento no puede ser posterior a la fecha de fin. ");
+    }
 }
