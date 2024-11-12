@@ -75,8 +75,10 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Event findById(UUID id) throws Fail {
-        return eventRepository.findById(id)
+        Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new Fail("Event not found.", HttpStatus.NOT_FOUND));
+        commentService.populate(voteService.populate(event));
+        return event;
     }
 
     /**
