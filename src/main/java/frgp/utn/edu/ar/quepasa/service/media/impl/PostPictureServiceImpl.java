@@ -103,7 +103,7 @@ public class PostPictureServiceImpl implements PostPictureService {
             throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
         var file = doc.get();
         ownerService.of(file).isOwner().isAdmin();
-        storageService.delete("picture."+file.getId().toString(), file.getMediaType());
+        storageService.delete("picture."+file.getId().toString());
         pictureRepository.delete(doc.get());
     }
 }

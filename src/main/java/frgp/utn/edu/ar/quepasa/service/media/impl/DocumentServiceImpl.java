@@ -79,7 +79,7 @@ public class DocumentServiceImpl implements DocumentService {
         var op = documentRepository.findById(id);
         if(op.isEmpty() || !op.get().isActive()) throw new Fail("Document not found. ", HttpStatus.NOT_FOUND);
         ownerService.of(op.get()).isOwner().isAdmin();
-        return new RawDocument(op.get(), storageService.loadAsResource("document." + id, op.get().getMediaType()));
+        return new RawDocument(op.get(), storageService.loadAsResource("document." + id));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class DocumentServiceImpl implements DocumentService {
             throw new Fail("Document not found. ", HttpStatus.NOT_FOUND);
         var file = doc.get();
         ownerService.of(file).isOwner().isAdmin();
-        storageService.delete("document."+file.getId().toString(), file.getMediaType());
+        storageService.delete("document."+file.getId().toString());
         documentRepository.delete(doc.get());
     }
 

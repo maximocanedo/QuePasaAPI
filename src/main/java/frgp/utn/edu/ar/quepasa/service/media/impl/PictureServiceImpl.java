@@ -92,7 +92,7 @@ public class PictureServiceImpl implements PictureService {
                 .findById(id);
         if(op.isEmpty() || !op.get().isActive()) throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
         //return new RawPicture(voteService.populate(op.get()), storageService.loadAsResource("picture." + id.toString()));
-        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id, op.get().getMediaType()));
+        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id));
     }
 
     @Override
@@ -125,7 +125,7 @@ public class PictureServiceImpl implements PictureService {
             throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
         var file = doc.get();
         ownerService.of(file).isOwner().isAdmin();
-        storageService.delete("picture."+file.getId().toString(), file.getMediaType());
+        storageService.delete("picture."+file.getId().toString());
         pictureRepository.delete(doc.get());
     }
 

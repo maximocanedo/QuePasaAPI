@@ -163,7 +163,7 @@ public class PictureControllerTests {
         pic.setDescription(mockPic.getDescription());
         Resource mr = new ByteArrayResource(content);
         var rd = new RawPicture(pic, mr);
-        when(storageService.loadAsResource(anyString(), any(MediaType.class))).thenAnswer(_ -> mr);
+        when(storageService.loadAsResource(anyString())).thenAnswer(_ -> mr);
         when(pictureService.getRawPictureById(any(String.class)))
                 .thenAnswer(_ -> rd);
         when(pictureService.getRawPictureById(any(UUID.class)))

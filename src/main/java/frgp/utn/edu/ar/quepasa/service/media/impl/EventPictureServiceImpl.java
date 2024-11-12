@@ -76,7 +76,7 @@ public class EventPictureServiceImpl implements EventPictureService {
         var op = pictureRepository
                 .findById(id);
         if (op.isEmpty() || !op.get().isActive()) throw new Fail("Picture not found. ", HttpStatus.NOT_FOUND);
-        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id, op.get().getMediaType()));
+        return new RawPicture(op.get(), storageService.loadAsResource("picture." + id));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class EventPictureServiceImpl implements EventPictureService {
         ownerService.of(file)
                 .isOwner()
                 .isAdmin();
-        storageService.delete("picture." + file.getId().toString(), file.getMediaType());
+        storageService.delete("picture." + file.getId().toString());
         pictureRepository.delete(doc.get());
     }
 }

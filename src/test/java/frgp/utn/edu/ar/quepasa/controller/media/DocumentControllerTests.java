@@ -165,7 +165,7 @@ public class DocumentControllerTests {
         doc.setDescription(mockDocument.getDescription());
         Resource mr = new ByteArrayResource(content);
         var rd = new RawDocument(doc, mr);
-        when(storageService.loadAsResource(anyString(), any(MediaType.class))).thenAnswer(_ -> mr);
+        when(storageService.loadAsResource(anyString())).thenAnswer(_ -> mr);
         when(documentService.getRawDocumentById(any(String.class)))
                 .thenAnswer(_ -> rd);
         when(documentService.getRawDocumentById(any(UUID.class)))

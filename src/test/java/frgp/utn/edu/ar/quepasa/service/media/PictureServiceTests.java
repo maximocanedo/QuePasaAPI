@@ -28,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
@@ -258,7 +257,7 @@ public class PictureServiceTests {
 
         verify(pictureRepository, times(1)).findById(pictureId);
         verify(pictureRepository, never()).delete(any(Picture.class));
-        verify(storageService, never()).delete(anyString(), any(MediaType.class));
+        verify(storageService, never()).delete(anyString());
 
     }
 
@@ -273,12 +272,12 @@ public class PictureServiceTests {
         when(vb.isAdmin()).thenReturn(vb);
         when(ownerService.of(any(Ownable.class))).thenReturn(vb);
 
-        doNothing().when(storageService).delete("picture." + pictureId, MediaType.IMAGE_JPEG);
+        doNothing().when(storageService).delete("picture." + pictureId);
 
         pictureService.delete(pictureId);
 
         verify(pictureRepository, times(1)).findById(pictureId);
-        verify(storageService, times(1)).delete(anyString(), any(MediaType.class));
+        verify(storageService, times(1)).delete(anyString());
         verify(pictureRepository, times(1)).delete(mockPic);
     }
 

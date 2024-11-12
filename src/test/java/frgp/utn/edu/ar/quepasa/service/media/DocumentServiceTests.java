@@ -27,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import frgp.utn.edu.ar.quepasa.exception.Fail;
@@ -241,7 +240,7 @@ public class DocumentServiceTests {
 
         verify(documentRepository, times(1)).findById(documentId);
         verify(documentRepository, never()).delete(any(Document.class));
-        verify(storageService, never()).delete(anyString(), any(MediaType.class));
+        verify(storageService, never()).delete(anyString());
 
     }
 
@@ -256,13 +255,13 @@ public class DocumentServiceTests {
         when(vb.isAdmin()).thenReturn(vb);
         when(ownerService.of(any(Ownable.class))).thenReturn(vb);
 
-        doNothing().when(storageService).delete("document." + documentId, MediaType.APPLICATION_PDF);
+        doNothing().when(storageService).delete("document." + documentId);
 
 
         documentService.delete(documentId);
 
         verify(documentRepository, times(1)).findById(documentId);
-        verify(storageService, times(1)).delete(anyString(), any(MediaType.class));
+        verify(storageService, times(1)).delete(anyString());
         verify(documentRepository, times(1)).delete(mockDocument);
     }
 
