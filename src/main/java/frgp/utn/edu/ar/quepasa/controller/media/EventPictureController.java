@@ -4,6 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.response.RawPicture;
 import frgp.utn.edu.ar.quepasa.model.media.EventPicture;
 import frgp.utn.edu.ar.quepasa.service.media.EventPictureService;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +45,7 @@ public class EventPictureController {
     }
 
     @GetMapping("/event/{id}")
-    public ResponseEntity<?> getEventPics(@PathVariable UUID id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<EventPicture>> getEventPics(@PathVariable UUID id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(eventPictureService.getEventPics(id, pageable));
     }
