@@ -1,6 +1,9 @@
 package frgp.utn.edu.ar.quepasa.data.request.post;
 
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+
 public class PostPatchEditRequest {
+    private Audience audience = null;
     private String title = null;
     private Integer subtype = null;
     private String description = null;
@@ -8,6 +11,9 @@ public class PostPatchEditRequest {
     private String tags = null;
 
     public PostPatchEditRequest() {}
+
+    public Audience getAudience() { return audience; }
+    public void setAudience(Audience audience) { this.audience = audience; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

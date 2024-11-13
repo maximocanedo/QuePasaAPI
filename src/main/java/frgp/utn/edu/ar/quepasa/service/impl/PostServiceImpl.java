@@ -303,6 +303,7 @@ public class PostServiceImpl implements PostService {
                 .isOwner()
                 .isAdmin()
                 .orElseFail();
+        if(newPost.getAudience() != null) post.setAudience(newPost.getAudience());
         if(newPost.getTitle() != null) post.setTitle(newPost.getTitle());
         if(newPost.getSubtype() != null) {
             var subtype = postSubtypeRepository.findActiveById(newPost.getSubtype())
