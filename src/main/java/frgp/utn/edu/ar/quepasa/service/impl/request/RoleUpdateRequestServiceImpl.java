@@ -14,6 +14,8 @@ import frgp.utn.edu.ar.quepasa.model.request.RoleUpdateRequest;
 import frgp.utn.edu.ar.quepasa.repository.request.RoleUpdateRequestRepository;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
+import org.springframework.http.HttpStatus;
 
 @Deprecated
 @Service
@@ -42,15 +44,15 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
         Role currentRole = requester.getRole();
     
         if (requestedRole == Role.MOD || requestedRole == Role.ADMIN) {
-            throw new IllegalArgumentException("No se permite solicitar el rol de MOD o ADMIN.");
+            throw new Fail("No se permite solicitar el rol de MOD o ADMIN.", HttpStatus.BAD_REQUEST);
         }
         if (requestedRole.ordinal() < currentRole.ordinal()) {
-            throw new IllegalArgumentException("El rol solicitado no puede ser inferior que el rol actual.");
+            throw new Fail("El rol solicitado no puede ser inferior que el rol actual.", HttpStatus.BAD_REQUEST);
         }
     
         RoleUpdateRequest request = new RoleUpdateRequest();
         request.setRequestedRole(requestedRole);
-        request.setRemarks(remarks);
+        // request.setRemarks(remarks);
         request.setRequester(requester);
         request.setActive(true);
         request.setStatus(RequestStatus.WAITING);
@@ -78,7 +80,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
             request.setRemarks(adminRemarks);
             roleUpdateRequestRepository.save(request);
         } else {
-            throw new IllegalArgumentException("RoleUpdateRequest con ID " + requestId + " no enocontrado");
+            throw new Fail("RoleUpdateRequest con ID " + requestId + " no encontrado", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -99,17 +101,17 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
         if (optionalRequest.isPresent()) {
             RoleUpdateRequest request = optionalRequest.get();
             if (request.getStatus() != RequestStatus.WAITING) {
-                throw new IllegalStateException("La solicitud ya ha sido revisada y no puede modificarse.");
+                throw new Fail("La solicitud ya ha sido revisada y no puede modificarse.", HttpStatus.BAD_REQUEST);
             }
             request.setStatus(approve ? RequestStatus.APPROVED : RequestStatus.REJECTED);
-            request.setReviewer(getCurrentUser());
+            request.setReviewer(getCurrentUserOrDie());
             request.setRemarks(reviewerRemarks);
             request.setActive(false);
     
             return roleUpdateRequestRepository.save(request);
         }
     
-        throw new IllegalArgumentException("RoleUpdateRequest: " + requestId + " no encontrado");
+        throw new Fail("RoleUpdateRequest: " + requestId + " no encontrado", HttpStatus.NOT_FOUND);
     }
     
 
@@ -129,7 +131,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
             request.setActive(false);
             roleUpdateRequestRepository.save(request);
         } else {
-            throw new IllegalArgumentException("RoleUpdateRequest con ID " + requestId + " no enocontrado");
+            throw new Fail("RoleUpdateRequest: " + requestId + " no encontrado", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -142,7 +144,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
     @Deprecated
     @Override
     public List<RoleUpdateRequest> findByUser() {
-        User currentUser = getCurrentUser();
+        User currentUser = authenticationService.getCurrentUserOrDie();
         return roleUpdateRequestRepository.findByRequesterAndActiveTrue(currentUser);
     }
 
