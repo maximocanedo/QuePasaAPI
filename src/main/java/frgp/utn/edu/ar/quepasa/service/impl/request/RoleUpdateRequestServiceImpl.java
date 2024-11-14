@@ -104,7 +104,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
                 throw new Fail("La solicitud ya ha sido revisada y no puede modificarse.", HttpStatus.BAD_REQUEST);
             }
             request.setStatus(approve ? RequestStatus.APPROVED : RequestStatus.REJECTED);
-            request.setReviewer(getCurrentUserOrDie());
+            request.setReviewer(getCurrentUser());
             request.setRemarks(reviewerRemarks);
             request.setActive(false);
     
