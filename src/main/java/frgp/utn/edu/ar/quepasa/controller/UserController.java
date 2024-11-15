@@ -4,6 +4,7 @@ import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.response.TotpEnablingResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.User;
@@ -70,6 +71,18 @@ public class UserController {
         return new ResponseEntity<>(mail, HttpStatus.OK);
     }
 
+    @DeleteMapping("/me/mail")
+    public ResponseEntity<?> deleteMail(@RequestBody String mailAddress) {
+        authenticationService.deleteMail(mailAddress);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/me/phone")
+    public ResponseEntity<?> deletePhone(@RequestBody String phoneNumber) {
+        authenticationService.deletePhone(phoneNumber);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @PostMapping("/me/phone")
     public ResponseEntity<Phone> requestPhoneVerificationCode(@RequestBody String content) throws AuthenticationCredentialsNotFoundException, AuthenticationFailedException {
         VerificationRequest req = new VerificationRequest();
@@ -91,11 +104,9 @@ public class UserController {
     }
 
     @PostMapping("/me/totp")
-    public ResponseEntity<byte[]> enableTotpAuthentication() {
-        byte[] qr = authenticationService.createTotpSecret();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        return new ResponseEntity<>(qr, headers, HttpStatus.OK);
+    public ResponseEntity<TotpEnablingResponse> enableTotpAuthentication() {
+        var totp = authenticationService.enableTotp();
+        return ResponseEntity.ok(totp);
     }
 
     @DeleteMapping("/me/totp")

@@ -13,6 +13,7 @@ import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
+import frgp.utn.edu.ar.quepasa.data.response.TotpEnablingResponse;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
@@ -47,10 +48,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Service
@@ -185,6 +183,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    public TotpEnablingResponse enableTotp() {
+        User current = getCurrentUserOrDie();
+        if(current.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
+        TOTPData data = generateSecret(current.getUsername());
+        try {
+            byte[] qrCode = generateQRCodeImage(data.getUrl());
+            current.setTotp(data.getSecretAsHex());
+            userRepository.save(current);
+            return new TotpEnablingResponse(
+                    qrCode,
+                    data.getUrl()
+            );
+        } catch(WriterException | IOException e) {
+            throw new Fail("Error trying to generate QR code. Operation was aborted. ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Deprecated(forRemoval = true)
+    @Override
     public byte[] createTotpSecret() {
         User user = getCurrentUserOrDie();
         if(user.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
@@ -197,6 +214,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch(WriterException | IOException e) {
             throw new Fail("Error trying to generate QR Code. Operation was aborted.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Deprecated(forRemoval = true)
+    public String createTotpSecretUrl() {
+        User user = getCurrentUserOrDie();
+        if(user.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
+        TOTPData data = generateSecret(user.getUsername());
+        String url = data.getUrl();
+        user.setTotp(data.getSecretAsHex());
+        userRepository.save(user);
+        return url;
     }
 
     private byte[] generateQRCodeImage(String text) throws WriterException, IOException {
@@ -255,6 +283,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
 
+    @Override
+    public void deleteMail(String mail) {
+        User me = getCurrentUserOrDie();
+        Mail file = mailRepository
+                .findByMailAndUser(mail, me)
+                .orElseThrow(() -> new Fail("El correo electrónico referenciado no existe. ", HttpStatus.NOT_FOUND));
+        mailRepository.delete(file);
+    }
+
     /**
      * <b>Registra un correo electrónico</b>
      * <p>Y envía un correo electrónico con un código OTP de seis dígitos para su posterior verificación. </p>
@@ -304,6 +341,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return mail;
         }
         throw new Fail("El código ingresado no es válido. ", HttpStatus.FORBIDDEN);
+    }
+
+    @Override
+    public void deletePhone(String phone) {
+        User me = getCurrentUserOrDie();
+        String phoneNumber = new PhoneValidator(phone)
+                .isNotNull("El número de teléfono no puede ser nulo. ")
+                .isNotBlank("El número de teléfono no puede estar en blanco. ")
+                .isValidPhoneNumber()
+                .format().build();
+        Phone file = phoneRepository
+                .findByPhoneAndUser(phoneNumber, me)
+                .orElseThrow(() -> new Fail("El número de teléfono referenciado no existe. ", HttpStatus.NOT_FOUND));
+        phoneRepository.delete(file);
     }
 
     /**
