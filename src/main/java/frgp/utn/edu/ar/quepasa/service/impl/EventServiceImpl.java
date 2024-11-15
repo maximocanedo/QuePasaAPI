@@ -64,7 +64,10 @@ public class EventServiceImpl implements EventService {
      **/
     @Override
     public Page<Event> getEvents(String query, Pageable pageable, boolean active) {
-        return eventRepository.search(query, pageable, active);
+        return eventRepository
+                .search(query, pageable, active)
+                .map(voteService::populate)
+                .map(commentService::populate);
     }
 
     /**
