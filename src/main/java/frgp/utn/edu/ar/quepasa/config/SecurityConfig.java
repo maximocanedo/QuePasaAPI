@@ -125,11 +125,11 @@ public class SecurityConfig {
                     request.requestMatchers(HttpMethod.GET, "/api/posts/op/{id}")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.GET, "/api/posts/me")
-                            .hasAuthority(Role.NEIGHBOUR.name());
+                            .authenticated();
                     request.requestMatchers(HttpMethod.POST, "/api/posts", "api/posts/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     request.requestMatchers(HttpMethod.GET, "/api/posts/**", "/api/posts/{id}/votes", "/api/posts/{id}/votes/**")
-                            .hasAuthority(Role.NEIGHBOUR.name());
+                            .authenticated();
                     request.requestMatchers(HttpMethod.POST,  "/api/posts/{id}/votes", "/api/posts/{id}/votes/**")
                             .hasAuthority(Role.NEIGHBOUR.name());
                     // Fin sección publicaciones
