@@ -72,14 +72,14 @@ public class UserController {
     }
 
     @DeleteMapping("/me/mail")
-    public ResponseEntity<?> deleteMail(@RequestBody String mailAddress) {
-        authenticationService.deleteMail(mailAddress);
+    public ResponseEntity<?> deleteMail(@RequestParam String subject) {
+        authenticationService.deleteMail(subject);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/me/phone")
-    public ResponseEntity<?> deletePhone(@RequestBody String phoneNumber) {
-        authenticationService.deletePhone(phoneNumber);
+    public ResponseEntity<?> deletePhone(@RequestParam String subject) {
+        authenticationService.deletePhone(subject);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
