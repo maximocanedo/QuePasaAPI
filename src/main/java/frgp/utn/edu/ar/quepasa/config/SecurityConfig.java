@@ -1,7 +1,5 @@
 package frgp.utn.edu.ar.quepasa.config;
 
-import frgp.utn.edu.ar.quepasa.model.enums.Role;
-import frgp.utn.edu.ar.quepasa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +12,15 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import frgp.utn.edu.ar.quepasa.model.enums.Role;
+import frgp.utn.edu.ar.quepasa.service.UserService;
 
 
 @Configuration
@@ -89,7 +89,7 @@ public class SecurityConfig {
 
                     // Sección trends
                     request.requestMatchers(HttpMethod.GET, "/api/trends/**")
-                    .hasAuthority(Role.NEIGHBOUR.name());
+                    .permitAll();
                     // Fin sección trends
 
 
