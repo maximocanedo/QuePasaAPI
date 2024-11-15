@@ -92,6 +92,7 @@ public class SecurityConfig {
                     .permitAll();
                     // Fin sección trends
 
+                    request.requestMatchers("/api/comments/**").authenticated();
 
                     // Sección documentos
                     request.requestMatchers(HttpMethod.GET, "/api/documents", "/api/documents/**")
