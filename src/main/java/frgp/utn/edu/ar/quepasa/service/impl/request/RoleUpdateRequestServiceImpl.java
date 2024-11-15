@@ -110,9 +110,11 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
             request.setReviewer(getCurrentUser());
             request.setRemarks(reviewerRemarks);
 
-            User user = optionalRequest.get().getOwner();
-            user.setRole(optionalRequest.get().getRequestedRole());
-            userRepository.save(user);
+            if(approve) {
+                User user = optionalRequest.get().getOwner();
+                user.setRole(optionalRequest.get().getRequestedRole());
+                userRepository.save(user);
+            }
 
             return roleUpdateRequestRepository.save(request);
         }
