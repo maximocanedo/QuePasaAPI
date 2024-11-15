@@ -92,8 +92,8 @@ public class EventServiceImpl implements EventService {
      * @throws Fail if no events are found
      */
     @Override
-    public Page<Event> findByOp(User owner, Pageable pageable) throws Fail {
-        return eventRepository.findByOwnerAndActive(owner, true, pageable)
+    public Page<Event> findByOp(User owner, Boolean active, Pageable pageable) throws Fail {
+        return eventRepository.findByOwnerAndActive(owner, active, pageable)
                 .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
@@ -122,8 +122,8 @@ public class EventServiceImpl implements EventService {
      * @throws Fail if no events are found
      */
     @Override
-    public Page<Event> findByAudience(Audience audience, Pageable pageable) throws Fail {
-        return eventRepository.findByAudience(audience, pageable)
+    public Page<Event> findByAudience(Audience audience, Pageable pageable, boolean active) throws Fail {
+        return eventRepository.findByAudienceAndActive(audience, active, pageable)
                 .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
@@ -137,8 +137,8 @@ public class EventServiceImpl implements EventService {
      * @throws Fail if no events are found
      */
     @Override
-    public Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable) throws Fail {
-        return eventRepository.findByCategory(eventCategory, pageable)
+    public Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable, boolean active) throws Fail {
+        return eventRepository.findByCategory(eventCategory, active, pageable)
                 .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
