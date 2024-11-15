@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,13 @@ import org.springframework.http.HttpStatus;
 public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
 
     private final RoleUpdateRequestRepository roleUpdateRequestRepository;
+    private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public RoleUpdateRequestServiceImpl(RoleUpdateRequestRepository roleUpdateRequestRepository, AuthenticationService authenticationService) {
+    public RoleUpdateRequestServiceImpl(RoleUpdateRequestRepository roleUpdateRequestRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.roleUpdateRequestRepository = roleUpdateRequestRepository;
+        this.userRepository = userRepository;
         this.authenticationService = authenticationService;
     }
 
@@ -106,8 +109,11 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
             request.setStatus(approve ? RequestStatus.APPROVED : RequestStatus.REJECTED);
             request.setReviewer(getCurrentUser());
             request.setRemarks(reviewerRemarks);
-            request.setActive(false);
-    
+
+            User user = optionalRequest.get().getOwner();
+            user.setRole(optionalRequest.get().getRequestedRole());
+            userRepository.save(user);
+
             return roleUpdateRequestRepository.save(request);
         }
     
