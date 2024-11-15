@@ -177,7 +177,7 @@ public class EventServiceTest {
         Page<Event> mockPage = new PageImpl<>(Arrays.asList(event1, event2));
         when(eventRepository.findByOwnerAndActive(owner, true, pageable)).thenReturn(Optional.of(mockPage));
 
-        Page<Event> events = eventService.findByOp(owner, pageable);
+        Page<Event> events = eventService.findByOp(owner, true, pageable);
 
         assertNotNull(events);
         assertFalse(events.isEmpty());
@@ -196,7 +196,7 @@ public class EventServiceTest {
 
         Fail exception = assertThrows(
                 Fail.class,
-                () -> eventService.findByOp(owner, pageable)
+                () -> eventService.findByOp(owner, true, pageable)
         );
 
         assertEquals("No Events found.", exception.getMessage());

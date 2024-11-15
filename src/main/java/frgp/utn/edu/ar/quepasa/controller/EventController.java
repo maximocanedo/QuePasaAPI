@@ -110,8 +110,12 @@ public class EventController {
      * @throws Fail    Si el evento no se encuentra.
      */
     @GetMapping("/user/{username}")
-    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) throws Fail {
-        Pageable pageable = PageRequest.of(page, size);
+    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
         return ResponseEntity.ok(eventService.findByUsername(username, pageable));
     }
 
@@ -124,10 +128,14 @@ public class EventController {
      * @throws Fail Si no se en encuentran eventos y/o todos los eventos del estan inactivos.
      */
     @GetMapping("/me")
-    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
+    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(eventService.findByOp(me, pageable));
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.findByOp(me, active, pageable));
     }
 
     /**
@@ -139,9 +147,13 @@ public class EventController {
      * @throws Fail Si no se encuentran eventos de la audiencia.
      */
     @GetMapping("/audience/{audience}")
-    public ResponseEntity<?> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(eventService.findByAudience(audience, pageable));
+    public ResponseEntity<?> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.findByAudience(audience, pageable, active));
     }
 
     /**
@@ -153,9 +165,13 @@ public class EventController {
      * @throws Fail Si no se encuentran eventos de la categoría.
      */
     @GetMapping("/eventCategory/{category}")
-    public ResponseEntity<?> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) throws Fail {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(eventService.findByEventCategory(category, pageable));
+    public ResponseEntity<?> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.findByEventCategory(category, pageable, active));
     }
 
     /**

@@ -16,11 +16,11 @@ import java.util.UUID;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
-    Optional<Page<Event>> findByOwnerAndActive(User owner, Boolean active, Pageable pageable);
+    Optional<Page<Event>> findByOwnerAndActive(User owner, boolean active, Pageable pageable);
 
-    Optional<Page<Event>> findByAudience(Audience audience, Pageable pageable);
+    Optional<Page<Event>> findByAudienceAndActive(Audience audience, boolean active, Pageable pageable);
 
-    Optional<Page<Event>> findByCategory(EventCategory eventCategory, Pageable pageable);
+    Optional<Page<Event>> findByCategory(EventCategory eventCategory, boolean active, Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.owner.username = :username AND e.active = true")
     Optional<Page<Event>> findByOwnerUsername(@NotNull String username, @NotNull Pageable pageable);

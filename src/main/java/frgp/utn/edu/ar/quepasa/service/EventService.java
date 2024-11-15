@@ -19,13 +19,13 @@ public interface EventService {
 
     Event findById(UUID id) throws Fail;
 
-    Page<Event> findByOp(User owner, Pageable pageable) throws Fail;
+    Page<Event> findByOp(User owner, Boolean active, Pageable pageable) throws Fail;
 
     Page<Event> findByUsername(String username, Pageable pageable) throws Fail;
 
-    Page<Event> findByAudience(Audience audience, Pageable pageable) throws Fail;
+    Page<Event> findByAudience(Audience audience, Pageable pageable, boolean active) throws Fail;
 
-    Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable) throws Fail;
+    Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable, boolean active) throws Fail;
 
     Event create(EventPostRequest event, User owner) throws Fail;
 
