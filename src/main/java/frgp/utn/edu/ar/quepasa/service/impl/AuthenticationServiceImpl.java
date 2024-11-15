@@ -261,7 +261,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public Mail requestMailVerificationCode(@NotNull VerificationRequest request) throws MessagingException {
-        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+        User me = getCurrentUserOrDie();
 
         var subject = new MailValidator(request.getSubject())
                 .isValidAddress()
@@ -292,10 +292,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public Mail verifyMail(CodeVerificationRequest request) throws AuthenticationFailedException {
-        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+        User me = getCurrentUserOrDie();
         Mail mail = mailRepository
                 .findByMailAndUser(request.getSubject(), me)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new Fail("El correo electrónico referenciado no existe. ", HttpStatus.NOT_FOUND));
         if(mail.isVerified()) return mail;
         if(passwordEncoder.matches(request.getCode(), mail.getHash())) {
             mail.setVerified(true);
@@ -303,7 +303,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             mailRepository.save(mail);
             return mail;
         }
-        throw new AuthenticationFailedException("Code not valid. ");
+        throw new Fail("El código ingresado no es válido. ", HttpStatus.FORBIDDEN);
     }
 
     /**
@@ -313,7 +313,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public Phone requestSMSVerificationCode(@NotNull VerificationRequest request) throws AuthenticationFailedException {
-       User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+       User me = getCurrentUserOrDie();
        int code = 111111;
        String hash = generateVerificationCodeHash(code);
        String phoneNumber = new PhoneValidator(request.getSubject())
@@ -337,11 +337,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public Phone verifyPhone(CodeVerificationRequest request) throws AuthenticationFailedException {
-        User me = getCurrentUser().orElseThrow(AuthenticationFailedException::new);
+        User me = getCurrentUserOrDie();
         var number = new PhoneValidator(request.getSubject()).format().build();
         Phone phone = phoneRepository
                 .findByPhoneAndUser(number, me)
-                .orElseThrow(() -> new Fail("Phone not found. ", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new Fail("El número de teléfono referenciado no existe. ", HttpStatus.BAD_REQUEST));
         if(phone.isVerified()) return phone;
         if(passwordEncoder.matches(request.getCode(), phone.getHash())) {
             phone.setVerified(true);
@@ -349,7 +349,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             phoneRepository.save(phone);
             return phone;
         }
-        throw new Fail("Code not valid. ", HttpStatus.BAD_REQUEST);
+        throw new Fail("El código ingresado no es válido. ", HttpStatus.BAD_REQUEST);
     }
 
 }

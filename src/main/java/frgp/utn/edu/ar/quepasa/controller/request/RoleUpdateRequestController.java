@@ -3,7 +3,6 @@ package frgp.utn.edu.ar.quepasa.controller.request;
 import java.util.List;
 import java.util.UUID;
 
-import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.service.RoleUpdateRequestService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,42 +35,38 @@ public class RoleUpdateRequestController {
     @PostMapping("/request")
     public ResponseEntity<RoleUpdateRequest> createRoleRequest(
             @RequestParam @NotNull Role requestedRole,
-            @RequestParam(required = false) String remarks) {
-        throw new Fail("This service is currently unavailable. ", HttpStatus.SERVICE_UNAVAILABLE);
-        /* RoleUpdateRequest request = roleUpdateRequestService.create(requestedRole, remarks);
-        return new ResponseEntity<>(request, HttpStatus.CREATED); // */
+            @RequestParam(required = false) String remarks
+    ) {
+        RoleUpdateRequest request = roleUpdateRequestService.create(requestedRole, remarks);
+        return new ResponseEntity<>(request, HttpStatus.CREATED);
     }
 
     @PostMapping("/respond")
     public ResponseEntity<RoleUpdateRequest> respondToRoleRequest(
             @RequestParam @NotNull UUID requestId,
             @RequestParam boolean approve,
-            @RequestParam(required = false) String reviewerRemarks) {
+            @RequestParam(required = false) String reviewerRemarks
+    ) {
 
-        throw new Fail("This service is currently unavailable. ", HttpStatus.SERVICE_UNAVAILABLE);
-        /* RoleUpdateRequest updatedRequest = roleUpdateRequestService.close(requestId, approve, reviewerRemarks);
-        return ResponseEntity.ok(updatedRequest); // */
-    }
-
-    @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> deleteRoleRequest(@PathVariable @NotNull UUID requestId) {
-
-        throw new Fail("This service is currently unavailable. ", HttpStatus.SERVICE_UNAVAILABLE);
-        /* roleUpdateRequestService.delete(requestId);
-        return ResponseEntity.noContent().build(); // */
-    }
-
-    @GetMapping("/my-requests")
-    public ResponseEntity<List<RoleUpdateRequest>> getMyRequests() {
-        throw new Fail("This service is currently unavailable. ", HttpStatus.SERVICE_UNAVAILABLE);
-        /* List<RoleUpdateRequest> requests = roleUpdateRequestService.findByUser();
-        return ResponseEntity.ok(requests); // */
+        RoleUpdateRequest updatedRequest = roleUpdateRequestService.close(requestId, approve, reviewerRemarks);
+        return ResponseEntity.ok(updatedRequest);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<RoleUpdateRequest>> getAllRequests() {
-        throw new Fail("This service is currently unavailable. ", HttpStatus.SERVICE_UNAVAILABLE);
-        /* List<RoleUpdateRequest> requests = roleUpdateRequestService.findAll();
-        return ResponseEntity.ok(requests); // */
+        List<RoleUpdateRequest> requests = roleUpdateRequestService.findAll();
+        return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/my-requests")
+    public ResponseEntity<List<RoleUpdateRequest>> getMyRequests() {
+        List<RoleUpdateRequest> requests = roleUpdateRequestService.findByUser();
+        return ResponseEntity.ok(requests);
+    }
+
+    @DeleteMapping("/{requestId}")
+    public ResponseEntity<Void> deleteRoleRequest(@PathVariable @NotNull UUID requestId) {
+        roleUpdateRequestService.delete(requestId);
+        return ResponseEntity.noContent().build();
     }
 }
