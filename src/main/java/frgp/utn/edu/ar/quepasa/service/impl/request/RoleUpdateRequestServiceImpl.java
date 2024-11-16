@@ -55,7 +55,7 @@ public class RoleUpdateRequestServiceImpl implements RoleUpdateRequestService {
     
         RoleUpdateRequest request = new RoleUpdateRequest();
         request.setRequestedRole(requestedRole);
-        // request.setRemarks(remarks);
+        request.setRemarks(remarks);
         request.setRequester(requester);
         request.setActive(true);
         request.setStatus(RequestStatus.WAITING);
