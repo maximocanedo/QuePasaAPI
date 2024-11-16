@@ -14,10 +14,10 @@ Content-Type: application/json
   "neighbourhoods": [1, 2, 3]
 }
 
-### Creacion evento con imagen
-GET {{base}}/api/pictures/308d95da-95ea-4b87-939e-af93943145e9
+### Obtener Eventos Categoria
+GET {{base}}/api/events/audience/NEIGHBORHOOD?page=0&size=&active=
 Authorization: Bearer {{token}}
-Content-Type: image/jpeg
+Content-Type: application/json
 
 ### Modificar evento
 PATCH {{base}}/api/events/9e11f195-73d8-4c78-a70e-d2c147c50435

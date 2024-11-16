@@ -138,7 +138,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Page<Event> findByEventCategory(EventCategory eventCategory, Pageable pageable, boolean active) throws Fail {
-        return eventRepository.findByCategory(eventCategory, active, pageable)
+        return eventRepository.findByCategoryAndActive(eventCategory, active, pageable)
                 .orElseThrow(() -> new Fail("No Events found.", HttpStatus.NOT_FOUND))
                 .map(commentService::populate)
                 .map(voteService::populate);
