@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import frgp.utn.edu.ar.quepasa.annotations.Sensitive;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -130,7 +131,7 @@ public class User implements UserDetails, Activatable {
      * Indica si el usuario tiene habilitado 2FA mediante TOTP.
      */
     @Transient
-    @JsonIgnore
+    @JsonProperty("totp")
     public boolean hasTotpEnabled() { return totp != null && !totp.isEmpty() && !totp.equals("no-totp"); }
 
     /**
