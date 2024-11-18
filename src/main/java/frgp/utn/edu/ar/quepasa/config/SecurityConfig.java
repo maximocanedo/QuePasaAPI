@@ -66,7 +66,8 @@ public class SecurityConfig {
                             .hasAuthority(Role.ADMIN.name());
 
 
-                    request.requestMatchers(HttpMethod.GET, "/api/countries", "/api/countries/**")
+                    request.requestMatchers(
+                        HttpMethod.GET, "/api/countries", "/api/countries/**")
                                     .permitAll();
                     request.requestMatchers(HttpMethod.POST, "/api/states")
                                     .hasAuthority(Role.ADMIN.name());
@@ -77,7 +78,7 @@ public class SecurityConfig {
                     // Fin sección usuarios
 
                     // Sección ciudades
-                    request.requestMatchers(HttpMethod.GET, "/api/cities/**")
+                    request.requestMatchers(HttpMethod.GET, "/api/cities/**", "/api/neighbourhoods/**")
                             .permitAll();
                     request.requestMatchers(HttpMethod.POST, "/api/cities", "/api/cities/**")
                             .hasAuthority(Role.ADMIN.name());
