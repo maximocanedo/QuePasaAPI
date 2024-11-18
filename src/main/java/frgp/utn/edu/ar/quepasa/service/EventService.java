@@ -14,10 +14,9 @@ import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.repository.EventRsvpRepository;
 
 
-public interface EventService extends EventRsvpRepository {
+public interface EventService {
     Page<Event> getEvents(String query, Pageable pageable, boolean active);
 
     Event findById(UUID id) throws Fail;

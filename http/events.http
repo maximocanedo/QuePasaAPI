@@ -61,7 +61,7 @@ GET {{base}}/api/events?q=&page=0&size=10&active=false&sort=
 Authorization: Bearer {{token}}
 
 ### Consultar eventos sorting por titulo
-GET {{base}}/api/events?q=&page=0&size=10&active=&sort=title,asc
+GET {{base}}/api/events?q=&page=0&size=10&active=&sort=votes_votes,asc
 Authorization: Bearer {{token}}
 
 ### Eliminar evento
@@ -75,6 +75,18 @@ Content-Type: application/json
 
 ### Desvincular barrio de evento
 DELETE {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/neighbourhood/4
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Comentar evento
+POST {{base}}/api/posts/159/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+"Hola Joe, Como estas?"
+
+### Obtener Comentarios de un evento
+GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d/comments
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
