@@ -17,7 +17,7 @@ public interface NeighbourhoodService {
     Optional<Neighbourhood> getNeighbourhoodById(long id, boolean activeOnly);
 
     // Buscar barrios por nombre
-    Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable);
+    Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, int city);
 
     // Actualizar un barrio existente
     Neighbourhood updateNeighbourhood(Neighbourhood updatedNeighbourhood);
