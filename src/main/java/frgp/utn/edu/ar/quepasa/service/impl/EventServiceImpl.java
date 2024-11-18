@@ -1,5 +1,23 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
@@ -16,19 +34,11 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import quepasa.api.validators.events.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import quepasa.api.validators.commons.ObjectValidator;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import quepasa.api.validators.events.EventAddressValidator;
+import quepasa.api.validators.events.EventDateValidator;
+import quepasa.api.validators.events.EventDescriptionValidator;
+import quepasa.api.validators.events.EventTitleValidator;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
@@ -322,6 +332,14 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
+    @Override
+    public Optional<EventRsvp> findRsvpByEventAndUser(UUID eventId, User user) throws Fail {
+        Event event = eventRepository.findById(eventId)
+        .orElseThrow(() -> new Fail("Event not found"));
+        return eventRsvpRepository.findByEventAndUser(event, user);
+        }
+
+
     /**
      * This method is used to remove a neighbourhood from an event
      * @param eventId id of the event
@@ -354,4 +372,171 @@ public class EventServiceImpl implements EventService {
         commentService.populate(voteService.populate(event));
         return event;
     }
+
+    @Override
+    public Optional<EventRsvp> findRsvpsByUser(int userId) {
+        return eventRsvpRepository.findByUser(userId);
+    }
+
+    @Override
+    public Optional<EventRsvp> findByEventAndUser(Event event, User user) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Optional<EventRsvp> findByUser(int user) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void flush() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> S saveAndFlush(S entity) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> List<S> saveAllAndFlush(Iterable<S> entities) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<EventRsvp> entities) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public EventRsvp getOne(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public EventRsvp getById(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public EventRsvp getReferenceById(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> List<S> findAll(Example<S> example) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> List<S> findAll(Example<S> example, Sort sort) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> List<S> saveAll(Iterable<S> entities) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<EventRsvp> findAll() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<EventRsvp> findAllById(Iterable<Integer> ids) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> S save(S entity) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Optional<EventRsvp> findById(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public long count() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void delete(EventRsvp entity) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Integer> ids) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends EventRsvp> entities) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteAll() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<EventRsvp> findAll(Sort sort) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Page<EventRsvp> findAll(Pageable pageable) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> Optional<S> findOne(Example<S> example) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> Page<S> findAll(Example<S> example, Pageable pageable) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> long count(Example<S> example) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp> boolean exists(Example<S> example) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <S extends EventRsvp, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
 }

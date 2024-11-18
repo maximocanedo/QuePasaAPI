@@ -1,18 +1,8 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
-import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
-import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.service.CommentService;
-import quepasa.api.exceptions.ValidationError;
-import frgp.utn.edu.ar.quepasa.model.Event;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.EventService;
-import frgp.utn.edu.ar.quepasa.service.VoteService;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,9 +10,30 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.Event;
+import frgp.utn.edu.ar.quepasa.model.EventRsvp;
+import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
+import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
+import frgp.utn.edu.ar.quepasa.service.CommentService;
+import frgp.utn.edu.ar.quepasa.service.EventService;
+import frgp.utn.edu.ar.quepasa.service.VoteService;
+import quepasa.api.exceptions.ValidationError;
 
 @RestController
 @RequestMapping("/api/events")
@@ -60,6 +71,13 @@ public class EventController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
         return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
     }
+
+    @GetMapping("/rsvps/user/{userId}")
+    public ResponseEntity<?> getRsvpsByUser(@PathVariable int userId) {
+        Optional<EventRsvp> rsvps = eventService.findRsvpsByUser(userId);
+        return ResponseEntity.ok(rsvps);
+    }
+
 
     /**
      * Crea un nuevo evento.
