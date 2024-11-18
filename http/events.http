@@ -91,7 +91,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### Eliminar Comentario
-DELETE {{base}}/api/comments/2592deb0-4949-4daa-8298-33a8c4ca5717
+DELETE {{base}}/api/events/2592deb0-4949-4daa-8298-33a8c4ca5717/comments/2592deb0-4949-4daa-8298-33a8c4ca5717
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

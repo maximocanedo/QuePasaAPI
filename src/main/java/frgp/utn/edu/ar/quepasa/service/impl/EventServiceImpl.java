@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
-import frgp.utn.edu.ar.quepasa.model.commenting.EventComment;
 import frgp.utn.edu.ar.quepasa.repository.commenting.EventCommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,7 +42,6 @@ public class EventServiceImpl implements EventService {
     private final CommentService commentService;
     private final NeighbourhoodRepository neighbourhoodRepository;
     private final EventRsvpRepository eventRsvpRepository;
-    private final EventCommentRepository eventCommentRepository;
 
     @Autowired
     public EventServiceImpl(
@@ -60,7 +58,6 @@ public class EventServiceImpl implements EventService {
         this.commentService = commentService;
         this.neighbourhoodRepository = neighbourhoodRepository;
         this.eventRsvpRepository = eventRsvpRepository;
-        this.eventCommentRepository = eventCommentRepository;
     }
 
     /**
@@ -366,12 +363,4 @@ public class EventServiceImpl implements EventService {
     public List<EventRsvp> findRsvpsByUser(User user, boolean confirmed) {
         return eventRsvpRepository.findByUserAndConfirmed(user, confirmed);
     }
-
-    @Override
-    public void deleteComment(UUID eventId, UUID commentId) throws Fail {
-        EventComment comment = eventCommentRepository.findById(commentId)
-                .orElseThrow(() -> new Fail("Comment not found.", HttpStatus.NOT_FOUND));
-        eventCommentRepository.delete(comment);
-    }
-
 }

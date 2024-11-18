@@ -294,12 +294,6 @@ public class EventController {
         return ResponseEntity.ok(commentService.create(content, Event.identify(eventId)));
     }
 
-    @DeleteMapping("/{eventId}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable UUID eventId, @PathVariable UUID commentId) {
-        eventService.deleteComment(eventId, commentId);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
-    }
-
     /**
      * Obtiene los comentarios de un evento.
      * @param eventId ID del evento a obtener los comentarios.
