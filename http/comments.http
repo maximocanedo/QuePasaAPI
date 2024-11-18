@@ -1,0 +1,21 @@
+### Editar Comentario
+PATCH {{base}}/api/comments/2592deb0-4949-4daa-8298-33a8c4ca5717
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+"Hola Joe, Como estas? Estoy interesado en participar"
+
+### Upvote comentario
+POST {{base}}/api/comments/2592deb0-4949-4daa-8298-33a8c4ca5717/votes/up
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Downvote comentario
+POST {{base}}/api/comments/2592deb0-4949-4daa-8298-33a8c4ca5717/votes/down
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Comentarios por Id
+GET {{base}}/api/comments/2592deb0-4949-4daa-8298-33a8c4ca5717
+Authorization: Bearer {{token}}
+Content-Type: application/json

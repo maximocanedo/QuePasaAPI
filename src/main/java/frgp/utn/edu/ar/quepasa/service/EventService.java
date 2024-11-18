@@ -43,4 +43,6 @@ public interface EventService {
 
     List<EventRsvp> findRsvpsByUser(User user, boolean confirmed);
 
+    void deleteComment(UUID eventId, UUID commentId) throws Fail;
+
 }
