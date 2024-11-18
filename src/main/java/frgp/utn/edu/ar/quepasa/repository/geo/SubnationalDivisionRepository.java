@@ -2,6 +2,9 @@ package frgp.utn.edu.ar.quepasa.repository.geo;
 
 import frgp.utn.edu.ar.quepasa.model.geo.Country;
 import frgp.utn.edu.ar.quepasa.model.geo.SubnationalDivision;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,5 +25,8 @@ public interface SubnationalDivisionRepository extends JpaRepository<Subnational
 
     @Query("SELECT s FROM SubnationalDivision s WHERE s.active = true AND s.country.iso3 = :countrysIso3")
     List<SubnationalDivision> getAllFrom(String countrysIso3);
+
+    @Query("SELECT s FROM SubnationalDivision s WHERE s.active = true AND s.country.iso3 = :countrysIso3")
+    Page<SubnationalDivision> pageAllFrom(String countrysIso3, Pageable pageable);
 
 }
