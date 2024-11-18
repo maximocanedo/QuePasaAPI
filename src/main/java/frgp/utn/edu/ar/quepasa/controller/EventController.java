@@ -3,6 +3,7 @@ package frgp.utn.edu.ar.quepasa.controller;
 import java.util.List;
 import java.util.UUID;
 
+import frgp.utn.edu.ar.quepasa.model.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -283,6 +284,18 @@ public class EventController {
         return ResponseEntity.ok(voteService.vote(Event.identify(eventId), -1));
     }
 
+    @PostMapping("/comments/{commentId}/votes/up")
+    public ResponseEntity<VoteCount> upVoteComment(@PathVariable UUID commentId) {
+        Comment comment = commentService.findById(commentId);
+        return ResponseEntity.ok(voteService.vote(comment, 1));
+    }
+
+    @PostMapping("/comments/{commentId}/votes/down")
+    public ResponseEntity<VoteCount> downVoteComment(@PathVariable UUID commentId) {
+        Comment comment = commentService.findById(commentId);
+        return ResponseEntity.ok(voteService.vote(comment, -1));
+    }
+
     /**
      * Agrega un comentario a un evento existente.
      * @param eventId ID del evento al que se va a agregar el comentario.
@@ -292,6 +305,11 @@ public class EventController {
     @PostMapping("/{eventId}/comments")
     public ResponseEntity<?> addComment(@PathVariable UUID eventId, @RequestBody String content) {
         return ResponseEntity.ok(commentService.create(content, Event.identify(eventId)));
+    }
+
+    @PatchMapping("/comments/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable UUID commentId, @RequestBody String content) {
+        return ResponseEntity.ok(commentService.update(commentId, content));
     }
 
     /**

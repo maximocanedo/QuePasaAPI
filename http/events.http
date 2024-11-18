@@ -79,13 +79,6 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### Comentar evento
-POST {{base}}/api/posts/172/comments
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-"Hola Joe, Como estas?"
-
-### Comentar evento
 GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d/comments
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -94,6 +87,16 @@ Content-Type: application/json
 
 ### Obtener Comentarios de un evento
 GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Upvote comentario
+POST {{base}}/api/events/comments/2592deb0-4949-4daa-8298-33a8c4ca5717/votes/up
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Downvote comentario
+POST {{base}}/api/events/comments/2592deb0-4949-4daa-8298-33a8c4ca5717/votes/down
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

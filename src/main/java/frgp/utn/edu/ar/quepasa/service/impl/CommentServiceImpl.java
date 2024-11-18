@@ -151,6 +151,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment update(UUID id, String content) {
+        content = content.substring(1, content.length() - 1);
         var commentOptional = commentRepository.findById(id);
         if(commentOptional.isEmpty() || !commentOptional.get().isActive())
             throw new Fail("Comment not found. ", HttpStatus.NOT_FOUND);
