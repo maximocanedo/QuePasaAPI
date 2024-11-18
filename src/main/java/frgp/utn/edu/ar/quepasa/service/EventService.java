@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.service;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -41,8 +41,6 @@ public interface EventService {
 
     Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail;
 
-    Optional<EventRsvp> findRsvpsByUser(int userId);
-
-    Optional<EventRsvp> findRsvpByEventAndUser(UUID eventId, User user) throws Fail;
+    List<EventRsvp> findRsvpsByUser(User user, boolean confirmed);
 
 }

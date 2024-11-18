@@ -2,10 +2,7 @@ package frgp.utn.edu.ar.quepasa.service.impl;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -327,14 +324,6 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
-    @Override
-    public Optional<EventRsvp> findRsvpByEventAndUser(UUID eventId, User user) throws Fail {
-        Event event = eventRepository.findById(eventId)
-        .orElseThrow(() -> new Fail("Event not found"));
-        return eventRsvpRepository.findByEventAndUser(event, user);
-        }
-
-
     /**
      * This method is used to remove a neighbourhood from an event
      * @param eventId id of the event
@@ -369,9 +358,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Optional<EventRsvp> findRsvpsByUser(int userId) {
-        //return eventRsvpRepository.findByUser(userId);
-        return null;
+    public List<EventRsvp> findRsvpsByUser(User user, boolean confirmed) {
+        return eventRsvpRepository.findByUserAndConfirmed(user, confirmed);
     }
 
 }

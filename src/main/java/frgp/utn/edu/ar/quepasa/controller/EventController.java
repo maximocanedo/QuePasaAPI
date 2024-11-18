@@ -1,6 +1,6 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +70,6 @@ public class EventController {
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
         return ResponseEntity.ok(eventService.getEvents(q, pageable, active));
-    }
-
-    @GetMapping("/rsvps/user/{userId}")
-    public ResponseEntity<?> getRsvpsByUser(@PathVariable int userId) {
-        Optional<EventRsvp> rsvps = eventService.findRsvpsByUser(userId);
-        return ResponseEntity.ok(rsvps);
     }
 
 
@@ -248,6 +242,12 @@ public class EventController {
     public ResponseEntity<Event> removeNeighbourhoodEvent(@PathVariable UUID eventId, @PathVariable Long neighbourhoodId) {
         Event updatedEvent = eventService.removeNeighbourhoodEvent(eventId, neighbourhoodId);
         return ResponseEntity.ok(updatedEvent);
+    }
+
+    @GetMapping("/rsvp/user/me")
+    public ResponseEntity<List<EventRsvp>> getRsvpsByUser(@RequestParam(defaultValue = "true") Boolean confirmed) {
+        User me = authenticationService.getCurrentUserOrDie();
+        return ResponseEntity.ok(eventService.findRsvpsByUser(me, confirmed));
     }
 
     
