@@ -58,7 +58,7 @@ public class NeighbourhoodController {
     // Buscar barrio por nombre
     @GetMapping("/search")
     public Page<Neighbourhood> searchNeighbourhoodsByName(
-            @RequestParam String name,
+            @RequestParam(defaultValue = "") String q,
             @RequestParam(defaultValue = "-1") long city,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -66,7 +66,7 @@ public class NeighbourhoodController {
         try {
             logger.info("Iniciando búsqueda de vecindarios.");
             Pageable pageable = PageRequest.of(page, size);
-            return neighbourhoodService.searchNeighbourhoodsByName(name, pageable, city);
+            return neighbourhoodService.searchNeighbourhoodsByName(q, pageable, city);
         } catch (Exception e) {
             logger.error("Error durante la búsqueda de vecindarios: {}", e.getMessage(), e);
             throw e;

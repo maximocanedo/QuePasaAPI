@@ -51,17 +51,12 @@ public class NeighbourhoodServiceImpl implements NeighbourhoodService {
     // Buscar barrios por nombre
     @Override
     public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, long city) {
-        logger.info("searchNeighbourhoodsByName: name={}, city={}, pageable={}", name, city, pageable);
-    
         Page<Neighbourhood> result;
         if (city == -1) {
-            logger.debug("sin filtro:");
             result = neighbourhoodRepository.findByNameAndActive(name, pageable);
         } else {
-            logger.debug("con filtrp: city={}", city);
             result = neighbourhoodRepository.findByNameAndActive(name, pageable, city);
         }
-        logger.info("{} barrios encontrados", result.getTotalElements());
         return result;
     }
     
