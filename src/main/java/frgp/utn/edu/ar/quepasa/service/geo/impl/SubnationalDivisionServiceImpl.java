@@ -10,6 +10,8 @@ import frgp.utn.edu.ar.quepasa.service.geo.SubnationalDivisionService;
 import quepasa.api.validators.geo.subnationaldivision.SubnationalDivisionISO3Validator;
 import quepasa.api.validators.geo.subnationaldivision.SubnationalDivisionLabelValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import quepasa.api.validators.commons.ObjectValidator;
@@ -61,6 +63,11 @@ public class SubnationalDivisionServiceImpl implements SubnationalDivisionServic
     @Override
     public List<SubnationalDivision> listFrom(String countryCode) {
         return repository.getAllFrom(countryCode);
+    }
+
+    @Override
+    public Page<SubnationalDivision> pageFrom(String countryCode, Pageable pageable) {
+        return repository.pageAllFrom(countryCode, pageable);
     }
 
     @Override

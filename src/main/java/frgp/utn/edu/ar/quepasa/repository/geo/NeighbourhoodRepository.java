@@ -16,7 +16,7 @@ public interface NeighbourhoodRepository extends JpaRepository<Neighbourhood, Lo
     Optional<Neighbourhood> findActiveNeighbourhoodById(long id);
 
     @Query("SELECT n FROM Neighbourhood n WHERE n.name LIKE %:name% AND n.active = true AND n.city.id = :city")
-    Page<Neighbourhood> findByNameAndActive(String name, Pageable page, int city);
+    Page<Neighbourhood> findByNameAndActive(String name, Pageable page, long city);
 
     @Query("SELECT n FROM Neighbourhood n WHERE n.name LIKE %:name% AND n.active = true")
     Page<Neighbourhood> findByNameAndActive(String name, Pageable page);

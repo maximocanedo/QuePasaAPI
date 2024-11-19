@@ -45,7 +45,7 @@ public class NeighbourhoodController {
 
     // Buscar barrio por nombre
     @GetMapping("/search")
-    public Page<Neighbourhood> searchNeighbourhoodsByName(@RequestParam String name, @RequestParam(defaultValue = "-1") int city, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<Neighbourhood> searchNeighbourhoodsByName(@RequestParam String name, @RequestParam(defaultValue = "-1") long city, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return neighbourhoodService.searchNeighbourhoodsByName(name, pageable, city);
     }

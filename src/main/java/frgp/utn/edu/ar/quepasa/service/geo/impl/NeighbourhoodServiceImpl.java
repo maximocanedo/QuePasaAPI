@@ -46,7 +46,7 @@ public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     // Buscar barrios por nombre
     @Override
-    public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, int city) {
+    public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, long city) {
         return city == -1 ? 
         neighbourhoodRepository.findByNameAndActive(name, pageable)
         : neighbourhoodRepository.findByNameAndActive(name, pageable, city);
