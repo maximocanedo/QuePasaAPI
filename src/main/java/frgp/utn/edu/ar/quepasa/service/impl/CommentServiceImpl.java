@@ -85,12 +85,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment create(String content, Post file) {
+        content = content.substring(1, content.length() - 1);
         var current = authenticationService.getCurrentUserOrDie();
         var f = postRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Post not found", HttpStatus.NOT_FOUND);
-        var post = new PostValidator(f.get())
-                .canAccess(current)
-                .build();
+        Post post = new PostValidator(f.get())
+                .canAccess(current).build();
         var comment = new PostComment();
         comment.setContent(
             new CommentContentValidator(content)
@@ -107,6 +107,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment create(String content, Event file) {
+        content = content.substring(1, content.length() - 1);
         var current = authenticationService.getCurrentUserOrDie();
         var f = eventRepository.findById(file.getId());
         if(f.isEmpty() || !f.get().isActive()) throw new Fail("Event not found", HttpStatus.NOT_FOUND);
@@ -150,6 +151,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment update(UUID id, String content) {
+        content = content.substring(1, content.length() - 1);
         var commentOptional = commentRepository.findById(id);
         if(commentOptional.isEmpty() || !commentOptional.get().isActive())
             throw new Fail("Comment not found. ", HttpStatus.NOT_FOUND);

@@ -1,5 +1,11 @@
 package frgp.utn.edu.ar.quepasa.service;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
@@ -8,10 +14,6 @@ import frgp.utn.edu.ar.quepasa.model.EventRsvp;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.UUID;
 
 
 public interface EventService {
@@ -38,4 +40,7 @@ public interface EventService {
     Event addNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail;
 
     Event removeNeighbourhoodEvent(UUID eventId, Long neighbourhoodId) throws Fail;
+
+    List<EventRsvp> findRsvpsByUser(User user, boolean confirmed);
+
 }

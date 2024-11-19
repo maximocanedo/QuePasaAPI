@@ -1,5 +1,16 @@
 package frgp.utn.edu.ar.quepasa.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.*;
+
+import frgp.utn.edu.ar.quepasa.repository.commenting.EventCommentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
 import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
@@ -16,19 +27,11 @@ import frgp.utn.edu.ar.quepasa.service.CommentService;
 import frgp.utn.edu.ar.quepasa.service.EventService;
 import frgp.utn.edu.ar.quepasa.service.OwnerService;
 import frgp.utn.edu.ar.quepasa.service.VoteService;
-import quepasa.api.validators.events.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import quepasa.api.validators.commons.ObjectValidator;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import quepasa.api.validators.events.EventAddressValidator;
+import quepasa.api.validators.events.EventDateValidator;
+import quepasa.api.validators.events.EventDescriptionValidator;
+import quepasa.api.validators.events.EventTitleValidator;
 
 @Service("eventService")
 public class EventServiceImpl implements EventService {
@@ -46,7 +49,8 @@ public class EventServiceImpl implements EventService {
             VoteService voteService,
             EventRepository eventRepository, CommentService commentService,
             NeighbourhoodRepository neighbourhoodRepository,
-            EventRsvpRepository eventRsvpRepository
+            EventRsvpRepository eventRsvpRepository,
+            EventCommentRepository eventCommentRepository
     ) {
         this.ownerService = ownerService;
         this.voteService = voteService;
@@ -353,5 +357,10 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         commentService.populate(voteService.populate(event));
         return event;
+    }
+
+    @Override
+    public List<EventRsvp> findRsvpsByUser(User user, boolean confirmed) {
+        return eventRsvpRepository.findByUserAndConfirmed(user, confirmed);
     }
 }

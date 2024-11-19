@@ -36,7 +36,7 @@ Content-Type: application/json
 }
 
 ### Asistencia a evento
-POST {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/rsvp
+POST {{base}}/api/events/26060a01-7c4b-4f70-a58f-928cdc797c47/rsvp
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -78,6 +78,23 @@ DELETE {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/neighbourhood/4
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+### Comentar evento
+GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+"Hola Joe, Como estas?"
+
+### Obtener Comentarios de un evento
+GET {{base}}/api/events/1a7f8ec0-5840-4b42-ac76-8eb66056251d/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Eliminar Comentario
+DELETE {{base}}/api/events/2592deb0-4949-4daa-8298-33a8c4ca5717/comments/2592deb0-4949-4daa-8298-33a8c4ca5717
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 ### Obtener Votos de un evento
 GET {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/votes
 Authorization: Bearer {{token}}
@@ -90,5 +107,10 @@ Content-Type: application/json
 
 ### Downvote un evento
 POST {{base}}/api/events/cea268b5-1591-4dbe-b72e-77e7ecdad0fc/votes/down
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Obtener asistencia usuario actual
+GET {{base}}/api/events/rsvp/user/me
 Authorization: Bearer {{token}}
 Content-Type: application/json

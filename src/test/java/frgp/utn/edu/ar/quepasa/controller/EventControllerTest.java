@@ -1,21 +1,22 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
-import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import org.junit.jupiter.api.*;
-import quepasa.api.exceptions.ValidationError;
-import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.enums.Audience;
-import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-import frgp.utn.edu.ar.quepasa.repository.EventRepository;
-import frgp.utn.edu.ar.quepasa.repository.UserRepository;
-import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,24 +24,34 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import org.springframework.security.test.context.support.WithMockUser;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import jakarta.transaction.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import org.springframework.test.web.servlet.ResultMatcher;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPatchEditRequest;
+import frgp.utn.edu.ar.quepasa.data.request.event.EventPostRequest;
+import frgp.utn.edu.ar.quepasa.exception.Fail;
+import frgp.utn.edu.ar.quepasa.model.Event;
+import frgp.utn.edu.ar.quepasa.model.EventRsvp;
+import frgp.utn.edu.ar.quepasa.model.User;
+import frgp.utn.edu.ar.quepasa.model.enums.Audience;
+import frgp.utn.edu.ar.quepasa.model.enums.EventCategory;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.repository.EventRepository;
+import frgp.utn.edu.ar.quepasa.repository.UserRepository;
+import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import jakarta.transaction.Transactional;
+import quepasa.api.exceptions.ValidationError;
 
 
 @Transactional
@@ -539,6 +550,63 @@ public class EventControllerTest {
         ;
 
         clearAuthContext();
+    }
+    
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("GET /rsvps/user/{userId} - Obtener RSVPs por usuario existente")
+    void testGetRsvpsByUser() throws Exception {
+        int userId = 1;
+
+        Event event = new Event();
+        event.setId(UUID.randomUUID());
+        event.setTitle("Taller de Cerámica");
+        EventRsvp rsvp1 = new EventRsvp();
+        rsvp1.setId(1);
+        rsvp1.setEvent(event);
+        rsvp1.setUser(new User());
+        rsvp1.setConfirmed(true);
+        EventRsvp rsvp2 = new EventRsvp();
+        rsvp2.setId(2);
+        rsvp2.setEvent(event);
+        rsvp2.setUser(new User());
+        rsvp2.setConfirmed(false);
+
+        mockMvc.perform(get("/api/rsvps/user/{userId}", userId)
+                .with(user("testUser").password("123456789").roles("USER"))
+                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(2)))
+                .andExpect((ResultMatcher) jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].event.title", is("Taller de Cerámica")))
+                .andExpect(jsonPath("$[0].confirmed", is(true)))
+                .andExpect(jsonPath("$[1].id", is(2)))
+                .andExpect(jsonPath("$[1].confirmed", is(false)));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("GET /rsvps/user/{userId} - No hay RSVPs para un usuario")
+    void testGetRsvpsByUserNoRsvps() throws Exception {
+        int userId = 1;
+
+        mockMvc.perform(get("/api/rsvps/user/{userId}", userId)
+                .with(user("testUser").password("123456789").roles("USER"))
+                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(0)));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser")
+    @DisplayName("GET /rsvps/user/{userId} - Usuario no encontrado")
+    void testGetRsvpsByUserNotFound() throws Exception {
+        int userId = 999;
+
+        mockMvc.perform(get("/api/rsvps/user/{userId}", userId)
+                .with(user("testUser").password("123456789").roles("USER"))
+                .contentType("application/json"))
+                .andExpect(status().isNotFound());
     }
 
     private void setAuthContext() {
