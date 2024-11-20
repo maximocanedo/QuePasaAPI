@@ -13,7 +13,7 @@ import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
-import frgp.utn.edu.ar.quepasa.data.response.TotpEnablingResponse;
+import frgp.utn.edu.ar.quepasa.data.response.TotpDetails;
 import frgp.utn.edu.ar.quepasa.exception.Fail;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
@@ -183,7 +183,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public TotpEnablingResponse enableTotp() {
+    public TotpDetails enableTotp() {
         User current = getCurrentUserOrDie();
         if(current.hasTotpEnabled()) throw new Fail("Totp already enabled. ", HttpStatus.CONFLICT);
         TOTPData data = generateSecret(current.getUsername());
@@ -191,13 +191,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             byte[] qrCode = generateQRCodeImage(data.getUrl());
             current.setTotp(data.getSecretAsHex());
             userRepository.save(current);
-            return new TotpEnablingResponse(
+            return new TotpDetails(
+                    true,
                     qrCode,
                     data.getUrl()
             );
         } catch(WriterException | IOException e) {
             throw new Fail("Error trying to generate QR code. Operation was aborted. ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public byte[] hexStringToByteArray(String hexString) {
+        int length = hexString.length();
+        byte[] byteArray = new byte[length / 2];
+        for (int i = 0; i < length; i += 2) {
+            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return byteArray;
+    }
+
+    @Override
+    public TotpDetails getTotpDetails() {
+        User current = getCurrentUserOrDie();
+        TotpDetails details = new TotpDetails();
+        TOTPData data = new TOTPData(
+                "QuePasa",
+                current.getUsername(),
+                current.hasTotpEnabled() ? hexStringToByteArray(current.getTotp()) : "".getBytes()
+        );
+        details.setEnabled(current.hasTotpEnabled());
+        details.setUrl(current.hasTotpEnabled() ? data.getUrl() : "");
+        if(details.isEnabled()) {
+            try {
+                details.setQr(generateQRCodeImage(data.getUrl()));
+            } catch (WriterException | IOException exception) {
+                details.setQr("".getBytes());
+            }
+        } else {
+            details.setQr("".getBytes());
+        }
+        return details;
     }
 
     @Deprecated(forRemoval = true)

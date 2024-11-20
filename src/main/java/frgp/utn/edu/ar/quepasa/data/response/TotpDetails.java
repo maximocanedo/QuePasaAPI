@@ -1,15 +1,20 @@
 package frgp.utn.edu.ar.quepasa.data.response;
 
-public class TotpEnablingResponse {
+public class TotpDetails {
 
+    private boolean enabled;
     private byte[] qr;
     private String url;
 
-    public TotpEnablingResponse() {}
-    public TotpEnablingResponse(byte[] qr, String url) {
+    public TotpDetails() {}
+    public TotpDetails(boolean enabled, byte[] qr, String url) {
+        this.enabled = enabled;
         this.qr = qr;
         this.url = url;
     }
+
+    public boolean isEnabled() { return this.enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     public byte[] getQr() { return this.qr; }
     public void setQr(byte[] qr) { this.qr = qr; }
