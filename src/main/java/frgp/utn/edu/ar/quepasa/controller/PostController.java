@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,7 +27,6 @@ import frgp.utn.edu.ar.quepasa.data.response.VoteCount;
 import frgp.utn.edu.ar.quepasa.model.Comment;
 import frgp.utn.edu.ar.quepasa.model.Post;
 import frgp.utn.edu.ar.quepasa.model.User;
-import frgp.utn.edu.ar.quepasa.model.commenting.PostComment;
 import frgp.utn.edu.ar.quepasa.model.enums.Audience;
 import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
 import frgp.utn.edu.ar.quepasa.service.CommentService;
@@ -332,8 +330,8 @@ public class PostController {
      * @return Entidad de respuesta con la lista paginada de comentarios.
      */
     @GetMapping("/{id}/comments")
-    public ResponseEntity<Page<PostComment>> viewComments(@PathVariable Integer id, Pageable pageable) {
-        return ResponseEntity.ok(commentService.findAllFromPost(id, pageable));
+    public ResponseEntity<?> viewComments(@PathVariable Integer id, Pageable pageable) {
+        return ResponseEntity.ok(commentService.findAllFromPost(id, pageable).map(voteService::populate));
     }
     // Termina sección de COMENTARIOS **/
 
