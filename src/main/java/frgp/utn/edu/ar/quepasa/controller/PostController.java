@@ -4,7 +4,9 @@ import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.util.List;
 
+import frgp.utn.edu.ar.quepasa.exception.Fail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -57,7 +59,7 @@ public class PostController {
      * @return Entidad de respuesta con los detalles de la publicación creada.
      */
     @PostMapping
-    public ResponseEntity<?> createPost(@RequestBody PostCreateRequest post) {
+    public ResponseEntity<Post> createPost(@RequestBody PostCreateRequest post) {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(postService.create(post, me));
     }
@@ -71,7 +73,7 @@ public class PostController {
      * @return Entidad de respuesta con una lista paginada de publicaciones encontradas.
      */
     @GetMapping("/all")
-    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
+    public ResponseEntity<Page<Post>> getPosts(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findAll(pageable, activeOnly));
     }
@@ -87,7 +89,7 @@ public class PostController {
      * @return Entidad de respuesta con una lista paginada de publicaciones filtradas.
      */
     @GetMapping("/search")
-    public ResponseEntity<?> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="title,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+    public ResponseEntity<Page<Post>> getPosts(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="title,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
         Sort.Direction direction = Sort.Direction.ASC;
         if(sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -103,7 +105,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la publicación buscada.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPostById(@PathVariable Integer id) {
+    public ResponseEntity<Post> getPostById(@PathVariable Integer id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 
@@ -116,7 +118,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones del usuario especificado.
      */
     @GetMapping("/op/{id}")
-    public ResponseEntity<?> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByOp(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByOp(id, pageable));
     }
@@ -130,7 +132,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones con la audiencia especificada.
      */
     @GetMapping("/audience/{audience}")
-    public ResponseEntity<?> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByAudience(audience, pageable));
     }
@@ -144,7 +146,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones con el tipo especificado.
      */
     @GetMapping("/type/{id}")
-    public ResponseEntity<?> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByType(id, pageable));
     }
@@ -158,7 +160,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones con el subtipo especificado.
      */
     @GetMapping("/subtype/{id}")
-    public ResponseEntity<?> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsBySubtype(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findBySubtype(id, pageable));
     }
@@ -175,7 +177,7 @@ public class PostController {
      * o una respuesta de tipo Bad Request indicando que el formato de fecha es inválido.
      */
     @GetMapping("/date/{start}/{end}")
-    public ResponseEntity<?> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByDateRange(@PathVariable String start, @PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         try {
             Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
             Timestamp endTimestamp = Timestamp.valueOf(end + " 23:59:59");
@@ -184,7 +186,7 @@ public class PostController {
             return ResponseEntity.ok(postService.findByDateRange(startTimestamp, endTimestamp, pageable));
         }
         catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid date format");
+            throw new Fail("Invalid date format", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -197,7 +199,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones después de la fecha de inicio.
      */
     @GetMapping("/date-start/{start}")
-    public ResponseEntity<?> getPostsByDateStart(@PathVariable String start, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByDateStart(@PathVariable String start, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         try {
             Timestamp startTimestamp = Timestamp.valueOf(start + " 00:00:00");
 
@@ -205,7 +207,7 @@ public class PostController {
             return ResponseEntity.ok(postService.findByDateStart(startTimestamp, pageable));
         }
         catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid date format");
+            throw new Fail("Invalid date format", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -218,7 +220,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones antes de la fecha de fin.
      */
     @GetMapping("/date-end/{end}")
-    public ResponseEntity<?> getPostsByDateEnd(@PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByDateEnd(@PathVariable String end, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         try {
             Timestamp endTimestamp = Timestamp.valueOf(end + " 00:00:00");
 
@@ -226,7 +228,7 @@ public class PostController {
             return ResponseEntity.ok(postService.findByDateEnd(endTimestamp, pageable));
         }
         catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid date format");
+            throw new Fail("Invalid date format", HttpStatus.BAD_REQUEST);
         }
     }
     // Termina sección de FECHAS **/
@@ -238,7 +240,7 @@ public class PostController {
      * @return Entidad de respuesta que contiene la lista paginada de publicaciones del usuario autenticado.
      */
     @GetMapping("/me")
-    public ResponseEntity<?> getPostsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Post>> getPostsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         User me = authenticationService.getCurrentUserOrDie();
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findByOp(me.getId(), pageable));
@@ -254,7 +256,7 @@ public class PostController {
      * -El usuario no es administrador.
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable Integer id, @RequestBody PostPatchEditRequest post) throws AccessDeniedException {
+    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody PostPatchEditRequest post) throws AccessDeniedException {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(postService.update(id, post, me));
     }
@@ -272,7 +274,7 @@ public class PostController {
     public ResponseEntity<?> deletePost(@PathVariable Integer id) throws AccessDeniedException {
         User me = authenticationService.getCurrentUserOrDie();
         postService.delete(id, me);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /** Comienza sección de VOTOS **/

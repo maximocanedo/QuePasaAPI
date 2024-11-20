@@ -1,24 +1,16 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
+import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
+import frgp.utn.edu.ar.quepasa.model.PostSubtype;
+import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import frgp.utn.edu.ar.quepasa.data.request.post.subtype.PostSubtypeRequest;
-import frgp.utn.edu.ar.quepasa.service.AuthenticationService;
-import frgp.utn.edu.ar.quepasa.service.PostSubtypeService;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -27,12 +19,10 @@ public class PostSubtypeController {
 
     private final PostSubtypeService postSubtypeService;
 
-    private final AuthenticationService authenticationService;
 
     @Autowired
-    public PostSubtypeController(PostSubtypeService postSubtypeService, AuthenticationService authenticationService) {
+    public PostSubtypeController(PostSubtypeService postSubtypeService) {
         this.postSubtypeService = postSubtypeService;
-        this.authenticationService = authenticationService;
     }
 
     /**
@@ -42,7 +32,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta con los detalles del subtipo creado.
      */
     @PostMapping
-    public ResponseEntity<?> createPostSubtype(@RequestBody PostSubtypeRequest subtype) {
+    public ResponseEntity<PostSubtype> createPostSubtype(@RequestBody PostSubtypeRequest subtype) {
         return ResponseEntity.ok(postSubtypeService.create(subtype));
     }
 
@@ -55,7 +45,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta con una lista paginada de subtipos encontrados.
      */
     @GetMapping("/all")
-    public ResponseEntity<?> getPostSubtypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
+    public ResponseEntity<Page<PostSubtype>> getPostSubtypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postSubtypeService.findAll(pageable, activeOnly));
     }
@@ -71,7 +61,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta con una lista paginada de subtipos filtrados.
      */
     @GetMapping("/search")
-    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="description,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+    public ResponseEntity<Page<PostSubtype>> getPostTypes(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="description,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
         Sort.Direction direction = Sort.Direction.ASC;
         if(sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -87,7 +77,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta que contiene el subtipo buscado.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPostSubtypeById(@PathVariable Integer id) {
+    public ResponseEntity<PostSubtype> getPostSubtypeById(@PathVariable Integer id) {
         return ResponseEntity.ok(postSubtypeService.findById(id));
     }
 
@@ -100,7 +90,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta que contiene la lista paginada de subtipos del tipo especificado.
      */
     @GetMapping("/type/{id}")
-    public ResponseEntity<?> getPostSubtypesByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<PostSubtype>> getPostSubtypesByType(@PathVariable Integer id, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postSubtypeService.findByType(id, pageable));
     }
@@ -111,7 +101,7 @@ public class PostSubtypeController {
      * @return Entidad de respuesta que contiene el subtipo editado.
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePostSubtype(@PathVariable Integer id, @RequestBody PostSubtypeRequest subtype) {
+    public ResponseEntity<PostSubtype> updatePostSubtype(@PathVariable Integer id, @RequestBody PostSubtypeRequest subtype) {
         return ResponseEntity.ok(postSubtypeService.update(id, subtype));
     }
 
@@ -123,7 +113,7 @@ public class PostSubtypeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostSubtype(@PathVariable Integer id)  {
         postSubtypeService.delete(id);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

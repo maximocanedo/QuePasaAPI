@@ -39,19 +39,19 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<?> findUserByUsername(@PathVariable String username) {
+    public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
     @PatchMapping("/{username}")
-    public ResponseEntity<?> update(@PathVariable String username, @RequestBody UserPatchEditRequest request) {
+    public ResponseEntity<User> update(@PathVariable String username, @RequestBody UserPatchEditRequest request) {
         return ResponseEntity.ok(userService.update(username, request));
     }
 
     @DeleteMapping("/{username}")
     public ResponseEntity<?> disable(@PathVariable String username) {
         userService.delete(username);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/me/mail")
@@ -115,7 +115,7 @@ public class UserController {
     @DeleteMapping("/me/totp")
     public ResponseEntity<?> disableTotpAuthentication() {
         authenticationService.disableTotp();
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/me")
@@ -127,7 +127,7 @@ public class UserController {
     @PostMapping("/me/password")
     public ResponseEntity<?> updatePassword(@RequestBody String newPassword) {
         userService.updatePassword(newPassword);
-        return ResponseEntity.ok("Password reset. ");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping
@@ -143,10 +143,10 @@ public class UserController {
             if (principal instanceof UserDetails) {
                 User currentUser = userService.findByUsername(((UserDetails) principal).getUsername());
                 userService.delete(currentUser.getUsername());
-                return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
         }
-        return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 }

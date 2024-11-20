@@ -3,6 +3,8 @@ package frgp.utn.edu.ar.quepasa.controller;
 import java.util.List;
 import java.util.UUID;
 
+import frgp.utn.edu.ar.quepasa.model.Comment;
+import frgp.utn.edu.ar.quepasa.model.commenting.EventComment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -82,7 +84,7 @@ public class EventController {
      * @throws ValidationError Si el evento no cumple con las validaciones.
      */
     @PostMapping
-    public ResponseEntity<?> createEvent(@RequestBody EventPostRequest event) throws Fail {
+    public ResponseEntity<Event> createEvent(@RequestBody EventPostRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.create(event, me));
     }
@@ -95,7 +97,7 @@ public class EventController {
      * @throws Fail si ocurre un error durante la confirmación de asistencia.
      */
     @PostMapping("/{eventId}/rsvp")
-    public ResponseEntity<?> confirmEventAssistance(@PathVariable UUID eventId) throws Fail {
+    public ResponseEntity<EventRsvp> confirmEventAssistance(@PathVariable UUID eventId) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.confirmEventAssistance(eventId, me));
     }
@@ -108,7 +110,7 @@ public class EventController {
      * @throws Fail Si el evento no se encuentra.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventById(@PathVariable UUID id) throws Fail {
+    public ResponseEntity<Event> getEventById(@PathVariable UUID id) throws Fail {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
@@ -122,7 +124,7 @@ public class EventController {
      * @throws Fail    Si el evento no se encuentra.
      */
     @GetMapping("/user/{username}")
-    public ResponseEntity<?> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByUser(@PathVariable String username, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -140,7 +142,7 @@ public class EventController {
      * @throws Fail Si no se en encuentran eventos y/o todos los eventos del estan inactivos.
      */
     @GetMapping("/me")
-    public ResponseEntity<?> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByAuthUser(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
@@ -159,7 +161,7 @@ public class EventController {
      * @throws Fail Si no se encuentran eventos de la audiencia.
      */
     @GetMapping("/audience/{audience}")
-    public ResponseEntity<?> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByAudience(@PathVariable Audience audience, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -177,7 +179,7 @@ public class EventController {
      * @throws Fail Si no se encuentran eventos de la categoría.
      */
     @GetMapping("/eventCategory/{category}")
-    public ResponseEntity<?> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByEventCategory(@PathVariable EventCategory category, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -187,7 +189,7 @@ public class EventController {
     }
 
     @GetMapping("/eventNeighbourhood/{neighbourhoodId}")
-    public ResponseEntity<?> getEventsByNeighbourhood(@PathVariable int neighbourhoodId, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByNeighbourhood(@PathVariable int neighbourhoodId, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -197,7 +199,7 @@ public class EventController {
     }
 
     @GetMapping("/eventNeighbourhood/{neighbourhoodId}/eventCategory/{category}")
-    public ResponseEntity<?> getEventsByNeighbourhoodAndEventCategory(@PathVariable int neighbourhoodId, @PathVariable EventCategory category, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+    public ResponseEntity<Page<Event>> getEventsByNeighbourhoodAndEventCategory(@PathVariable int neighbourhoodId, @PathVariable EventCategory category, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
         Sort.Direction direction = Sort.Direction.ASC;
         if (sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -216,7 +218,7 @@ public class EventController {
      * @throws ValidationError Si el evento no cumple con las validaciones.
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws Fail {
+    public ResponseEntity<Event> updateEvent(@PathVariable UUID id, @RequestBody EventPatchEditRequest event) throws Fail {
         User me = authenticationService.getCurrentUserOrDie();
         return ResponseEntity.ok(eventService.update(id, event, me));
     }
@@ -231,7 +233,7 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable UUID id) throws Fail {
         eventService.delete(id);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /*   Seccion Agregar Barrio  */
@@ -310,7 +312,7 @@ public class EventController {
      * @return Entidad de respuesta con el comentario creado.
      */
     @PostMapping("/{eventId}/comments")
-    public ResponseEntity<?> addComment(@PathVariable UUID eventId, @RequestBody String content) {
+    public ResponseEntity<Comment> addComment(@PathVariable UUID eventId, @RequestBody String content) {
         return ResponseEntity.ok(commentService.create(content, Event.identify(eventId)));
     }
 
@@ -322,7 +324,7 @@ public class EventController {
      * @return Entidad de respuesta con los comentarios del evento.
      */
     @GetMapping("/{eventId}/comments")
-    public ResponseEntity<?> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
+    public ResponseEntity<Page<Comment>> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(
                 commentService.findAllFromEvent(eventId, pageable)

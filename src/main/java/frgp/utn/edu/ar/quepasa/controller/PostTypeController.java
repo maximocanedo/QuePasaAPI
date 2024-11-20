@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class PostTypeController {
 
     private final PostTypeService postTypeService;
-    private final AuthenticationService authenticationService;
 
     @Autowired
-    public PostTypeController(PostTypeService postTypeService, AuthenticationService authenticationService) {
+    public PostTypeController(PostTypeService postTypeService) {
         this.postTypeService = postTypeService;
-        this.authenticationService = authenticationService;
     }
 
     /**
@@ -32,7 +30,7 @@ public class PostTypeController {
      * @return Entidad de respuesta con los detalles del tipo creado.
      */
     @PostMapping
-    public ResponseEntity<?> createPostType(@RequestBody String description) {
+    public ResponseEntity<PostType> createPostType(@RequestBody String description) {
         return ResponseEntity.ok(postTypeService.create(description));
     }
 
@@ -45,7 +43,7 @@ public class PostTypeController {
      * @return Entidad de respuesta con una lista paginada de tipos encontrados.
      */
     @GetMapping("/all")
-    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size,  @RequestParam(defaultValue="true") boolean activeOnly) {
+    public ResponseEntity<Page<PostType>> getPostTypes(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size,  @RequestParam(defaultValue="true") boolean activeOnly) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postTypeService.findAll(pageable, activeOnly));
     }
@@ -61,7 +59,7 @@ public class PostTypeController {
      * @return Entidad de respuesta con una lista paginada de tipos filtrados.
      */
     @GetMapping("/search")
-    public ResponseEntity<?> getPostTypes(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="description,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
+    public ResponseEntity<Page<PostType>> getPostTypes(@RequestParam(defaultValue="") String q, @RequestParam(defaultValue="description,asc") String sort, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active) {
         Sort.Direction direction = Sort.Direction.ASC;
         if(sort.contains("desc")) {
             direction = Sort.Direction.DESC;
@@ -77,7 +75,7 @@ public class PostTypeController {
      * @return Entidad de respuesta que contiene el tipo buscado.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPostTypeById(@PathVariable Integer id) {
+    public ResponseEntity<PostType> getPostTypeById(@PathVariable Integer id) {
         return ResponseEntity.ok(postTypeService.findById(id));
     }
 
@@ -99,7 +97,7 @@ public class PostTypeController {
      * @return Entidad de respuesta que contiene el tipo editado.
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePostType(@PathVariable Integer id, @RequestBody String description) {
+    public ResponseEntity<PostType> updatePostType(@PathVariable Integer id, @RequestBody String description) {
         return ResponseEntity.ok(postTypeService.update(id, description));
     }
 
@@ -111,7 +109,7 @@ public class PostTypeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostType(@PathVariable Integer id) {
         postTypeService.delete(id);
-        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

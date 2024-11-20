@@ -1,19 +1,14 @@
 package frgp.utn.edu.ar.quepasa.controller.media;
 
-import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.response.RawDocument;
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import quepasa.api.exceptions.ValidationError;
 import frgp.utn.edu.ar.quepasa.model.media.Document;
 import frgp.utn.edu.ar.quepasa.service.media.DocumentService;
-import frgp.utn.edu.ar.quepasa.service.media.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
