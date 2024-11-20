@@ -196,6 +196,16 @@ public class EventController {
         return ResponseEntity.ok(eventService.findByEventsNeighbourhood(q, neighbourhoodId, pageable, active));
     }
 
+    @GetMapping("/eventNeighbourhood/{neighbourhoodId}/eventCategory/{category}")
+    public ResponseEntity<?> getEventsByNeighbourhoodAndEventCategory(@PathVariable int neighbourhoodId, @PathVariable EventCategory category, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.findByEventsNeighbourhoodAndEventCategory(q, neighbourhoodId, category, pageable, active));
+    }
+
     /**
      * Actualiza un evento existente.
      *

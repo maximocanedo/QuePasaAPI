@@ -60,6 +60,10 @@ Authorization: Bearer {{token}}
 GET {{base}}/api/events/eventNeighbourhood/1?q=taller de escultura&page=0&size=10&active=true&sort=title,asc
 Authorization: Bearer {{token}}
 
+### Consultar eventos por barrio y categoria
+GET {{base}}/api/events/eventNeighbourhood/1/eventCategory/SPORTIVE?q=taller de escultura&page=0&size=10&active=true&sort=title,asc
+Authorization: Bearer {{token}}
+
 ### Consultar eventos inactivos
 GET {{base}}/api/events?q=&page=0&size=10&active=false&sort=
 Authorization: Bearer {{token}}

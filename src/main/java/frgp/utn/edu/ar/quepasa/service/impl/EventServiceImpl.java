@@ -368,4 +368,9 @@ public class EventServiceImpl implements EventService {
     public Page<Event> findByEventsNeighbourhood(String query, int neighbourhoodId, Pageable pageable, boolean active) {
         return eventRepository.findByNeighbourhoodId(query, neighbourhoodId, active, pageable).map(voteService::populate).map(commentService::populate);
     }
+
+    @Override
+    public Page<Event> findByEventsNeighbourhoodAndEventCategory(String q, int neighbourhoodId, EventCategory category, Pageable pageable, boolean active) {
+        return eventRepository.findByNeighbourhoodIdAndCategory(q, neighbourhoodId, category, active, pageable).map(voteService::populate).map(commentService::populate);
+    }
 }
