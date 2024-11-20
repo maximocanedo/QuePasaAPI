@@ -30,4 +30,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     @Query("SELECT e FROM Event e WHERE :neighbourhoodId IN (SELECT neighbourhoods.id FROM e.neighbourhoods neighbourhoods) AND e.active = :active AND (e.title LIKE %:query% OR e.description LIKE %:query%)")
     Page<Event> findByNeighbourhoodId(String query, long neighbourhoodId, boolean active, @NotNull Pageable pageable);
+
+    @Query("SELECT e FROM Event e WHERE :neighbourhoodId IN (SELECT neighbourhoods.id FROM e.neighbourhoods neighbourhoods) AND e.category = :category AND e.active = :active AND (e.title LIKE %:q% OR e.description LIKE %:q%)")
+    Page<Event> findByNeighbourhoodIdAndCategory(String q, int neighbourhoodId, EventCategory category, boolean active, Pageable pageable);
 }

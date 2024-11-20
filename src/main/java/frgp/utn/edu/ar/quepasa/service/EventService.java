@@ -44,4 +44,6 @@ public interface EventService {
     List<EventRsvp> findRsvpsByUser(User user, boolean confirmed);
 
     Page<Event> findByEventsNeighbourhood(String query, int neighbourhoodId, Pageable pageable, boolean active);
+
+    Page<Event> findByEventsNeighbourhoodAndEventCategory(String q, int neighbourhoodId, EventCategory category, Pageable pageable, boolean active);
 }
