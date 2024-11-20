@@ -1,19 +1,23 @@
 package frgp.utn.edu.ar.quepasa.service.geo.impl;
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
-import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.repository.geo.NeighbourhoodRepository;
+import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
+
 
 @Service
 public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     private final NeighbourhoodRepository neighbourhoodRepository;
+    private static final Logger logger = LoggerFactory.getLogger(NeighbourhoodServiceImpl.class);
 
     @Autowired
     public NeighbourhoodServiceImpl(NeighbourhoodRepository neighbourhoodRepository) {
@@ -46,11 +50,16 @@ public class NeighbourhoodServiceImpl implements NeighbourhoodService {
 
     // Buscar barrios por nombre
     @Override
-    public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, int city) {
-        return city == -1 ? 
-        neighbourhoodRepository.findByNameAndActive(name, pageable)
-        : neighbourhoodRepository.findByNameAndActive(name, pageable, city);
+    public Page<Neighbourhood> searchNeighbourhoodsByName(String name, Pageable pageable, long city) {
+        Page<Neighbourhood> result;
+        if (city == -1) {
+            result = neighbourhoodRepository.findByNameAndActive(name, pageable);
+        } else {
+            result = neighbourhoodRepository.findByNameAndActive(name, pageable, city);
+        }
+        return result;
     }
+    
 
     // Actualizar un barrio existente
     @Override

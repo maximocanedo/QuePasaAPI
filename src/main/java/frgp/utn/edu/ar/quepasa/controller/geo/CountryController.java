@@ -45,8 +45,8 @@ public class CountryController {
     }
 
     @GetMapping("/{iso}/states")
-    public ResponseEntity<List<SubnationalDivision>> getStates(@PathVariable String iso) {
-        var list = subnationalDivisionService.listFrom(iso);
+    public ResponseEntity<Page<SubnationalDivision>> getStates(@PathVariable String iso, Pageable pageable) {
+        var list = subnationalDivisionService.pageFrom(iso, pageable);
         return ResponseEntity.ok(list);
     }
 

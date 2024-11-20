@@ -1,17 +1,17 @@
 package frgp.utn.edu.ar.quepasa.controller.geo.neighbourhoods;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import frgp.utn.edu.ar.quepasa.controller.geo.NeighbourhoodController;
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
-import jakarta.transaction.Transactional;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,18 +19,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import frgp.utn.edu.ar.quepasa.controller.geo.NeighbourhoodController;
+import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
+import frgp.utn.edu.ar.quepasa.service.geo.NeighbourhoodService;
+import jakarta.transaction.Transactional;
 @Transactional
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -76,24 +80,24 @@ public class NeighbourhoodControllerTests {
     @DisplayName("Obtener todos los barrios")
     public void getAllNeighbourhoodsTest() throws Exception {
         Neighbourhood neighbourhood1 = new Neighbourhood();
-        neighbourhood1.setName("Barrio Norte");
-
+        neighbourhood1.setName("Rincón de Milberg");
+    
         Neighbourhood neighbourhood2 = new Neighbourhood();
-        neighbourhood2.setName("Palermo");
-
+        neighbourhood2.setName("Tigre Centro");
+    
         Pageable pageable = PageRequest.of(0, 10);
-
-        Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(Arrays.asList(neighbourhood1, neighbourhood2));
-
+    
+        Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(Arrays.asList(neighbourhood1, neighbourhood2), pageable, 2);
+    
         when(neighbourhoodService.getAllNeighbourhoods(true, pageable)).thenReturn(neighbourhoodsPage);
-
+    
         mockMvc.perform(get("/api/neighbourhoods?activeOnly=true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("Barrio Norte"))
-                .andExpect(jsonPath("$[1].name").value("Palermo"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].name").value("Rincón de Milberg"))
+                .andExpect(jsonPath("$.content[1].name").value("Tigre Centro"));
     }
-
+    
     @Test
     @DisplayName("Obtener un barrio por ID")
     public void getNeighbourhoodByIdTest() throws Exception {
@@ -118,12 +122,13 @@ public class NeighbourhoodControllerTests {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(List.of(neighbourhood));
 
-        when(neighbourhoodService.searchNeighbourhoodsByName("Belgrano", pageable)).thenReturn(neighbourhoodsPage);
+        when(neighbourhoodService.searchNeighbourhoodsByName("Belgrano", pageable, -1)).thenReturn(neighbourhoodsPage);
 
         mockMvc.perform(get("/api/neighbourhoods/search?name=Belgrano"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Belgrano"));
+                .andExpect(jsonPath("$.content[0].name").value("Belgrano"));
     }
+
 
     @Test
     @DisplayName("Actualizar un barrio")
@@ -149,4 +154,34 @@ public class NeighbourhoodControllerTests {
         mockMvc.perform(delete("/api/neighbourhoods/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @DisplayName("Buscar barrios por ciudad sin nombre especificado")
+    public void searchNeighbourhoodsByCityTest() throws Exception {
+        Neighbourhood neighbourhood1 = new Neighbourhood();
+        neighbourhood1.setName("Palermo");
+    
+        Neighbourhood neighbourhood2 = new Neighbourhood();
+        neighbourhood2.setName("Palermo Chico");
+    
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Neighbourhood> neighbourhoodsPage = new PageImpl<>(Arrays.asList(neighbourhood1, neighbourhood2), pageable, 2);
+    
+        when(neighbourhoodService.searchNeighbourhoodsByName("", pageable, 56)).thenReturn(neighbourhoodsPage);
+    
+        mockMvc.perform(get("/api/neighbourhoods/search")
+                .param("name", "")
+                .param("page", "0")
+                .param("size", "10")
+                .param("city", "56"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].name").value("Palermo"))
+                .andExpect(jsonPath("$.content[1].name").value("Palermo Chico"))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
+    }
+    
 }
