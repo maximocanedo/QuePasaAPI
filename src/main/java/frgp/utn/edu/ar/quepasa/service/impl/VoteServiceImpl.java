@@ -105,6 +105,9 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public VoteCount count(Comment file) {
+        if(commentVotesRepository.getVotes(file.getId()) == null) {
+            return buildCount(0, commentVotesRepository.getUserVote(file.getId(), getCurrentUser().getUsername()));
+        }
         return buildCount(
             commentVotesRepository.getVotes(file.getId()),
             commentVotesRepository.getUserVote(file.getId(), getCurrentUser().getUsername())
@@ -113,6 +116,9 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public VoteCount count(Picture file) {
+        if(commentVotesRepository.getVotes(file.getId()) == null) {
+            return buildCount(0, commentVotesRepository.getUserVote(file.getId(), getCurrentUser().getUsername()));
+        }
         return buildCount(
             pictureVoteRepository.getVotes(file.getId()),
             pictureVoteRepository.getUserVote(file.getId(), getCurrentUser().getUsername())
