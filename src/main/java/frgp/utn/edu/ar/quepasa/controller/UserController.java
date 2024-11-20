@@ -1,12 +1,9 @@
 package frgp.utn.edu.ar.quepasa.controller;
 
-import frgp.utn.edu.ar.quepasa.data.ResponseError;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.user.UserPatchEditRequest;
-import frgp.utn.edu.ar.quepasa.data.response.TotpEnablingResponse;
-import frgp.utn.edu.ar.quepasa.exception.Fail;
-import quepasa.api.exceptions.ValidationError;
+import frgp.utn.edu.ar.quepasa.data.response.TotpDetails;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -103,8 +100,14 @@ public class UserController {
         return new ResponseEntity<>(me, HttpStatus.OK);
     }
 
+    @GetMapping("/me/totp")
+    public ResponseEntity<TotpDetails> getTotpDetails() {
+        var totp = authenticationService.getTotpDetails();
+        return ResponseEntity.ok(totp);
+    }
+
     @PostMapping("/me/totp")
-    public ResponseEntity<TotpEnablingResponse> enableTotpAuthentication() {
+    public ResponseEntity<TotpDetails> enableTotpAuthentication() {
         var totp = authenticationService.enableTotp();
         return ResponseEntity.ok(totp);
     }

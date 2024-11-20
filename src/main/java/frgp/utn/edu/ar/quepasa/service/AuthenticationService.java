@@ -7,7 +7,7 @@ import frgp.utn.edu.ar.quepasa.data.request.SigninRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.CodeVerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.request.auth.VerificationRequest;
 import frgp.utn.edu.ar.quepasa.data.response.JwtAuthenticationResponse;
-import frgp.utn.edu.ar.quepasa.data.response.TotpEnablingResponse;
+import frgp.utn.edu.ar.quepasa.data.response.TotpDetails;
 import frgp.utn.edu.ar.quepasa.model.User;
 import frgp.utn.edu.ar.quepasa.model.auth.Mail;
 import frgp.utn.edu.ar.quepasa.model.auth.Phone;
@@ -30,7 +30,9 @@ public interface AuthenticationService {
 
     TOTPData generateSecret(String username);
 
-    TotpEnablingResponse enableTotp();
+    TotpDetails enableTotp();
+
+    TotpDetails getTotpDetails();
 
     byte[] createTotpSecret();
 

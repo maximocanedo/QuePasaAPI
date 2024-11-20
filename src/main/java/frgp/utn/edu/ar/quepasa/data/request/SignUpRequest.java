@@ -1,7 +1,5 @@
 package frgp.utn.edu.ar.quepasa.data.request;
 
-import frgp.utn.edu.ar.quepasa.model.geo.Neighbourhood;
-
 public class SignUpRequest {
     private String name;
     private String username;

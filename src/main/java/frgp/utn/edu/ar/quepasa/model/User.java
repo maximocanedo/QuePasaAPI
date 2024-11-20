@@ -131,7 +131,7 @@ public class User implements UserDetails, Activatable {
      * Indica si el usuario tiene habilitado 2FA mediante TOTP.
      */
     @Transient
-    @JsonProperty("totp")
+    @JsonIgnore
     public boolean hasTotpEnabled() { return totp != null && !totp.isEmpty() && !totp.equals("no-totp"); }
 
     /**
