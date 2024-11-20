@@ -363,4 +363,9 @@ public class EventServiceImpl implements EventService {
     public List<EventRsvp> findRsvpsByUser(User user, boolean confirmed) {
         return eventRsvpRepository.findByUserAndConfirmed(user, confirmed);
     }
+
+    @Override
+    public Page<Event> findByEventsNeighbourhood(String query, int neighbourhoodId, Pageable pageable, boolean active) {
+        return eventRepository.findByNeighbourhoodId(query, neighbourhoodId, active, pageable).map(voteService::populate).map(commentService::populate);
+    }
 }

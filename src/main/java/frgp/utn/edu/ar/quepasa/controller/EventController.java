@@ -186,6 +186,16 @@ public class EventController {
         return ResponseEntity.ok(eventService.findByEventCategory(category, pageable, active));
     }
 
+    @GetMapping("/eventNeighbourhood/{neighbourhoodId}")
+    public ResponseEntity<?> getEventsByNeighbourhood(@PathVariable int neighbourhoodId, @RequestParam(defaultValue="") String q, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size, @RequestParam(defaultValue="true") boolean active, @RequestParam(defaultValue="title,asc") String sort) throws Fail {
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (sort.contains("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort.split(",")[0]));
+        return ResponseEntity.ok(eventService.findByEventsNeighbourhood(q, neighbourhoodId, pageable, active));
+    }
+
     /**
      * Actualiza un evento existente.
      *
@@ -304,6 +314,9 @@ public class EventController {
     @GetMapping("/{eventId}/comments")
     public ResponseEntity<?> getComments(@PathVariable UUID eventId, @RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(commentService.findAllFromEvent(eventId, pageable));
+        return ResponseEntity.ok(
+                commentService.findAllFromEvent(eventId, pageable)
+                        .map(voteService::populate)
+        );
     }
 }

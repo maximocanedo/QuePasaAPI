@@ -53,7 +53,11 @@ GET {{base}}/api/events/user/bocelli.andrea?page=0&size=10
 Authorization: Bearer {{token}}
 
 ### Consultar eventos activos
-GET {{base}}/api/events?q=&page=0&size=10&active=true&sort=
+GET {{base}}/api/events?q=&page=0&size=10&active=true&sort=createdAt,desc
+Authorization: Bearer {{token}}
+
+### Consultar eventos por barrio
+GET {{base}}/api/events/eventNeighbourhood/1?q=taller de escultura&page=0&size=10&active=true&sort=title,asc
 Authorization: Bearer {{token}}
 
 ### Consultar eventos inactivos
