@@ -213,4 +213,25 @@ public class User implements UserDetails, Activatable {
         return active;
     }
 
+    @Override
+    @Transient
+    @JsonIgnore
+    public int hashCode() {
+        return
+            getId().hashCode() +
+            getName().hashCode() +
+            Integer.valueOf(getPhone().size()+"").intValue() +
+            getAddress().hashCode() +
+            Integer.valueOf(getNeighbourhood().getId()+"").intValue() +
+            getProfilePicture().getId().hashCode() +
+            getRole().hashCode() +
+            getUsername().hashCode();
+    }
+
+    @JsonProperty("efingerprint")
+    @Transient
+    public String fingerprint() {
+        return Integer.toHexString(hashCode());
+    }
+
 }

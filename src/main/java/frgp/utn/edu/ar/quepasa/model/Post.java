@@ -86,7 +86,7 @@ public class Post implements Ownable, Votable, Commentable, Activatable {
     /**
      * Devuelve la descripción de la publicación.
      */
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 

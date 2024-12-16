@@ -21,7 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import frgp.utn.edu.ar.quepasa.model.enums.Role;
 import frgp.utn.edu.ar.quepasa.service.UserService;
-
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
+import jakarta.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +40,11 @@ public class SecurityConfig {
     @Autowired @Lazy
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Bean
+    public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {
+        return new ShallowEtagHeaderFilter();
     }
 
     @Bean

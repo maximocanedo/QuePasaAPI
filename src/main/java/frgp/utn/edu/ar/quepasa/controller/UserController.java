@@ -40,7 +40,10 @@ public class UserController {
 
     @GetMapping("/{username}")
     public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(userService.findByUsername(username));
+        var x = userService.findByUsername(username);
+        return ResponseEntity.ok()
+                .eTag(x.fingerprint())
+                .body(x);
     }
 
     @PatchMapping("/{username}")
@@ -97,7 +100,9 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> me() {
         User me = authenticationService.getCurrentUserOrDie();
-        return new ResponseEntity<>(me, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .eTag(me.fingerprint())
+                .body(me);
     }
 
     @GetMapping("/me/totp")
